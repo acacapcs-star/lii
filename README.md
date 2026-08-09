@@ -30,7 +30,7 @@ This repository was renamed to `lii` in August 2026 (formerly `PsyGuard-AI`); th
 | | v1 — PsyGuard AI | v2 — lii |
 |---|---|---|
 | Period | Apr – May 2026 | 10 Jul 2026 – present |
-| Authorship | Four-student team, advisor Kai-Chun Hou | **Rebuilt independently by Yu-Shin Lan** |
+| Authorship | Four-student team, advisor Kai-Chun Hou | **Independently developed forward by Yu-Shin Lan** |
 | Scope | Flutter MVP: AI companion chat, check-in, sleep log, trend charts | Three-stream ERS, three-tier intervention, risk-inverse response, three-layer privacy, encrypted journal, speech features, breathing overture |
 | Recognition | 23rd Y.S. Awards, Apr 2026 — Honorable Mention, Senior-High AI Application (75 entries); Miao Feng-Chiang Technology Innovation Award, 3 of 714 entries, presented jointly to the team and its advisor | Submitted to the Da Vinci International Invention Exhibition; **result not yet announced** |
 
@@ -841,7 +841,7 @@ and received two awards:
 
 The Miao Feng-Chiang award is judged across the entire competition rather than
 within a category — 3 out of 714. It is the strongest third-party validation the
-project currently holds, and it belongs to the v1 phase. **v2 lii was rebuilt
+project currently holds, and it belongs to the v1 phase. **v2 lii was developed forward
 independently by the author and has no award result of its own yet.**
 
 ### Da Vinci International Invention Exhibition, submitted August 2026
@@ -873,7 +873,7 @@ implementation. Below are its main points and how lii is designed against them.
 an endorsement, certification or approval.**
 
 > To be clear about provenance: this correspondence was obtained during the v1
-> PsyGuard team phase and was requested in the team's name. v2 lii was rebuilt
+> PsyGuard team phase and was requested in the team's name. v2 lii was developed forward
 > independently by the author afterwards, carrying the same regulatory mapping
 > forward and deepening it — for example, implementing "layered authorisation" as
 > three structurally separate database tables, and "avoid labelling" as the
