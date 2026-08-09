@@ -15,7 +15,6 @@ import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_language.dart';
 import '../../../core/ers/group_norms.dart';
 import '../../../core/security/secret_diary_lock.dart';
-import '../../../core/security/secret_diary_lock.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
@@ -452,6 +451,96 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   : const Center(child: CircularProgressIndicator()),
             ),
             const SizedBox(height: 18),
+            _sectionTitle(
+                language == AppLanguage.zhTw ? '🔔 提醒方式' : '🔔 Alerts'),
+            const SizedBox(height: 12),
+            _card(
+              child: StatefulBuilder(
+                builder: (localCtx, setLocal) =>
+                    FutureBuilder<SharedPreferences>(
+                  future: SharedPreferences.getInstance(),
+                  builder: (fCtx, snap) {
+                    final p = snap.data;
+                    final on = p?.getBool('alerts_red_enabled') ?? true;
+                    final zh = language == AppLanguage.zhTw;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          value: on,
+                          onChanged: p == null
+                              ? null
+                              : (v) async {
+                                  if (!v) {
+                                    final ok = await showDialog<bool>(
+                                      context: localCtx,
+                                      builder: (dCtx) => AlertDialog(
+                                        title: Text(zh
+                                            ? '關掉紅色等級？'
+                                            : 'Turn off the red tier?'),
+                                        content: Text(zh
+                                            ? '關掉之後，等級最多顯示到黃色，lii 也不會自己打開求助流程。\n\n'
+                                              '分數本身還是會照常記錄，求助資源頁也一直都在選單裡，你隨時點得進去。\n\n'
+                                              '只是那一刻，沒有人會先開口。'
+                                            : 'With this off, the tier stops at amber and lii will not '
+                                              'open the safety flow by itself.\n\n'
+                                              'Your scores are still recorded, and the help page stays in '
+                                              'the menu for you to open any time.\n\n'
+                                              'It only means that in that moment, nothing will speak first.'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(dCtx, false),
+                                            child: Text(
+                                                zh ? '維持開啟' : 'Keep it on'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(dCtx, true),
+                                            child:
+                                                Text(zh ? '關掉' : 'Turn off'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                    if (ok != true) return;
+                                  }
+                                  await p.setBool('alerts_red_enabled', v);
+                                  setLocal(() {});
+                                },
+                          title: Text(
+                            zh
+                                ? '顯示紅色風險等級'
+                                : 'Show the red risk tier',
+                            style: GoogleFonts.nunitoSans(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              color: LumiTheme.textPrimary,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          zh
+                              ? '分數到 70 以上時顯示紅色，並直接把求助流程打開。'
+                                '關掉的話等級最多到黃色 —— 分數照常記錄，'
+                                '求助資源頁也一直在選單裡，隨時點得進去。'
+                              : 'Above 70 the tier turns red and lii opens the safety flow for you. '
+                                'With this off the tier stops at amber — scores are still recorded, '
+                                'and the help page stays in the menu at all times.',
+                          style: GoogleFonts.nunitoSans(
+                            fontSize: 13,
+                            height: 1.6,
+                            color: LumiTheme.textSecondary,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 28),
             _sectionTitle(copy.dataPrivacySectionTitle),
             const SizedBox(height: 12),
             _card(
@@ -471,6 +560,155 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             const SizedBox(height: 12),
             _card(child: _autoLockSelector(language == AppLanguage.zhTw)),
             const SizedBox(height: 18),
+            // ── DEMO 用 · 只在 debug 模式出現，release 版自動消失 ──
+            if (kDebugMode) ...[
+              _sectionTitle(language == AppLanguage.zhTw
+                  ? '🎬 Demo 工具（僅 debug）'
+                  : '🎬 Demo tools (debug only)'),
+              const SizedBox(height: 12),
+              _card(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      language == AppLanguage.zhTw
+                          ? '清除 ERS 平滑歷史'
+                          : 'Clear ERS smoothing history',
+                      style: GoogleFonts.nunitoSans(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: LumiTheme.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      language == AppLanguage.zhTw
+                          ? 'ERS 會取最近 3 次的平均，所以之前測試的分數會把新分數拉低。'
+                            '清掉之後，下一次 check-in 就是單獨計分。'
+                            '只影響平滑用的暫存，不會刪日記、心情紀錄或睡眠資料。'
+                          : 'ERS averages the last 3 scores, so earlier test runs pull new '
+                            'scores down. Clearing this makes the next check-in count on its own. '
+                            'Only the smoothing cache is removed — diaries, moods and sleep logs stay.',
+                      style: GoogleFonts.nunitoSans(
+                        fontSize: 13,
+                        height: 1.6,
+                        color: LumiTheme.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: OutlinedButton(
+                        onPressed: () async {
+                          final zh = language == AppLanguage.zhTw;
+                          final ok = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: Text(zh
+                                  ? '清除 ERS 平滑歷史？'
+                                  : 'Clear ERS smoothing history?'),
+                              content: Text(zh
+                                  ? '下一次 check-in 會單獨計分，儀表板的趨勢圖也會少掉這幾點。'
+                                  : 'The next check-in will be scored on its own, and those '
+                                    'points will disappear from the dashboard trend.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, false),
+                                  child: Text(zh ? '取消' : 'Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, true),
+                                  child: Text(zh ? '清除' : 'Clear'),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (ok != true) return;
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.remove('ers_recent');
+                          await prefs.remove('last_ers_level');
+                          await prefs.remove('last_ers_score');
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(zh
+                                  ? '已清除。回首頁前先滑掉重進，畫面才會更新。'
+                                  : 'Cleared. Reopen the app for the home screen to refresh.'),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          language == AppLanguage.zhTw
+                              ? '清除'
+                              : 'Clear',
+                          style: GoogleFonts.nunitoSans(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              _card(
+                child: StatefulBuilder(
+                  builder: (localCtx, setLocal) =>
+                      FutureBuilder<SharedPreferences>(
+                    future: SharedPreferences.getInstance(),
+                    builder: (fCtx, snap) {
+                      final p = snap.data;
+                      final on =
+                          p?.getBool('demo_skip_ers_smoothing') ?? false;
+                      final zh = language == AppLanguage.zhTw;
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SwitchListTile(
+                            contentPadding: EdgeInsets.zero,
+                            value: on,
+                            onChanged: p == null
+                                ? null
+                                : (v) async {
+                                    await p.setBool(
+                                        'demo_skip_ers_smoothing', v);
+                                    setLocal(() {});
+                                  },
+                            title: Text(
+                              zh
+                                  ? '跳過 ERS 平滑（錄影用）'
+                                  : 'Skip ERS smoothing (for filming)',
+                              style: GoogleFonts.nunitoSans(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                                color: LumiTheme.textPrimary,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            zh
+                                ? '平常 ERS 會取最近 3 次平均，避免有人只是今天狀態差就被丟進紅色警報。'
+                                  '打開這個開關之後，等級只看這一次的分數，紅燈會立刻成立。'
+                                  '錄完請關掉。'
+                                : 'Normally ERS averages the last 3 scores, so nobody is thrown into a '
+                                  'red alert over one bad day. With this on, the tier follows this '
+                                  'check-in alone and red can trigger immediately. Turn it off after filming.',
+                            style: GoogleFonts.nunitoSans(
+                              fontSize: 13,
+                              height: 1.6,
+                              color: LumiTheme.textSecondary,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 28),
+            ],
             _sectionTitle(copy.resetSectionTitle),
             const SizedBox(height: 12),
             _card(

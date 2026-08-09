@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'note_page.dart';
 import '../../../core/ers/speech_metrics.dart';
 import '../../../core/security/secret_swipe_shell.dart';
@@ -12,6 +13,8 @@ import '../../../core/risk_engine/risk_models.dart';
 import '../../../core/risk_engine/risk_provider.dart';
 import '../../../core/security/local_settings_service.dart';
 import '../../../core/storage/database_provider.dart';
+import '../../home/presentation/home_page.dart'
+    show homeDashboardProvider;
 import '../../../l10n/app_strings.dart';
 import '../../ers/ers_engine.dart';
 import '../../ers/ers_models.dart';
@@ -123,18 +126,34 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
         recent.removeAt(0);
       }
       await prefs.setStringList('ers_recent', recent);
-      final smoothed = recent
-              .map((e) => double.tryParse(e) ?? 0)
-              .fold<double>(0, (p, e) => p + e) /
-          recent.length;
-      final smoothedLevel = smoothed >= 70
+      // DEMO_SKIP_SMOOTHING 設定頁 Demo 區的開關，只在 debug 生效。
+      // 平常一定走平均 —— 不讓任何人因為單日狀態差就被丟進紅色警報。
+      final skipSmoothing =
+          kDebugMode && (prefs.getBool('demo_skip_ers_smoothing') ?? false);
+      final smoothed = skipSmoothing
+          ? ersResult.adjustedERS
+          : recent
+                  .map((e) => double.tryParse(e) ?? 0)
+                  .fold<double>(0, (p, e) => p + e) /
+              recent.length;
+      final trueLevel = smoothed >= 70
           ? 'red'
           : smoothed >= 45
               ? 'yellow'
               : 'green';
+      // ALERTS_RED_ENABLED 使用者可以在設定頁關掉紅色等級。預設是開的。
+      // 關掉時只壓「給使用者看的等級」—— 真實等級照存 last_ers_level_true，
+      // 系統不會假裝那天沒發生過。
+      final redEnabled = prefs.getBool('alerts_red_enabled') ?? true;
+      final smoothedLevel =
+          (!redEnabled && trueLevel == 'red') ? 'yellow' : trueLevel;
+      await prefs.setString('last_ers_level_true', trueLevel);
       await prefs.setDouble('last_ers_score', smoothed);
       await prefs.setString('last_ers_level', smoothedLevel);
       if (!mounted) return;
+      // HOME_INVALIDATE 存完就叫首頁重抓，
+      // 不然表情和顏色會停在舊的，要滑掉重開才會更正。
+      ref.invalidate(homeDashboardProvider);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(copy.savedRisk(smoothedLevel == 'red'
@@ -158,13 +177,15 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(ctx);
-                  if (risk.riskLevel == RiskLevel.high || ersResult.riskLevel == 'red') {
+                  if ((risk.riskLevel == RiskLevel.high ||
+                          ersResult.riskLevel == 'red') &&
+                      redEnabled) {
                     context.go('/safety');
                   } else {
                     context.go('/home');
                   }
                 },
-                child: Text(ersResult.riskLevel == 'red' ? (copy.isZhTw ? '⚠️ 前往求助資源' : '⚠️ Get help resources') : (copy.isZhTw ? '了解了' : 'Got it')),
+                child: Text(ersResult.riskLevel == 'red' && redEnabled ? (copy.isZhTw ? '⚠️ 前往求助資源' : '⚠️ Get help resources') : (copy.isZhTw ? '了解了' : 'Got it')),
               ),
             ],
           ),

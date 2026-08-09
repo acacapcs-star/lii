@@ -185,6 +185,44 @@ class RiskEngine {
       reasons.add('近 7 天睡眠困難天數偏高');
     }
 
+    // SLEEP_DURATION 睡眠「時數」原本完全沒被算進來 ——
+    // 只睡 2 小時但沒勾入睡困難的學生，這個引擎會看不到。
+    // sleepLogs 早就傳進來了，這裡才真的讀它。
+    try {
+      final hours = <double>[];
+      for (final s in sleepLogs) {
+        final h = (s.sleepHours as num?)?.toDouble();
+        if (h != null && h > 0) hours.add(h);
+      }
+      if (hours.isNotEmpty) {
+        final avg = hours.reduce((a, b) => a + b) / hours.length;
+        if (avg < 5) {
+          score += 25;
+          reasons.add('近 7 天睡眠時數明顯不足');
+        } else if (avg < 6) {
+          score += 12;
+          reasons.add('近 7 天睡眠時數偏少');
+        }
+      }
+
+      // 單一晚的極端狀況：又短又睡不著，兩個條件都要成立。
+      // 只有其中一項的話，熬夜趕作業的人天天都會踩到。
+      if (sleepLogs.isNotEmpty) {
+        final last = sleepLogs.last;
+        final lastHours = (last.sleepHours as num?)?.toDouble();
+        final lastDifficulty = (last.difficulty as num?)?.toInt();
+        if (lastHours != null &&
+            lastHours < 4 &&
+            lastDifficulty != null &&
+            lastDifficulty >= 2) {
+          score += 15;
+          reasons.add('最近一晚幾乎沒睡');
+        }
+      }
+    } catch (_) {
+      // 欄位對不上就跳過這一段，不影響其他判斷。
+    }
+
     final distressHits = _distressKeywords
         .where((kw) => joined.contains(kw))
         .length;

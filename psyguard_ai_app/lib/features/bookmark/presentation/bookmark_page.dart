@@ -27,12 +27,12 @@ const _kBookmarksKey = 'bookmarks_v2';
 const _kStationsKey = 'achievements_v1';
 
 const List<Color> _bgColors = [
-  Color(0xFF7E8FE8),
-  Color(0xFFF7A8B8),
-  Color(0xFF6FCF97),
-  Color(0xFFF2C94C),
-  Color(0xFFB8A7E0),
-  Color(0xFF56607F),
+  Color(0xFF337FB0), // ice 冰藍
+  Color(0xFF2A8A88), // sea 海藍
+  Color(0xFF7A54B0), // amethyst 紫水晶
+  Color(0xFFA65F14), // amber 琥珀
+  Color(0xFF2C7247), // moss 苔綠
+  Color(0xFFB04E6C), // dawn 晨曦
 ];
 
 const List<String> _bgImages = [
@@ -598,11 +598,14 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(3, (ti) {
+              children: List.generate(GlassTone.values.length, (ti) {
                 const cols = [
                   Color(0xFF337FB0), // 冰藍
                   Color(0xFF2A8A88), // 海藍
                   Color(0xFF7A54B0), // 紫水晶
+                  Color(0xFFA65F14), // 琥珀 amber
+                  Color(0xFF2C7247), // 苔綠 moss
+                  Color(0xFFB04E6C), // 晨曦 dawn
                 ];
                 final on = b.toneIndex == ti;
                 return GestureDetector(
@@ -738,6 +741,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
     final authorCtrl = TextEditingController();
     int colorIndex = 0;
     int imageIndex = -1;
+    int toneIndex = 0; // 球的顏色 = 使用者選的背景色
     String customImagePath = '';
 
     showModalBottomSheet(
@@ -836,11 +840,11 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
                       spacing: 12,
                       runSpacing: 10,
                       children: List.generate(_bgColors.length, (i) {
-                        final selected = imageIndex < 0 && colorIndex == i;
+                        final selected = colorIndex == i;
                         return GestureDetector(
                           onTap: () => setSheet(() {
-                            colorIndex = i;
-                            imageIndex = -1;
+                            toneIndex = i; // 球的顏色
+                            colorIndex = i; // 沒放圖時的卡片底色
                           }),
                           child: Container(
                             width: 40,
@@ -940,6 +944,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
                         author: authorCtrl.text.trim(),
                         colorIndex: colorIndex,
                         imageIndex: imageIndex,
+                        toneIndex: toneIndex,
                         frameIndex: 0,
                         customImagePath: customImagePath,
                       ));
@@ -1535,7 +1540,8 @@ class _PacerCardViewState extends State<_PacerCardView> {
     final t = _t;
 
     return LunaCableCar(
-      tone: GlassTone.values[b.toneIndex.clamp(0, 2)],
+      tone: GlassTone
+          .values[b.toneIndex.clamp(0, GlassTone.values.length - 1)],
       childWidth: _w,
       childHeight: _h,
       t: t,
@@ -1648,3 +1654,11 @@ class _PacerCardViewState extends State<_PacerCardView> {
     );
   }
 }
+
+
+// ─────────────────────────────────────────────────────────
+// 給推播卡（home_page 的 _DailyCableCard）用。
+// 兩邊共用同一份清單，卡片才會長得一模一樣。
+// ─────────────────────────────────────────────────────────
+const List<Color> kBookmarkBgColors = _bgColors;
+const List<String> kBookmarkBgImages = _bgImages;

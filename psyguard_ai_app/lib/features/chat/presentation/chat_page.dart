@@ -316,10 +316,14 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             children: [
               const Text('💭', style: TextStyle(fontSize: 36)),
               const SizedBox(height: 12),
-              Text(
-                incongruence.alertMessage,
-                style: const TextStyle(fontSize: 14),
-                textAlign: TextAlign.center,
+              Consumer(
+                builder: (c, r, _) => Text(
+                  incongruence.alertMessageFor(
+                    AppStrings.of(r.watch(appLanguageControllerProvider)).isZhTw,
+                  ),
+                  style: const TextStyle(fontSize: 14),
+                  textAlign: TextAlign.center,
+                ),
               ),
               const SizedBox(height: 16),
               Row(
@@ -327,7 +331,19 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(ctx),
-                      child: Consumer(builder: (c, r, _) => Text(AppStrings.of(r.watch(appLanguageControllerProvider)).isZhTw ? '繼續說' : 'Keep talking')),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                      ),
+                      child: Consumer(
+                        builder: (c, r, _) => FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            AppStrings.of(r.watch(appLanguageControllerProvider)).isZhTw ? '繼續說' : 'Keep talking',
+                            maxLines: 1,
+                            softWrap: false,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -336,12 +352,22 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0ABFBC),
                         foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
                       ),
                       onPressed: () {
                         Navigator.pop(ctx);
                         context.go('/safety');
                       },
-                      child: Consumer(builder: (c, r, _) => Text(AppStrings.of(r.watch(appLanguageControllerProvider)).isZhTw ? '求助資源' : 'Get help')),
+                      child: Consumer(
+                        builder: (c, r, _) => FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            AppStrings.of(r.watch(appLanguageControllerProvider)).isZhTw ? '求助資源' : 'Get help',
+                            maxLines: 1,
+                            softWrap: false,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],

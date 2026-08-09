@@ -71,6 +71,9 @@ class AppStrings {
   String get statusNeedsAttention => isZhTw ? '需要被關注' : 'Needs attention';
   String get statusWatchful => isZhTw ? '留意中' : 'Keep an eye on it';
   String get statusGood => isZhTw ? '狀態良好' : 'Doing okay';
+  // ERS_LABEL 跟首頁的表情顏色同一組門檻（<=40 / 41-70 / >70）
+  String get statusCare => isZhTw ? '需要留意' : 'Take care';
+  String get statusSupport => isZhTw ? '需要支持' : 'Needs support';
   String get todayStatus => isZhTw ? '今日身心狀態' : 'Today\'s well-being';
   String get exploreSelf => isZhTw ? '探索自我' : 'Explore Yourself';
   String get moreFeatures => isZhTw ? '更多功能' : 'More Features';

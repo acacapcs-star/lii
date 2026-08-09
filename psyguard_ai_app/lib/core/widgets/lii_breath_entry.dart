@@ -35,6 +35,17 @@ LiiBreathMode liiModeFromErs(int ers) {
 ///
 /// 低落和焦慮要分開，因為處理方式是相反的：
 /// 焦慮用長吐氣壓交感神經；低落用長吐氣只會更往下沉，要等長節奏提振。
+// BREATH_ERS 用 ERS 分數決定節奏，門檻跟首頁表情顏色完全一樣
+// （LumiTheme.riskColor：<=40 綠 / 41-70 黃 / >70 紅）。
+//   綠 calm     4-2-4-2 -> 4-4-4-4   維持
+//   黃 low      3-0-3-0 -> 4-0-4-0   短促，先讓身體動起來
+//   紅 anxious  4-2-4-0 -> 4-7-8-0   吐氣拉長，把喚起度壓下來
+BreathMood liiMoodFromErs(int ers) {
+  if (ers <= 40) return BreathMood.calm;
+  if (ers <= 70) return BreathMood.low;
+  return BreathMood.anxious;
+}
+
 BreathMood liiMoodFromSignals({
   required int mood,
   required int stress,
@@ -55,6 +66,9 @@ class LiiBreathButton extends StatefulWidget {
   final int? stress;
   final int? energy;
 
+  // BREATH_ERS 有 ERS 就優先用它，沒有才回退到三個滑桿分數
+  final int? ersScore;
+
   /// safety flow 那顆「我現在想找人說話」按下去要做什麼
   final VoidCallback? onAskForHelp;
 
@@ -64,6 +78,7 @@ class LiiBreathButton extends StatefulWidget {
     this.mood,
     this.stress,
     this.energy,
+    this.ersScore,
     this.onAskForHelp,
   });
 
@@ -119,15 +134,22 @@ class _LiiBreathButtonState extends State<LiiBreathButton>
     final mode = widget.ers == null
         ? LiiBreathMode.daily
         : liiModeFromErs(widget.ers!);
-    final mood = (widget.mood == null ||
-            widget.stress == null ||
-            widget.energy == null)
-        ? BreathMood.calm
-        : liiMoodFromSignals(
-            mood: widget.mood!,
-            stress: widget.stress!,
-            energy: widget.energy!,
-          );
+    // BREATH_ERS 優先用 ERS（跟首頁的紅黃綠同一組門檻），
+    // 沒有 ERS 紀錄才回退到三個滑桿分數的舊規則。
+    final BreathMood mood;
+    if (widget.ersScore != null) {
+      mood = liiMoodFromErs(widget.ersScore!);
+    } else if (widget.mood == null ||
+        widget.stress == null ||
+        widget.energy == null) {
+      mood = BreathMood.calm;
+    } else {
+      mood = liiMoodFromSignals(
+        mood: widget.mood!,
+        stress: widget.stress!,
+        energy: widget.energy!,
+      );
+    }
     showLiiBreath(
       context,
       mood: mood,

@@ -38,6 +38,32 @@ import '../../../core/widgets/lii_breath_entry.dart';
 import '../../../core/widgets/luna_orb.dart';
 import 'dart:io';
 import '../../../core/crystals/crystal_collection_page.dart';
+import '../../bookmark/presentation/bookmark_page.dart'
+    show kBookmarkBgColors, kBookmarkBgImages;
+
+// ─────────────────────────────────────────────────────────
+// PACER 底色濃度。改這三個數字就能調「底色蓋住背景圖」的程度。
+//   0x00 = 全透明（只看得到背景圖）
+//   0xFF = 全不透明（背景圖完全看不到）
+// 目前：上 0.10 → 中 0.20 → 下 0.35（淺上深下）
+// 覺得底色太淡就三個一起往上加，太濃就往下減。
+// ─────────────────────────────────────────────────────────
+const int kTintTop = 0x1A;    // 0.10
+const int kTintMid = 0x33;    // 0.20
+const int kTintBottom = 0x59; // 0.35
+
+// ─────────────────────────────────────────────────────────
+// 六色各自的預設背景圖（沒有自選圖片時才會用到）。
+// 想換圖就改這裡的檔名，記得圖要放在 assets/images/ 底下。
+// ─────────────────────────────────────────────────────────
+const Map<GlassTone, String> kToneBg = {
+  GlassTone.ice: 'assets/images/night_scenic.png',      // 夜空
+  GlassTone.sea: 'assets/images/ocean_bg.jpeg',         // 海底
+  GlassTone.amethyst: 'assets/images/bg_penguin.jpeg',  // 企鵝
+  GlassTone.amber: 'assets/images/coral_bg.jpeg',       // 珊瑚
+  GlassTone.moss: 'assets/images/bg_otter.jpeg',        // 水獺
+  GlassTone.dawn: 'assets/images/bg_capybara.jpeg',     // 水豚
+};
 
 class HomeDashboard {
   HomeDashboard({
@@ -46,6 +72,8 @@ class HomeDashboard {
     required this.todayCheckinRisk,
     required this.latestRisk,
     required this.recentNotes,
+    required this.cumulativeCount,
+    required this.ersScore,
   });
 
   final DailyCheckin? todayCheckin;
@@ -53,15 +81,29 @@ class HomeDashboard {
   final RiskSnapshotResult? todayCheckinRisk;
   final RiskSnapshot? latestRisk;
   final List<String> recentNotes;
+
+  // CUM_IN_PROVIDER 累積紅燈次數。以前是 _HomeContentState 的 local
+  // state，抓一次就不動 -> 表情顏色永遠不更新。搬進來跟大家一起抓。
+  final int cumulativeCount;
+
+  // ERS_UNIFIED 全 app 共用的那個分數（last_ers_score）。
+  // 以前首頁自己用 riskEngine 另外算一套，跟彈窗/snackbar 對不起來。
+  final int ersScore;
 }
 
-final homeDashboardProvider = FutureProvider<HomeDashboard>((ref) async {
+// AUTO_REFRESH autoDispose = 沒人看就丟掉，回首頁時重抓。
+// 這樣在 check-in 存完心情，回來首頁就會是新的，不用滑掉重開。
+final homeDashboardProvider =
+    FutureProvider.autoDispose<HomeDashboard>((ref) async {
   final db = ref.read(appDatabaseProvider);
   final riskEngine = ref.read(riskEngineProvider);
   final since = DateTime.now().subtract(const Duration(days: 3));
   final messages = await db.getMessagesSince(since);
   final checkins = await db.getCheckinsSince(since);
   final todayCheckin = await db.getTodayCheckin();
+  final cumulativeCount = await CumulativeRiskEngine().getRedCount();
+  final prefs = await SharedPreferences.getInstance();
+  final ersScore = (prefs.getDouble('last_ers_score') ?? 20).floor();
   final notes = <String>[
     ...messages.map((m) => m.content),
     ...checkins.where((c) => c.note != null).map((c) => c.note!),
@@ -78,6 +120,8 @@ final homeDashboardProvider = FutureProvider<HomeDashboard>((ref) async {
             energyScore: todayCheckin.energyScore,
           ),
     latestRisk: await db.getLatestRiskSnapshot(),
+    cumulativeCount: cumulativeCount,
+    ersScore: ersScore,
     recentNotes: notes,
   );
 });
@@ -152,7 +196,23 @@ class HomePage extends ConsumerWidget {
             const Positioned.fill(child: FishTouchLayer()),
             // ❄️ 冰霜觸碰層（手碰到哪就結冰，不擋操作）
             // LII_BREATH_ENTRY 🌙 lii 呼吸入口（自己輕輕呼吸，點下去進呼吸會話）
-            const Positioned.fill(child: LiiBreathButton()),
+            Positioned.fill(
+              // LII_BREATH_MOOD 呼吸頻率跟著「當天」的 check-in 走。
+              // 沒有分數就傳 null，_open() 會退回 calm。
+              child: Consumer(builder: (context, ref, _) {
+                final c = ref.watch(homeDashboardProvider).valueOrNull
+                    ?.todayCheckin;
+                // BREATH_ERS 傳 ERS 進去，呼吸節奏才會跟紅黃綠一致
+                final ers = ref.watch(homeDashboardProvider).valueOrNull
+                    ?.ersScore;
+                return LiiBreathButton(
+                  mood: c?.moodScore,
+                  stress: c?.stressScore,
+                  energy: c?.energyScore,
+                  ersScore: ers,
+                );
+              }),
+            ),
             // CRYSTAL_BOX 水晶收藏的獨立入口。跟球分開，
             // 有自己的手勢，不會跟拖曳/縮放/切換互搶。
             Positioned(
@@ -326,7 +386,6 @@ class _HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<_HomeContent> {
-  int _cumulativeCount = 0;
   String _homePetType = 'otter';
 
   Future<void> _maybeShowDailyPacer() async {
@@ -372,12 +431,12 @@ class _HomeContentState extends State<_HomeContent> {
       type: MaterialType.transparency,
       child: Center(
         child: SizedBox(
-        height: 520,
+        height: 580,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
-              height: 440,
+              height: 500,
               child: PageView.builder(
                 itemCount: deck.length,
                 controller: PageController(viewportFraction: 0.88),
@@ -436,10 +495,9 @@ class _HomeContentState extends State<_HomeContent> {
     WidgetsBinding.instance
         .addPostFrameCallback((_) => _maybeShowDailyPacer());
     await SilenceDetector().recordActivity();
-    final count = await CumulativeRiskEngine().getRedCount();
+    // CUM_IN_PROVIDER 累積次數改由 provider 提供，這裡不用再查一次
     final alert = await SilenceDetector().checkSilence();
     if (mounted) {
-      setState(() => _cumulativeCount = count);
       if (alert != null) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           showDialog(
@@ -472,10 +530,9 @@ class _HomeContentState extends State<_HomeContent> {
     return LumiTheme.negativeKeywords.any((kw) => notes.contains(kw));
   }
 
-  int get _riskScore =>
-      widget.data.todayCheckinRisk?.riskScore ??
-      widget.data.latestRisk?.riskScore ??
-      20;
+  // ERS_UNIFIED 改讀 ERS，跟 snackbar / 彈窗 / dashboard 同一個數字。
+  // 門檻在 LumiTheme.riskColor：<=40 綠 / 41-70 黃 / >70 紅
+  int get _riskScore => widget.data.ersScore;
   String get _riskLevel =>
       widget.data.todayCheckinRisk?.riskLevelKey ??
       widget.data.latestRisk?.riskLevel ??
@@ -492,9 +549,17 @@ class _HomeContentState extends State<_HomeContent> {
     final theme = widget.theme;
     final copy = widget.copy;
     final engine = CumulativeRiskEngine();
-    final cumulativeColor = Color(int.parse(engine.colorForCount(_cumulativeCount).replaceAll('#', '0xFF')));
-    final riskColor = _cumulativeCount > 0 ? cumulativeColor : LumiTheme.riskColor(_riskScore);
-    final riskLabel = engine.labelForCount(_cumulativeCount, isZh: copy.isZhTw);
+    // CUM_IN_PROVIDER 改讀 provider 的值，不再用永遠不會變的 local state
+    final cumCount = widget.data.cumulativeCount;
+    // COLOR_TODAY 顏色只看「當天」的分數（<=40 綠 / 41-70 黃 / >70 紅）。
+    // 以前只要累積過紅燈就整個蓋掉，今天填黃色也會顯示紅色。
+    // 累積的嚴重程度改由底下的 riskLabel 文字表達。
+    final riskColor = LumiTheme.riskColor(_riskScore);
+    // ERS_LABEL 文字也跟著 ERS，跟上面的顏色用同一組門檻。
+    // 以前讀的是累積紅燈次數，所以 ERS 68（黃）還是寫 Doing okay。
+    final riskLabel = _riskScore <= 40
+        ? copy.statusGood
+        : (_riskScore <= 70 ? copy.statusCare : copy.statusSupport);
 
     final exploreCards = [
       _cardData(
@@ -1841,120 +1906,145 @@ class _DailyCableCardState extends State<_DailyCableCard> {
   double _t = 1;
   double _pull = 0;
 
+  // 圖片來源的優先順序也跟 My Pacers 一致：
+  // 自訂照片 -> 選到的預設背景圖 -> 都沒有就回 null（改用純色底）
+  ImageProvider? get _image {
+    final d = widget.data;
+    final path = (d['customImagePath'] as String?) ?? '';
+    if (path.startsWith('b64:')) {
+      return MemoryImage(base64Decode(path.substring(4)));
+    }
+    if (path.isNotEmpty) {
+      return FileImage(File(path));
+    }
+    final ii = (d['imageIndex'] as num?)?.toInt() ?? -1;
+    if (ii >= 0) {
+      return AssetImage(
+          kBookmarkBgImages[ii.clamp(0, kBookmarkBgImages.length - 1)]);
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final d = widget.data;
-    final quote = (d['quote'] as String?) ?? '';
-    final author = (d['author'] as String?) ?? '';
-    final tone = GlassTone
-        .values[((d['tone'] as num?)?.toInt() ?? 0)
-            .clamp(0, GlassTone.values.length - 1)];
-    final path = (d['customImagePath'] as String?) ?? '';
-    final deep = tone.stops.last;
+    final tone = GlassTone.values[((d['tone'] as num?)?.toInt() ?? 0)
+        .clamp(0, GlassTone.values.length - 1)];
+
+    // ORB_FIT 尺寸跟著螢幕算，球才不會爆出對話框（爆出去就摸不到、滑不動）
+    final mq = MediaQuery.of(context);
+    final w = (mq.size.width * 0.62).clamp(180.0, 250.0);
+    final avail = mq.size.height - mq.padding.vertical;
+    final h = (w * 1.36).clamp(200.0, avail * 0.52);
+    final orb = w * 0.42;
 
     return LunaCableCar(
-      childWidth: 240,
-      childHeight: 300,
-      orbSize: 92,
-      ropeLen: 12,
       tone: tone,
+      childWidth: w,
+      childHeight: h,
+      orbSize: orb,
+      ropeLen: 12,
+      interactive: true,
       t: _t,
       pull: _pull,
-      // 球縮小到 104，卡片本身就有地方可以左右滑；
-      // 在球上拖 = 拉文字，在卡片上拖 = 換下一則。
-      // 推播卡的球不吃任何拖曳 —— 這裡的主要動作是「滑到下一則」，
-      // 球一旦攔截手勢就翻不了頁。拉文字的功能留在 Pacer Lift。
       onChanged: (nt, np) => setState(() {
         _t = nt;
         _pull = np;
       }),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              tone.stops[0].withAlpha(0xD9),
-              tone.stops[1].withAlpha(0xC4),
-              tone.stops[2].withAlpha(0xB3),
-            ],
-          ),
-          border: Border.all(color: Colors.white, width: 4),
-          boxShadow: const [
-            BoxShadow(
-                color: Colors.black38, blurRadius: 16, offset: Offset(0, 6)),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              if (path.isNotEmpty)
-                Image(
-                  image: path.startsWith('b64:')
-                      ? MemoryImage(base64Decode(path.substring(4)))
-                          as ImageProvider
-                      : FileImage(File(path)),
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const SizedBox(),
-                ),
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      deep.withAlpha(0x00),
-                      deep.withAlpha(0x4D),
-                      deep.withAlpha(0x99),
-                    ],
-                    stops: const [0.32, 0.7, 1.0],
-                  ),
+      child: _car(tone, _t),
+    );
+  }
+
+  Widget _car(GlassTone tone, double t) {
+    final d = widget.data;
+    final quote = (d['quote'] as String?) ?? '';
+    final author = (d['author'] as String?) ?? '';
+    final ci = (d['colorIndex'] as num?)?.toInt() ?? 0;
+    final img = _image;
+    // 取當前水晶的最深色階，卡片和球才是一套
+    final deep = tone.stops.last;
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22),
+        color: img == null
+            ? kBookmarkBgColors[ci.clamp(0, kBookmarkBgColors.length - 1)]
+            : null,
+        border: Border.all(color: Colors.white, width: 5),
+        boxShadow: const [
+          BoxShadow(
+              color: Colors.black38, blurRadius: 20, offset: Offset(0, 8)),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // 照片跟著文字一起浮現
+            if (img != null)
+              Opacity(
+                opacity: (0.18 + 0.82 * t).clamp(0.0, 1.0),
+                child: Image(image: img, fit: BoxFit.cover),
+              ),
+            // 沒有邊界的染色：從底部往上化開，越上面越透明
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    deep.withAlpha(0x00),
+                    deep.withAlpha(0x59),
+                    deep.withAlpha(0xC4),
+                    deep.withAlpha(0xE0),
+                  ],
+                  stops: const [0.34, 0.58, 0.84, 1.0],
                 ),
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      LunaReveal(
-                        text: quote,
-                        progress: _t,
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    LunaReveal(
+                      text: quote,
+                      progress: t,
+                      style: const TextStyle(
+                        fontSize: 15.5,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        height: 1.55,
+                        shadows: [
+                          Shadow(blurRadius: 12, color: Colors.black87),
+                          Shadow(blurRadius: 3, color: Colors.black87),
+                        ],
+                      ),
+                    ),
+                    if (author.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        '\u2014 $author',
+                        textAlign: TextAlign.left,
                         style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                          height: 1.35,
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
+                          color: Color(0xE6FFFFFF),
                           shadows: [
-                            Shadow(blurRadius: 12, color: Colors.black87),
-                            Shadow(blurRadius: 3, color: Colors.black87),
+                            Shadow(blurRadius: 6, color: Colors.black87),
                           ],
                         ),
                       ),
-                      if (author.isNotEmpty) ...[
-                        const SizedBox(height: 6),
-                        Text('\u2014 $author',
-                            textAlign: TextAlign.left,
-                            style: const TextStyle(
-                              fontSize: 11.5,
-                              fontStyle: FontStyle.italic,
-                              color: Color(0xE6FFFFFF),
-                              shadows: [
-                                Shadow(blurRadius: 6, color: Colors.black87),
-                              ],
-                            )),
-                      ],
                     ],
-                  ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -63,7 +63,7 @@ class ERSEngine {
     if (hours >= 6 && hours < 7) return 30;   // 略少
     if (hours >= 5 && hours < 6) return 60;   // 不足
     if (hours > 9) return 25;                  // 過多
-    return 85;                                  // 嚴重不足
+    return 95;                                  // 嚴重不足
   }
 
   // 連續使用天數（越高越好）
@@ -101,10 +101,12 @@ class ERSEngine {
     );
 
     // 串流三：行為（25%）
+    // ROUTINE_REWEIGHT 睡眠是生理事實，打卡只是使用習慣，兩者不該等重。
+    // 一天睡 2 小時的人，不該因為有乖乖打卡就被判定作息健康。
     final stream3 = (
-      normalizeSleep(input.sleepDuration) * 0.5 +
-      normalizeStreak(input.appUsageStreak) * 0.25 +
-      normalizeConsistency(input.checkInConsistency) * 0.25
+      normalizeSleep(input.sleepDuration) * 0.7 +
+      normalizeStreak(input.appUsageStreak) * 0.15 +
+      normalizeConsistency(input.checkInConsistency) * 0.15
     );
 
     // 加權融合（沒有真實語音時，語言串流不列入，權重重新分配給生理+行為）
