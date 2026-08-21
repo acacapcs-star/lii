@@ -55,7 +55,7 @@ class AppStrings {
   String get copied => isZhTw ? '已複製' : 'Copied';
 
   String get navHome => isZhTw ? '首頁' : 'Home';
-  String get navChat => isZhTw ? 'AI 陪伴' : 'AI Companion';
+  String get navChat => isZhTw ? '說出來' : 'Talk it out';
   String get navCheckin => isZhTw ? '筆記紀錄' : 'Check-in';
   String get navSleep => isZhTw ? '睡眠紀錄' : 'Sleep Log';
   String get navTrends => isZhTw ? '趨勢圖' : 'Trends';
@@ -75,16 +75,16 @@ class AppStrings {
   String get statusCare => isZhTw ? '需要留意' : 'Take care';
   String get statusSupport => isZhTw ? '需要支持' : 'Needs support';
   String get todayStatus => isZhTw ? '今日身心狀態' : 'Today\'s well-being';
-  String get exploreSelf => isZhTw ? '探索自我' : 'Explore Yourself';
-  String get moreFeatures => isZhTw ? '更多功能' : 'More Features';
+  String get exploreSelf => isZhTw ? '探索自己' : 'Explore Yourself';
+  String get moreFeatures => isZhTw ? '工具' : 'Tools';
   String get emergencyCase => isZhTw ? '案號 115-E018647' : 'Case 115-E018647';
   String get emotionalRelease => isZhTw ? '情緒抒發' : 'Emotional release';
   String get healthDataTrends => isZhTw ? '健康數據趨勢' : 'Health data trends';
-  String get supportiveChat => isZhTw ? '舒心對話' : 'Supportive chat';
+  String get supportiveChat => isZhTw ? '想說什麼都行' : "Say what's going on";
   String get sleepStatus => isZhTw ? '記錄睡眠狀況' : 'Track sleep';
   String get moodFirstAid => isZhTw ? '心情急救' : 'Mood first aid';
   String get sevenDaySummary =>
-      isZhTw ? '下載 7 日身心摘要' : 'Download 7-day summary';
+      isZhTw ? '近七天的摘要' : 'A 7-day summary';
 
   String get chatTitle => navChat;
   String get chatEmptyTitle =>
@@ -201,7 +201,7 @@ class AppStrings {
       isZhTw ? '今天狀態不錯！繼續保持 ✨' : 'You are doing well today. Keep it up ✨';
   String get liiIsHere => isZhTw ? 'lii 在這裡陪你' : 'lii is here with you';
 
-  String get trendsTitle => isZhTw ? '身心趨勢' : 'Well-being Trends';
+  String get trendsTitle => isZhTw ? '最近的起伏' : 'Trends';
   String get analysisHistory => isZhTw ? '分析歷史' : 'Analysis History';
   String get aiTrendAnalysis => isZhTw ? 'AI 趨勢分析' : 'AI Trend Analysis';
   String days(int value) => isZhTw ? '$value 天' : '$value days';

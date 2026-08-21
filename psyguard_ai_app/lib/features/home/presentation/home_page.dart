@@ -261,7 +261,7 @@ class HomePage extends ConsumerWidget {
       ('#', zh ? '練習工具' : 'Practice', Icons.circle),
       ('/chat', copy.navChat, Icons.chat_bubble_rounded),
       ('/thought-coach', zh ? '思考教練' : 'Thought Coach', Icons.psychology_rounded),
-      ('/distortion-quiz', zh ? '思考陷阱測驗' : 'Thinking Trap Quiz', Icons.quiz_rounded),
+      ('/distortion-quiz', zh ? '你常掉進哪一個' : 'Thinking Traps', Icons.quiz_rounded),
       ('/tools', copy.navTools, Icons.style_rounded),
       ('#', zh ? '陪伴' : 'Companions', Icons.circle),
       ('/hope-box', zh ? '🌙 希望盒' : '🌙 Hope Box', Icons.auto_awesome_rounded),
@@ -823,7 +823,7 @@ class _HomeContentState extends State<_HomeContent> {
             ),
             _InteractiveCard(
               title: copy.isZhTw ? '思考教練' : 'Thought Coach',
-              subtitle: copy.isZhTw ? '轉念練習 (CBT)' : 'Reframe your thoughts (CBT)',
+              subtitle: copy.isZhTw ? '同一件事，另一種說法' : 'Reframe a thought',
               icon: Icons.psychology_rounded,
               color: const Color(0xFF5A9B9E),
               route: '/thought-coach',
@@ -833,12 +833,12 @@ class _HomeContentState extends State<_HomeContent> {
                   : 'Stuck in a negative thought? Let me guide you to reframe it with CBT.',
             ),
             _InteractiveCard(
-              title: copy.isZhTw ? '思考陷阱測驗' : 'Thinking Trap Quiz',
+              title: copy.isZhTw ? '你常掉進哪一個' : 'Thinking Traps',
               subtitle: copy.isZhTw ? '測你的思考習慣' : 'Discover your patterns',
               icon: Icons.quiz_rounded,
               color: const Color(0xFF9575CD),
               route: '/distortion-quiz',
-              tooltipTitle: copy.isZhTw ? '思考陷阱測驗' : 'Thinking Trap Quiz',
+              tooltipTitle: copy.isZhTw ? '你常掉進哪一個' : 'Thinking Traps',
               tooltipDescription: copy.isZhTw
                   ? '12 題測驗，找出你最容易掉進的思考陷阱。'
                   : '12 questions to reveal your most common thinking trap.',
@@ -867,7 +867,7 @@ class _HomeContentState extends State<_HomeContent> {
             ),
             _InteractiveCard(
               title: copy.isZhTw ? '我的 Pacers' : 'My Pacers',
-              subtitle: copy.isZhTw ? '存下有人對你說過的話' : 'Save what someone said to you',
+              subtitle: copy.isZhTw ? '有人這樣對你說過' : 'Words you saved',
               icon: Icons.bookmark_rounded,
               color: const Color(0xFFB8A7E0),
               route: '/bookmark',
