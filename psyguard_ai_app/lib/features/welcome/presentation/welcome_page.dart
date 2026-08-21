@@ -104,7 +104,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
     final settings = ref.read(localSettingsServiceProvider);
     await settings.setWelcomeSeen();
     await settings.setConsentAccepted(version: 1);
-    if (mounted) context.go('/pet');
+    if (mounted) context.go('/home');
   }
 
   @override

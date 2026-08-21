@@ -267,7 +267,6 @@ class HomePage extends ConsumerWidget {
       ('/hope-box', zh ? '🌙 希望盒' : '🌙 Hope Box', Icons.auto_awesome_rounded),
       ('/bookmark', zh ? '📑 我的 Pacers' : '📑 My Pacers', Icons.bookmark_rounded),
       ('/weekly-persona', zh ? '本週人設' : 'Weekly Persona', Icons.pets_rounded),
-      ('/pet', zh ? '我的夥伴' : 'My Pet', Icons.favorite_rounded),
       ('#', zh ? '報告' : 'Reports', Icons.circle),
       ('/ai_report', zh ? 'AI 報告' : 'AI Report', Icons.description_rounded),
       ('/ai_history', zh ? 'AI 歷史' : 'AI History', Icons.history_rounded),
