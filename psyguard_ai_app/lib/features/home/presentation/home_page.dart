@@ -259,7 +259,7 @@ class HomePage extends ConsumerWidget {
       ('/trends', copy.navTrends, Icons.timeline_rounded),
       ('/calendar-overview', zh ? '月曆總覽' : 'Calendar', Icons.calendar_month_rounded),
       ('#', zh ? '練習工具' : 'Practice', Icons.circle),
-      ('/chat', copy.navChat, Icons.chat_bubble_rounded),
+      ('/chat', copy.navChat, Icons.forum_outlined),
       ('/thought-coach', zh ? '思考教練' : 'Thought Coach', Icons.psychology_rounded),
       ('/distortion-quiz', zh ? '你常掉進哪一個' : 'Thinking Traps', Icons.quiz_rounded),
       ('/tools', copy.navTools, Icons.style_rounded),
@@ -583,12 +583,12 @@ class _HomeContentState extends State<_HomeContent> {
       _cardData(
         copy.navChat,
         copy.supportiveChat,
-        Icons.chat_bubble_outline_rounded,
+        Icons.forum_outlined,
         const Color(0xFF5B8C85),
         '/chat',
         copy.isZhTw
-            ? '有些時候，你只需要被聽見，我會一直在，安靜陪著你。'
-            : 'Sometimes you just need to be heard. I am here with you.',
+            ? '不用整理好再說，想到什麼就寫什麼。'
+            : "You don't have to organise it first. Just write.",
       ),
       _cardData(
         copy.navSleep,

@@ -85,7 +85,7 @@ class AppFrame extends ConsumerWidget {
       tile('/trends', copy.navTrends, Icons.show_chart_rounded),
       tile('/calendar-overview', zh ? '月曆總覽' : 'Calendar', Icons.calendar_month_rounded),
       header(zh ? '練習工具' : 'Practice'),
-      tile('/chat', copy.navChat, Icons.chat_bubble_outline_rounded),
+      tile('/chat', copy.navChat, Icons.forum_outlined),
       tile('/thought-coach', zh ? '思考教練' : 'Thought Coach', Icons.psychology_outlined),
       tile('/distortion-quiz', zh ? '思考陷阱測驗' : 'Thinking Trap Quiz', Icons.quiz_outlined),
       tile('/tools', copy.navTools, Icons.handyman_outlined),
