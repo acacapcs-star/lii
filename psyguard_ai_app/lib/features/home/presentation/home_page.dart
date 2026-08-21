@@ -263,7 +263,7 @@ class HomePage extends ConsumerWidget {
       ('/thought-coach', zh ? '思考教練' : 'Thought Coach', Icons.psychology_rounded),
       ('/distortion-quiz', zh ? '你常掉進哪一個' : 'Thinking Traps', Icons.quiz_rounded),
       ('/tools', copy.navTools, Icons.style_rounded),
-      ('#', zh ? '陪伴' : 'Companions', Icons.circle),
+      ('#', zh ? '安靜的地方' : 'Quiet', Icons.circle),
       ('/hope-box', zh ? '🌙 希望盒' : '🌙 Hope Box', Icons.auto_awesome_rounded),
       ('/bookmark', zh ? '📑 我的 Pacers' : '📑 My Pacers', Icons.bookmark_rounded),
       ('/weekly-persona', zh ? '本週人設' : 'Weekly Persona', Icons.pets_rounded),
@@ -806,7 +806,7 @@ class _HomeContentState extends State<_HomeContent> {
                 isBold: _hasNegativeSignal,
                 tooltipTitle: copy.navTools,
                 tooltipDescription: copy.isZhTw
-                    ? '當你開始感到不安，我會陪你慢慢穩下來。'
+                    ? '開始不安的時候，這裡有幾個能穩住自己的方法。'
                     : 'When you start to feel unsettled, these tools can help you steady yourself.',
               ),
             ),
@@ -829,7 +829,7 @@ class _HomeContentState extends State<_HomeContent> {
               route: '/thought-coach',
               tooltipTitle: copy.isZhTw ? '思考教練' : 'Thought Coach',
               tooltipDescription: copy.isZhTw
-                  ? '陷入負面想法時，讓我陪你用 CBT 換個角度看。'
+                  ? '卡在同一個念頭時，用 CBT 的方法拆開來看。'
                   : 'Stuck in a negative thought? Let me guide you to reframe it with CBT.',
             ),
             _InteractiveCard(
@@ -856,7 +856,7 @@ class _HomeContentState extends State<_HomeContent> {
             ),
             _InteractiveCard(
               title: copy.isZhTw ? '希望盒' : 'Hope Box',
-              subtitle: copy.isZhTw ? '收藏溫柔的話陪你' : 'Cards that carry you',
+              subtitle: copy.isZhTw ? '撐住你的那些話' : 'Cards that carry you',
               icon: Icons.auto_awesome_rounded,
               color: const Color(0xFF7E8FE8),
               route: '/hope-box',
@@ -884,7 +884,7 @@ class _HomeContentState extends State<_HomeContent> {
               route: '/voice',
               tooltipTitle: copy.isZhTw ? '聲控喚醒' : 'Voice Wake',
               tooltipDescription: copy.isZhTw
-                  ? '說「嘿，在嗎？」喚醒Luna陪你聊聊。'
+                  ? '說「嘿，在嗎？」，直接講出來就好。'
                   : 'Say "Hey Luna" to wake up your companion.',
             ),
           ],

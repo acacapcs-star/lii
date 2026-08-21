@@ -14,7 +14,7 @@ class AppStrings {
   String get todayMentalStateAnalysis => isZhTw ? '今日心理狀態分析' : "Today's Mental State Analysis";
 
   String get welcomeTagline =>
-      isZhTw ? '你的心理健康\n陪伴夥伴' : 'Your mental health\nsupport companion';
+      isZhTw ? '越糟的時候\n說得越少' : 'The worse it gets\nthe less it says';
 
   String get disclaimerTitle => isZhTw ? '重要聲明' : 'Important Notice';
 
@@ -89,7 +89,7 @@ class AppStrings {
   String get chatTitle => navChat;
   String get chatEmptyTitle =>
       isZhTw ? '今天有什麼想聊聊的嗎？' : 'What would you like to talk about today?';
-  String get chatEmptySubtitle => isZhTw ? '我在這裡傾聽你' : 'I am here to listen';
+  String get chatEmptySubtitle => isZhTw ? '想到什麼就寫' : 'Write whatever comes';
   String get chatHint => isZhTw ? '輸入你的感受...' : 'Type how you feel...';
   String get voiceUnavailable => isZhTw
       ? '語音功能無法使用，請確認權限設定'
@@ -192,14 +192,14 @@ class AppStrings {
   String get safetyOptionResources =>
       isZhTw ? 'C. 查看求助資源 (1925) ↓' : 'C. See support resources ↓';
   String get guardianHigh => isZhTw
-      ? 'lii 一直都在你身邊，不管你選哪條路，我都陪著你 🤍'
-      : 'lii is here with you. Whichever path you choose, I am here 🤍';
+      ? '不管你選哪一條，路都還在。'
+      : 'Whichever path you choose, it is still there.';
   String get guardianMedium => isZhTw
-      ? '最近感覺如何？lii 想陪你說說話 💙'
+      ? '最近怎麼樣？有空的話記一下。'
       : 'How have you been feeling? lii is here if you want to talk 💙';
   String get guardianLow =>
       isZhTw ? '今天狀態不錯！繼續保持 ✨' : 'You are doing well today. Keep it up ✨';
-  String get liiIsHere => isZhTw ? 'lii 在這裡陪你' : 'lii is here with you';
+  String get liiIsHere => isZhTw ? 'lii 還在' : 'lii is still here';
 
   String get trendsTitle => isZhTw ? '最近的起伏' : 'Trends';
   String get analysisHistory => isZhTw ? '分析歷史' : 'Analysis History';

@@ -89,7 +89,7 @@ class AppFrame extends ConsumerWidget {
       tile('/thought-coach', zh ? '思考教練' : 'Thought Coach', Icons.psychology_outlined),
       tile('/distortion-quiz', zh ? '思考陷阱測驗' : 'Thinking Trap Quiz', Icons.quiz_outlined),
       tile('/tools', copy.navTools, Icons.handyman_outlined),
-      header(zh ? '陪伴' : 'Companions'),
+      header(zh ? '安靜的地方' : 'Quiet'),
       tile('/hope-box', zh ? '🌙 希望盒' : '🌙 Hope Box', Icons.auto_awesome_rounded),
       tile('/weekly-persona', zh ? '本週人設' : 'Weekly Persona', Icons.pets_rounded),
       header(zh ? '報告' : 'Reports'),
