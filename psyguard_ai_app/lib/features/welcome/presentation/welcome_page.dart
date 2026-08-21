@@ -60,7 +60,7 @@ const _pages = <_Page>[
   _Page(
     titleZh: '球球是你的\n想放哪就放哪',
     titleEn: 'The orb is yours',
-    bodyZh: '點一下：陪你呼吸\n長按：看水晶收藏\n拖著走：換位置　拉四個角：調大小',
+    bodyZh: '點一下：開始呼吸\n長按：看水晶收藏\n拖著走：換位置　拉四個角：調大小',
     bodyEn:
         'Tap: breathe with Luna\nHold: your crystal collection\nDrag to move it. Pull a corner to resize.',
     bg: [Color(0xFF2A5F8F), Color(0xFF1A3D6E), Color(0xFF0F2444)],

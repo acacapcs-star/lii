@@ -400,7 +400,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  '我在這裡陪你，我們一起找人幫忙好嗎？',
+                  '要不要一起找人幫忙？',
                   style: TextStyle(fontSize: 14),
                   textAlign: TextAlign.center,
                 ),

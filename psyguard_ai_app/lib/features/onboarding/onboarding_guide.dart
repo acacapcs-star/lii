@@ -58,7 +58,7 @@ class _Slide {
 const List<_Slide> _slides = [
   _Slide(
     '🌙',
-    'AI 陪你說話\n真人接住你',
+    'AI 讀你的痕跡\n真人接住你',
     'Someone to talk to.\nSomeone to catch you.',
     '給台灣青少年的\n心理健康夥伴 🌙',
     'A mental-health companion\nbuilt for youth in Taiwan 🌙',
@@ -88,7 +88,7 @@ const List<_Slide> _slides = [
     '🔮',
     '球球是你的\n想放哪就放哪',
     'The orb is yours',
-    '點一下：陪你呼吸，從你現在的速度慢慢放慢\n長按：看水晶收藏，練習過的次數會變成水晶\n拖著走：換位置。拉四個角：調大小',
+    '點一下：開始呼吸，從你現在的速度慢慢放慢\n長按：看水晶收藏，練習過的次數會變成水晶\n拖著走：換位置。拉四個角：調大小',
     'Tap: breathe with Luna. It starts at your own\npace, then slows. Hold: your crystals, unlocked\nby practice. Drag to move it, pull a corner\nto resize.',
   ),
   _Slide(

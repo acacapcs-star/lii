@@ -101,7 +101,7 @@ class VoiceWakeService {
       await _tts.speak("Hey! I'm Luna. I'm here for you.");
     } else {
       await _tts.setLanguage('zh-TW');
-      await _tts.speak('嘿！我是Luna，我在這裡陪你。');
+      await _tts.speak('嘿，說吧。');
     }
   }
 

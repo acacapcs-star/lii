@@ -110,7 +110,7 @@ class ERSPercentileWidget extends ConsumerWidget {
           const SizedBox(height: 8),
           Text(
             isZh
-                ? 'lii 正在認識你的日常，慢慢陪你看見自己的變化'
+                ? 'lii 正在認識你的日常，還在建立你的基準線'
                 : 'lii is learning your normal — building a picture of you over time',
             style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
           ),

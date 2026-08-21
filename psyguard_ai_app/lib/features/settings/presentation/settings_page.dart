@@ -151,7 +151,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               ),
             ),
             const SizedBox(height: 18),
-            _sectionTitle(language == AppLanguage.zhTw ? '🚡 陪伴推播' : '🚡 Daily Pacer'),
+            _sectionTitle(language == AppLanguage.zhTw ? '🚡 每日 Pacer' : '🚡 Daily Pacer'),
             const SizedBox(height: 8),
             _card(child: const _DailyPacerSwitch()),
             const SizedBox(height: 20),

@@ -64,7 +64,7 @@ const _builtin = <_Q>[
   _Q("You showed up. That already matters.", '你出現了，這本身就有意義。', 'cheer'),
   _Q("Being gentle with yourself is also strength.", '對自己溫柔，也是一種力量。', 'cheer'),
   _Q("You're not behind. You're on your own path, your own pace.", '你沒有落後，你走在自己的路上，用自己的步調。', 'cheer'),
-  _Q("Luna is keeping pace with you — you set the speed.", 'Luna 陪你一起走 —— 步調由你決定。', 'cheer'),
+  _Q("Luna is keeping pace with you — you set the speed.", '步調由你決定。', 'cheer'),
 ];
 
 class HopeBoxPage extends ConsumerStatefulWidget {

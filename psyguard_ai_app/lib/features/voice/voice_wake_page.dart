@@ -361,7 +361,7 @@ class _VoiceWakePageState extends ConsumerState<VoiceWakePage>
           if (!_isNoteMode) {
             setState(() {
               _statusText = isZh
-                  ? 'Luna：嘿！我在這裡陪你 💙'
+                  ? 'Luna：嘿，說吧'
                   : "Luna: Hey! I'm here for you 💙";
               _isListening = false;
             });
@@ -387,7 +387,7 @@ class _VoiceWakePageState extends ConsumerState<VoiceWakePage>
             } catch (_) {
               if (!mounted) return;
               setState(() => _statusText =
-                  isZh ? 'Luna：我在這裡陪你 💙' : "Luna: I'm here for you 💙");
+                  isZh ? 'Luna：說吧' : 'Luna: go ahead');
             }
           }
         },
