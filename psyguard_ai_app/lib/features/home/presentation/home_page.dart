@@ -267,7 +267,6 @@ class HomePage extends ConsumerWidget {
       ('/hope-box', zh ? '🌙 希望盒' : '🌙 Hope Box', Icons.auto_awesome_rounded),
       ('/bookmark', zh ? '📑 我的 Pacers' : '📑 My Pacers', Icons.bookmark_rounded),
       ('/weekly-persona', zh ? '本週人設' : 'Weekly Persona', Icons.pets_rounded),
-      ('/penguin', zh ? 'Luna 樂園' : 'Luna Park', Icons.park_rounded),
       ('/pet', zh ? '我的夥伴' : 'My Pet', Icons.favorite_rounded),
       ('#', zh ? '報告' : 'Reports', Icons.circle),
       ('/ai_report', zh ? 'AI 報告' : 'AI Report', Icons.description_rounded),
@@ -877,17 +876,6 @@ class _HomeContentState extends State<_HomeContent> {
               tooltipDescription: copy.isZhTw
                   ? '存下有人對你說過、想一直記得的話，需要時打開來看。'
                   : 'Save the words someone said that you want to keep.',
-            ),
-            _InteractiveCard(
-              title: copy.isZhTw ? 'Luna 樂園' : 'Luna Park',
-              subtitle: copy.isZhTw ? (_homePetType == 'otter' ? '和水獺互動紓壓' : '和水豚互動紓壓') : 'Play with Luna',
-              icon: Icons.pets_rounded,
-              color: const Color(0xFF0ABFBC),
-              route: '/penguin',
-              tooltipTitle: copy.isZhTw ? 'Luna 樂園' : 'Luna Park',
-              tooltipDescription: copy.isZhTw
-                  ? '和Luna互動、丟魚、摸摸，讓心情好一點。'
-                  : 'Feed Luna, pet Luna, and feel a little better.',
             ),
             _InteractiveCard(
               title: copy.isZhTw ? '嘿，在嗎？' : 'Hey, Luna?',

@@ -92,7 +92,6 @@ class AppFrame extends ConsumerWidget {
       header(zh ? '陪伴' : 'Companions'),
       tile('/hope-box', zh ? '🌙 希望盒' : '🌙 Hope Box', Icons.auto_awesome_rounded),
       tile('/weekly-persona', zh ? '本週人設' : 'Weekly Persona', Icons.pets_rounded),
-      tile('/penguin', zh ? 'Luna 樂園' : 'Luna Park', Icons.park_outlined),
       tile('/pet', zh ? '我的夥伴' : 'My Pet', Icons.favorite_outline_rounded),
       header(zh ? '報告' : 'Reports'),
       tile('/ai_report', zh ? 'AI 報告' : 'AI Report', Icons.description_outlined),
