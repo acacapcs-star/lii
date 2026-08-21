@@ -15,3 +15,10 @@ build/
 
 # Trae IDE
 .trae/
+
+# editor backups
+*.bak
+*.hbbak
+*.nybak
+*.scfix
+*.orig
