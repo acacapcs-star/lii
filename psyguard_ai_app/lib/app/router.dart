@@ -24,9 +24,7 @@ import '../features/trends/presentation/ai_report_history_page.dart';
 import '../features/tools_library/presentation/tool_history_page.dart';
 import '../features/welcome/presentation/welcome_page.dart';
 import '../features/welcome/presentation/consent_page.dart';
-import '../features/welcome/presentation/pet_selection_page.dart';
 import '../features/voice/voice_wake_page.dart';
-import '../features/penguin/penguin_park_page.dart';
 import '../features/checkin/presentation/month_overview_page.dart';
 import '../core/security/secret_swipe_shell.dart';
 import '../features/cbt/presentation/cbt_page.dart';
@@ -173,12 +171,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             _buildPageWithSlide(context, state, const ExportPage()),
       ),
       GoRoute(
-        path: '/pet',
-        name: 'pet',
-        pageBuilder: (context, state) =>
-            _buildPageWithSlide(context, state, const PetSelectionPage()),
-      ),
-      GoRoute(
         path: '/voice',
         name: 'voice',
         pageBuilder: (context, state) =>
@@ -201,12 +193,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'about',
         pageBuilder: (context, state) =>
             _buildPageWithSlide(context, state, const AboutPage()),
-      ),
-      GoRoute(
-        path: '/penguin',
-        name: 'penguin',
-        pageBuilder: (context, state) =>
-            _buildPageWithSlide(context, state, const PenguinParkPage()),
       ),
       GoRoute(
         path: '/calendar-overview',
