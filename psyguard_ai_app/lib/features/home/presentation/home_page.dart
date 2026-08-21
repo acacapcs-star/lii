@@ -428,8 +428,8 @@ class _HomeContentState extends State<_HomeContent> {
     return Material(
       type: MaterialType.transparency,
       child: Center(
-        child: SizedBox(
-        height: 580,
+        child: ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 700),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
