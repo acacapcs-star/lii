@@ -21,6 +21,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../features/ers/silence_detector.dart';
@@ -108,8 +109,8 @@ class _PetReminderBubbleState extends State<PetReminderBubble> {
       return _BubbleMessage(
         _BubbleKind.silence,
         zh
-            ? '嘿嘿～已經 $days 天沒看到你了，今天心情如何呀？>///<'
-            : "Hey~ it's been $days days! How are you feeling today? >///<",
+            ? '現在的你怎麼樣？三個拉桿，一分鐘就好'
+            : 'How are you right now? Three sliders, a minute at most',
       );
     }
 
@@ -198,6 +199,9 @@ class _PetReminderBubbleState extends State<PetReminderBubble> {
                   onTap: () {
                     _hideTimer?.cancel();
                     setState(() => _visible = false);
+                    if (_message?.kind == _BubbleKind.silence) {
+                      context.push('/checkin');
+                    }
                   },
                   child: Container(
                     padding:
