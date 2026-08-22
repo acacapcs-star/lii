@@ -125,7 +125,7 @@ class _DistortionQuizPageState extends ConsumerState<DistortionQuizPage> {
         const SizedBox(height: 40),
         Text(
           isZh ? q.zh : q.en,
-          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600, height: 1.4),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, height: 1.4),
         ),
         const SizedBox(height: 40),
         for (int i = 0; i < options.length; i++) ...[
@@ -166,12 +166,12 @@ class _DistortionQuizPageState extends ConsumerState<DistortionQuizPage> {
           const SizedBox(height: 16),
           Text(isZh ? '你最容易掉進的思考陷阱是' : 'Your most likely thinking trap is',
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, color: Color(0xFF6B7280))),
+              style: const TextStyle(fontSize: 15, color: Color(0xFF6B7280))),
           const SizedBox(height: 8),
           Text(info['name']!,
               textAlign: TextAlign.center,
               style: TextStyle(
-                  fontSize: 26, fontWeight: FontWeight.w600, color: LumiTheme.primary)),
+                  fontSize: 24, fontWeight: FontWeight.w600, color: LumiTheme.primary)),
           const SizedBox(height: 24),
           Container(
             padding: const EdgeInsets.all(18),
@@ -187,14 +187,14 @@ class _DistortionQuizPageState extends ConsumerState<DistortionQuizPage> {
                     style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
                 const SizedBox(height: 6),
                 Text(info['desc']!,
-                    style: const TextStyle(fontSize: 14, height: 1.5, color: Color(0xFF475467))),
+                    style: const TextStyle(fontSize: 15, height: 1.5, color: Color(0xFF475467))),
                 const SizedBox(height: 16),
                 Text(isZh ? '下次可以練習問自己：' : 'Next time, try asking yourself:',
                     style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
                 const SizedBox(height: 6),
                 Text(info['tip']!,
                     style: const TextStyle(
-                        fontSize: 14, height: 1.5, color: Color(0xFF5A9B9E),
+                        fontSize: 15, height: 1.5, color: Color(0xFF5A9B9E),
                         fontStyle: FontStyle.italic)),
               ],
             ),

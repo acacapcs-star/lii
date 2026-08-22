@@ -309,7 +309,7 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
                   Text('$_year',
                       style: TextStyle(
                         color: _accent,
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.w600,
                       )),
                   Text(isZh ? '年度重點總覽' : 'Year Overview',

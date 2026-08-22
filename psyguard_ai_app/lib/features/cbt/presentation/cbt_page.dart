@@ -301,7 +301,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
           // 引導問句
           Text(isZh ? '一起想想：' : 'Let\'s reflect:',
               style: const TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w600)),
+                  fontSize: 15, fontWeight: FontWeight.w600)),
           const SizedBox(height: 10),
           ...a.questions.map((q) => Container(
                 margin: const EdgeInsets.only(bottom: 10),
@@ -317,7 +317,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(q,
-                          style: const TextStyle(fontSize: 14, height: 1.45)),
+                          style: const TextStyle(fontSize: 15, height: 1.45)),
                     ),
                   ],
                 ),
@@ -357,7 +357,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
                   ? '有時候光是說出來，就已經是照顧自己了。'
                   : 'Sometimes just naming it is already taking care of yourself.'),
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 14, color: Color(0xFF6B7280), height: 1.5),
+          style: const TextStyle(fontSize: 15, color: Color(0xFF6B7280), height: 1.5),
         ),
         const SizedBox(height: 40),
         _primaryButton(isZh ? '完成' : 'Done', () => Navigator.of(context).pop()),
@@ -393,7 +393,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
           const SizedBox(height: 20),
           Text(isZh ? '✅ 支持這個想法的證據' : '✅ Evidence FOR this thought',
               style: const TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF66BB6A))),
+                  fontSize: 15, fontWeight: FontWeight.w600, color: Color(0xFF66BB6A))),
           const SizedBox(height: 8),
           TextField(
             controller: _evidenceForController,
@@ -411,7 +411,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
           const SizedBox(height: 18),
           Text(isZh ? '🔍 反對這個想法的證據' : '🔍 Evidence AGAINST this thought',
               style: const TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF5A9B9E))),
+                  fontSize: 15, fontWeight: FontWeight.w600, color: Color(0xFF5A9B9E))),
           const SizedBox(height: 8),
           TextField(
             controller: _evidenceAgainstController,

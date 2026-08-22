@@ -120,7 +120,7 @@ class _ReportCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: LumiTheme.textPrimary,
-                  fontSize: 14,
+                  fontSize: 15,
                   height: 1.5,
                 ),
               ),

@@ -725,7 +725,7 @@ class _NotePageState extends ConsumerState<NotePage> {
               fontSize: 20, fontStyle: FontStyle.italic,
               color: _accent,
             )),
-            Text(_isZh ? '即時同步 AI' : 'Syncs with AI', style: const TextStyle(fontSize: 10, color: Color(0xFF0ABFBC))),
+            Text(_isZh ? '即時同步 AI' : 'Syncs with AI', style: const TextStyle(fontSize: 11, color: Color(0xFF0ABFBC))),
           ],
         ),
         actions: [

@@ -326,7 +326,7 @@ class _SecretUnlockScreenState extends State<SecretUnlockScreen> {
                         ? (_isZh ? '秘密日記' : 'Secret Diary')
                         : (_isZh ? '建立秘密日記' : 'Create your secret diary'),
                     style: const TextStyle(
-                      fontSize: 22,
+                      fontSize: 20,
                       fontStyle: FontStyle.italic,
                       color: kTaroDeep,
                     ),

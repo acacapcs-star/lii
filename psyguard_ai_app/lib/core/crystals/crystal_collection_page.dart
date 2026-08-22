@@ -73,12 +73,12 @@ class _CrystalCollectionPageState extends State<CrystalCollectionPage>
                 Text(
                   '$got / ${kCrystalRules.length}',
                   style: const TextStyle(
-                      fontSize: 26, fontWeight: FontWeight.w400, color: _ink),
+                      fontSize: 24, fontWeight: FontWeight.w400, color: _ink),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   CrystalStore.nextHint(zh: false) ?? 'All collected',
-                  style: const TextStyle(fontSize: 12.5, color: _inkSoft),
+                  style: const TextStyle(fontSize: 13, color: _inkSoft),
                 ),
                 const SizedBox(height: 22),
                 GridView.count(
@@ -138,7 +138,7 @@ class _CrystalCollectionPageState extends State<CrystalCollectionPage>
         Text(
           r.tone.labelEn,
           style: TextStyle(
-            fontSize: 12.5,
+            fontSize: 13,
             fontWeight: FontWeight.w600,
             color: got ? _ink : _inkSoft.withAlpha(120),
           ),
@@ -213,7 +213,7 @@ class _CrystalCollectionPageState extends State<CrystalCollectionPage>
                     Text(
                       r.tone.labelEn,
                       style: TextStyle(
-                        fontSize: 26,
+                        fontSize: 24,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.5,
                         color: Colors.white.withAlpha(got ? 255 : 130),
@@ -224,7 +224,7 @@ class _CrystalCollectionPageState extends State<CrystalCollectionPage>
                       got ? 'Collected' : r.requirementEn,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 15,
                         color: Colors.white.withAlpha(150),
                       ),
                     ),

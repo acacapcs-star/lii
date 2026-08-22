@@ -85,7 +85,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         title: Text(
           copy.title,
           style: GoogleFonts.nunitoSans(
-            fontSize: 18,
+            fontSize: 20,
             fontWeight: FontWeight.w600,
             color: LumiTheme.textPrimary,
           ),
@@ -308,7 +308,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         textStyle: GoogleFonts.nunitoSans(
-                          fontSize: 14,
+                          fontSize: 15,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -332,7 +332,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         textStyle: GoogleFonts.nunitoSans(
-                          fontSize: 14,
+                          fontSize: 15,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -435,7 +435,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               textStyle: GoogleFonts.nunitoSans(
-                                fontSize: 14,
+                                fontSize: 15,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -783,7 +783,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         textStyle: GoogleFonts.nunitoSans(
-                          fontSize: 14,
+                          fontSize: 15,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -939,7 +939,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 title: Text(
                   p.labelFor(isZh),
                   style: GoogleFonts.nunitoSans(
-                    fontSize: 14,
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: LumiTheme.textPrimary,
                   ),
@@ -1052,7 +1052,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     return Text(
       text,
       style: GoogleFonts.nunitoSans(
-        fontSize: 14,
+        fontSize: 15,
         fontWeight: FontWeight.w600,
         color: LumiTheme.textPrimary,
       ),
@@ -1414,7 +1414,7 @@ class _DailyPacerSwitchState extends State<_DailyPacerSwitch> {
           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
       subtitle: Text(
         zh ? '每天第一次打開時，Luna 會拿一則你存過的話出來。' : 'Luna brings back one saved line each day.',
-        style: const TextStyle(fontSize: 12.5, height: 1.6),
+        style: const TextStyle(fontSize: 13, height: 1.6),
       ),
     );
   }

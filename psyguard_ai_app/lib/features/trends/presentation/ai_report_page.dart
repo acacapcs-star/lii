@@ -54,7 +54,7 @@ class AiReportPage extends ConsumerWidget {
             height: 1.5,
           ),
           h3: const TextStyle(
-            fontSize: 18,
+            fontSize: 20,
             fontWeight: FontWeight.w600,
             color: LumiTheme.textPrimary,
             height: 1.5,

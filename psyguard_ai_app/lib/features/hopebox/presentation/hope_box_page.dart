@@ -266,13 +266,13 @@ class _HopeBoxPageState extends ConsumerState<HopeBoxPage> {
                       borderRadius: BorderRadius.circular(24),
                     ),
                     child: Text(isZh ? '👆 點一下翻開' : '👆 Tap to reveal',
-                        style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w400)),
+                        style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w400)),
                   ),
                 ] else
                   Text(
                     text,
                     style: TextStyle(
-                      color: Colors.white, fontSize: 26, fontWeight: FontWeight.w600, height: 1.4,
+                      color: Colors.white, fontSize: 24, fontWeight: FontWeight.w600, height: 1.4,
                       shadows: [const Shadow(color: Colors.black, blurRadius: 10, offset: Offset(0, 2))],
                     ),
                   ),

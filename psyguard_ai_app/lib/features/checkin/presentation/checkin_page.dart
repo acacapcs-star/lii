@@ -316,7 +316,7 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
                               Text(
                                 'Open Today Diary',
                                 style: TextStyle(
-                                  fontSize: 14, 
+                                  fontSize: 15, 
                                   fontWeight: FontWeight.w600, 
                                   color: Color(0xFF2C5282),
                                 ),
@@ -499,7 +499,7 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
           Text(
             assistiveLabel,
             style: const TextStyle(
-              fontSize: 10,
+              fontSize: 11,
               color: LumiTheme.textLight,
             ),
           ),

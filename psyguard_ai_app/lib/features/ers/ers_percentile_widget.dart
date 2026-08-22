@@ -72,7 +72,7 @@ class ERSPercentileWidget extends ConsumerWidget {
                     style: TextStyle(
                       color: _riskColor,
                       fontWeight: FontWeight.w600,
-                      fontSize: 14,
+                      fontSize: 15,
                     ),
                   ),
                   ),

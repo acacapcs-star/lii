@@ -102,7 +102,7 @@ class _TooltipOverlay extends StatelessWidget {
             Text(
               title,
               style: const TextStyle(
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF2D3748),
               ),

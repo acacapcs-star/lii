@@ -449,7 +449,7 @@ class _VoiceWakePageState extends ConsumerState<VoiceWakePage>
               _statusText,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.w400,
               ),
               textAlign: TextAlign.center,

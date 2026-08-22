@@ -138,7 +138,7 @@ class _ToolCard extends ConsumerWidget {
               Text(
                 copy.todayGuidance,
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: LumiTheme.textSecondary,
                 ),
@@ -301,7 +301,7 @@ class _ToolCard extends ConsumerWidget {
           Text(
             toolDescription,
             style: const TextStyle(
-              fontSize: 14,
+              fontSize: 15,
               color: LumiTheme.textSecondary,
               height: 1.5,
             ),

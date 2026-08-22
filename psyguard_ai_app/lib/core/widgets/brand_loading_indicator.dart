@@ -76,7 +76,7 @@ class _BrandLoadingIndicatorState extends State<BrandLoadingIndicator>
           Text(
             widget.message!,
             style: const TextStyle(
-              fontSize: 14,
+              fontSize: 15,
               color: Color(0xFF718096),
               fontWeight: FontWeight.w400,
             ),

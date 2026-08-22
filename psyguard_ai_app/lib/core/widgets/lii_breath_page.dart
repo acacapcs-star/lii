@@ -432,7 +432,7 @@ class _LiiBreathPageState extends State<LiiBreathPage>
                     label: Text(
                       _tide.isOn ? 'Tide on' : 'Tide off',
                       style: TextStyle(
-                        fontSize: 12.5,
+                        fontSize: 13,
                         color: _tide.isOn
                             ? const Color(0xFFC8E8FF)
                             : Colors.white38,

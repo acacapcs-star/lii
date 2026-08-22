@@ -92,7 +92,7 @@ class SleepHistoryPage extends ConsumerWidget {
                           style: GoogleFonts.nunitoSans(
                             color: LumiTheme.textSecondary,
                             fontWeight: FontWeight.w600,
-                            fontSize: 14,
+                            fontSize: 15,
                           ),
                         ),
                         _buildQualityBadge(log.difficulty, copy),

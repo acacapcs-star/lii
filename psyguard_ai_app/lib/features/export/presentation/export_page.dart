@@ -126,7 +126,7 @@ class _ExportPageState extends ConsumerState<ExportPage> {
                         copy.exportReportBody(_days),
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 15,
                           color: LumiTheme.textSecondary,
                           height: 1.5,
                         ),

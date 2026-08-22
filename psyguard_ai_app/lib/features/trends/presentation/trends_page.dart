@@ -596,7 +596,7 @@ class TrendsPage extends ConsumerWidget {
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 12.5,
+                  fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: on ? color : Colors.grey,
                 ),
@@ -721,7 +721,7 @@ class TrendsPage extends ConsumerWidget {
               Text(
                 sub,
                 style: TextStyle(
-                  fontSize: 10,
+                  fontSize: 11,
                   color: on
                       ? Colors.white.withValues(alpha: 0.85)
                       : LumiTheme.textLight,

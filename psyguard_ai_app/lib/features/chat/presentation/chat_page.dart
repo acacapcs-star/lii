@@ -687,7 +687,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: LumiTheme.textLight,
-                              fontSize: 14,
+                              fontSize: 15,
                             ),
                           ),
                         ),

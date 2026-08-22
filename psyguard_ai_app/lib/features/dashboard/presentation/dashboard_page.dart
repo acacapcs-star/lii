@@ -212,7 +212,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
           return Column(mainAxisAlignment: MainAxisAlignment.end, children: [
             Text(v.round().toString(),
                 style: TextStyle(
-                    fontSize: 10, color: c, fontWeight: FontWeight.w600)),
+                    fontSize: 11, color: c, fontWeight: FontWeight.w600)),
             const SizedBox(height: 4),
             Container(
                 width: 22,

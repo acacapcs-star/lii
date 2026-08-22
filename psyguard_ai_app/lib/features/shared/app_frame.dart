@@ -39,7 +39,7 @@ class AppFrame extends ConsumerWidget {
                   'Luna',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 26,
+                    fontSize: 24,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

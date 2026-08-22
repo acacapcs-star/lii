@@ -72,7 +72,7 @@ class SafetyPage extends ConsumerWidget {
                       Text(
                         copy.liiIsHere,
                         style: const TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w600),
+                            fontSize: 15, fontWeight: FontWeight.w600),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 12),
@@ -150,7 +150,7 @@ class SafetyPage extends ConsumerWidget {
                             : riskLevel == RiskLevel.medium
                                 ? copy.guardianMedium
                                 : copy.guardianLow,
-                        style: const TextStyle(fontSize: 14, height: 1.5),
+                        style: const TextStyle(fontSize: 15, height: 1.5),
                       ),
                     ),
                   ],
@@ -196,7 +196,7 @@ class SafetyPage extends ConsumerWidget {
                                 : copy.needHelpQuestion,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 18,
+                              fontSize: 20,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -241,7 +241,7 @@ class SafetyPage extends ConsumerWidget {
                       Text(
                         step.title,
                         style: const TextStyle(
-                          fontSize: 14,
+                          fontSize: 15,
                           fontWeight: FontWeight.w600,
                           color: LumiTheme.textPrimary,
                         ),
@@ -331,7 +331,7 @@ class SafetyPage extends ConsumerWidget {
     return Text(
       text,
       style: const TextStyle(
-        fontSize: 14,
+        fontSize: 15,
         fontWeight: FontWeight.w600,
         color: LumiTheme.textPrimary,
       ),

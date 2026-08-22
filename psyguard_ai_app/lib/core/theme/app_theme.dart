@@ -91,7 +91,7 @@ class LumiTheme {
       color: textPrimary,
     ),
     titleMedium: GoogleFonts.nunitoSans(
-      fontSize: 18,
+      fontSize: 20,
       fontWeight: FontWeight.w600,
       color: textPrimary,
     ),
@@ -101,7 +101,7 @@ class LumiTheme {
       height: 1.5,
     ),
     bodyMedium: GoogleFonts.nunitoSans(
-      fontSize: 14,
+      fontSize: 15,
       color: textSecondary,
       height: 1.5,
     ),

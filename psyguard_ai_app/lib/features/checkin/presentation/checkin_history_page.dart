@@ -92,7 +92,7 @@ class CheckinHistoryPage extends ConsumerWidget {
                           style: GoogleFonts.nunitoSans(
                             color: LumiTheme.textSecondary,
                             fontWeight: FontWeight.w600,
-                            fontSize: 14,
+                            fontSize: 15,
                           ),
                         ),
                         _buildScoreBadge(copy.mood, checkin.moodScore),
@@ -113,7 +113,7 @@ class CheckinHistoryPage extends ConsumerWidget {
                         copy.isZhTw ? '無文字筆記' : 'No text note',
                         style: GoogleFonts.nunitoSans(
                           color: LumiTheme.textLight,
-                          fontSize: 14,
+                          fontSize: 15,
                           fontStyle: FontStyle.italic,
                         ),
                       ),

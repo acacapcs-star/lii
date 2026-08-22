@@ -145,7 +145,7 @@ class _WeeklyPersonaPageState extends ConsumerState<WeeklyPersonaPage> {
                 Text(info.emoji, style: const TextStyle(fontSize: 80)),
                 const SizedBox(height: 12),
                 Text(isZh ? '本週的你是' : 'This week you are',
-                    style: TextStyle(fontSize: 14, color: Colors.white.withValues(alpha: 0.9))),
+                    style: TextStyle(fontSize: 15, color: Colors.white.withValues(alpha: 0.9))),
                 const SizedBox(height: 4),
                 Text(info.name,
                     style: const TextStyle(
@@ -167,7 +167,7 @@ class _WeeklyPersonaPageState extends ConsumerState<WeeklyPersonaPage> {
           const SizedBox(height: 24),
           // 這週數據小結
           Text(isZh ? '這週的你（$_days 天記錄）' : 'Your week ($_days days logged)',
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
           const SizedBox(height: 12),
           _statRow(isZh ? '心情' : 'Mood', _avgMood, const Color(0xFF66BB6A)),
           _statRow(isZh ? '壓力' : 'Stress', _avgStress, const Color(0xFFFFA726)),

@@ -180,7 +180,7 @@ class _LunaPacerCardState extends State<LunaPacerCard>
                     child: _photo == null
                         ? const Text('點一下放照片',
                             style: TextStyle(
-                                fontSize: 12.5, color: Color(0xFFA7A296)))
+                                fontSize: 13, color: Color(0xFFA7A296)))
                         : Image.memory(_photo!, fit: BoxFit.cover),
                   ),
                 ),
