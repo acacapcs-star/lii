@@ -56,7 +56,6 @@ class PetReminderBubble extends StatefulWidget {
 class _PetReminderBubbleState extends State<PetReminderBubble> {
   _BubbleMessage? _message;
   String _petName = 'Luna';
-  String _petType = 'otter';
   bool _visible = false;
   Timer? _hideTimer;
 
@@ -75,7 +74,6 @@ class _PetReminderBubbleState extends State<PetReminderBubble> {
   Future<void> _prepare() async {
     final prefs = await SharedPreferences.getInstance();
     _petName = prefs.getString('pet_name') ?? 'Luna';
-    _petType = prefs.getString('pet_type') ?? 'otter';
 
     final msg = await _pickMessage(prefs);
     if (msg == null || !mounted) return;
@@ -180,7 +178,6 @@ class _PetReminderBubbleState extends State<PetReminderBubble> {
     return t;
   }
 
-  String get _petEmoji => _petType == 'capybara' ? '🦫' : '🦦';
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +217,7 @@ class _PetReminderBubbleState extends State<PetReminderBubble> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(_petEmoji, style: const TextStyle(fontSize: 26)),
+                        Image.asset('assets/images/lii_ball.png', width: 26, height: 26, errorBuilder: (_, __, ___) => const SizedBox.shrink()),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Column(

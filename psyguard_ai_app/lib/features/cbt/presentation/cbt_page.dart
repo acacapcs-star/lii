@@ -38,7 +38,6 @@ class _CbtPageState extends ConsumerState<CbtPage> {
   final _evidenceAgainstController = TextEditingController();
   CbtAnalysis? _analysis;
   String _petName = 'Luna';
-  String _petType = 'otter';
 
   @override
   void initState() {
@@ -51,7 +50,6 @@ class _CbtPageState extends ConsumerState<CbtPage> {
     if (!mounted) return;
     setState(() {
       _petName = prefs.getString('pet_name') ?? 'Luna';
-      _petType = prefs.getString('pet_type') ?? 'otter';
     });
   }
 
@@ -63,7 +61,6 @@ class _CbtPageState extends ConsumerState<CbtPage> {
     super.dispose();
   }
 
-  String get _petEmoji => _petType == 'capybara' ? '🦫' : '🦦';
 
   Future<void> _analyze(bool isZh) async {
     final text = _controller.text.trim();
@@ -119,7 +116,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(_petEmoji, style: const TextStyle(fontSize: 48)),
+              Image.asset('assets/images/lii_ball.png', width: 48, height: 48, errorBuilder: (_, __, ___) => const SizedBox.shrink()),
               const SizedBox(height: 16),
               const CircularProgressIndicator(),
               const SizedBox(height: 16),
@@ -159,7 +156,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
         const SizedBox(height: 20),
         Row(
           children: [
-            Text(_petEmoji, style: const TextStyle(fontSize: 32)),
+            Image.asset('assets/images/lii_ball.png', width: 32, height: 32, errorBuilder: (_, __, ___) => const SizedBox.shrink()),
             const SizedBox(width: 12),
             Expanded(
               child: Text(title,
@@ -206,7 +203,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
         const SizedBox(height: 20),
         Row(
           children: [
-            Text(_petEmoji, style: const TextStyle(fontSize: 32)),
+            Image.asset('assets/images/lii_ball.png', width: 32, height: 32, errorBuilder: (_, __, ___) => const SizedBox.shrink()),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -288,7 +285,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(_petEmoji, style: const TextStyle(fontSize: 28)),
+                Image.asset('assets/images/lii_ball.png', width: 28, height: 28, errorBuilder: (_, __, ___) => const SizedBox.shrink()),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(a.gentleReframe,
@@ -338,7 +335,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(_petEmoji, style: const TextStyle(fontSize: 56)),
+        Image.asset('assets/images/lii_ball.png', width: 56, height: 56, errorBuilder: (_, __, ___) => const SizedBox.shrink()),
         const SizedBox(height: 20),
         Text(
           better
@@ -373,7 +370,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
           const SizedBox(height: 12),
           Row(
             children: [
-              Text(_petEmoji, style: const TextStyle(fontSize: 32)),
+              Image.asset('assets/images/lii_ball.png', width: 32, height: 32, errorBuilder: (_, __, ___) => const SizedBox.shrink()),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
