@@ -16,6 +16,7 @@ import '../../../l10n/app_language.dart';
 import '../../../core/ers/group_norms.dart';
 import '../../../core/security/secret_diary_lock.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../core/crystals/crystal_store.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -709,6 +710,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               ),
               const SizedBox(height: 28),
             ],
+            _sectionTitle(language == AppLanguage.zhTw ? '🔓 展示模式' : '🔓 Exhibition mode'),
+            const SizedBox(height: 12),
+            _card(child: const _DemoUnlockSwitch()),
+            const SizedBox(height: 28),
             _sectionTitle(copy.resetSectionTitle),
             const SizedBox(height: 12),
             _card(
@@ -1373,6 +1378,52 @@ class _SettingsCopy {
   String get cancel => _isZhTw ? '取消' : 'Cancel';
   String get clear => _isZhTw ? '清除' : 'Clear';
   String get clearDataButton => _isZhTw ? '清除資料' : 'Clear Data';
+}
+
+class _DemoUnlockSwitch extends StatefulWidget {
+  const _DemoUnlockSwitch();
+  @override
+  State<_DemoUnlockSwitch> createState() => _DemoUnlockSwitchState();
+}
+
+class _DemoUnlockSwitchState extends State<_DemoUnlockSwitch> {
+  bool _on = false;
+  bool _ready = false;
+
+  @override
+  void initState() {
+    super.initState();
+    CrystalStore.ensureLoaded().then((_) {
+      if (!mounted) return;
+      setState(() {
+        _on = CrystalStore.demoUnlockAll;
+        _ready = true;
+      });
+    });
+  }
+
+  Future<void> _set(bool v) async {
+    setState(() => _on = v);
+    await CrystalStore.setDemoUnlockAll(v);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final zh = Localizations.localeOf(context).languageCode == 'zh';
+    return SwitchListTile(
+      value: _on,
+      onChanged: _ready ? _set : null,
+      contentPadding: EdgeInsets.zero,
+      title: Text(zh ? '六顆水晶全部解鎖' : 'Unlock all six crystals',
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+      subtitle: Text(
+        zh
+            ? '供評審檢視用。平常請關閉 — 水晶本來只能靠呼吸換來。'
+            : 'For judges to view. Keep this off normally — crystals are earned by breathing.',
+        style: const TextStyle(fontSize: 13, height: 1.6),
+      ),
+    );
+  }
 }
 
 class _DailyPacerSwitch extends StatefulWidget {

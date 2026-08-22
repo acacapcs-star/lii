@@ -699,15 +699,18 @@ class _HomeContentState extends State<_HomeContent> {
         Row(
           children: [
             Flexible(
-              child: Text(
-                copy.exploreSelf,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: _bgIsDark(context)
-                      ? const Color(0xFFD8DEE6)
-                      : null,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  copy.exploreSelf,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: _bgIsDark(context)
+                        ? const Color(0xFFD8DEE6)
+                        : null,
+                  ),
+                  maxLines: 1,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
             ),
             const SizedBox(width: 8),
@@ -1232,7 +1235,33 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
                     children: [
                       Container(
                         padding: const EdgeInsets.all(24),
-                        decoration: LumiTheme.softCard,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: isDark
+                                ? [
+                                    Color.alphaBlend(widget.riskColor.withValues(alpha: 0.10), const Color(0xFF16202F)),
+                                    Color.alphaBlend(widget.riskColor.withValues(alpha: 0.30), const Color(0xFF0E1522)),
+                                  ]
+                                : [
+                                    Colors.white,
+                                    Color.alphaBlend(widget.riskColor.withValues(alpha: 0.30), Colors.white),
+                                  ],
+                          ),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: widget.riskColor.withValues(alpha: isDark ? 0.62 : 0.42),
+                            width: 4,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: widget.riskColor.withValues(alpha: 0.22),
+                              blurRadius: 16,
+                              offset: const Offset(0, 7),
+                            ),
+                          ],
+                        ),
                         child: Row(
                           children: [
                             Container(
@@ -1271,9 +1300,21 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF0F8FF),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFBDD7EE), width: 1.5),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Colors.white, Color(0xFFDCEBF7)],
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                      color: const Color(0xFF4A7FA5).withValues(alpha: 0.42), width: 4),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF4A7FA5).withValues(alpha: 0.22),
+                      blurRadius: 16,
+                      offset: const Offset(0, 7),
+                    ),
+                  ],
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
