@@ -813,7 +813,7 @@ class _HomeContentState extends State<_HomeContent> {
                 title: copy.navTools,
                 subtitle: copy.moodFirstAid,
                 icon: Icons.medical_services_rounded,
-                color: const Color(0xFF3E9B8F),
+                color: const Color(0xFF0E6B5C),
                 route: '/tools',
                 isBold: _hasNegativeSignal,
                 tooltipTitle: copy.navTools,
@@ -826,7 +826,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.navExport,
               subtitle: copy.sevenDaySummary,
               icon: Icons.mark_email_read_rounded,
-              color: const Color(0xFF4A7FA5),
+              color: const Color(0xFFB8C2CC),
               route: '/export',
               tooltipTitle: copy.navExport,
               tooltipDescription: copy.isZhTw
@@ -837,7 +837,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '思考教練' : 'Thought Coach',
               subtitle: copy.isZhTw ? '同一件事，另一種說法' : 'Reframe a thought',
               icon: Icons.psychology_rounded,
-              color: const Color(0xFF4E9C6B),
+              color: const Color(0xFF2B4C8C),
               route: '/thought-coach',
               tooltipTitle: copy.isZhTw ? '思考教練' : 'Thought Coach',
               tooltipDescription: copy.isZhTw
@@ -848,7 +848,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '你常掉進哪一個' : 'Thinking Traps',
               subtitle: copy.isZhTw ? '測你的思考習慣' : 'Discover your patterns',
               icon: Icons.quiz_rounded,
-              color: const Color(0xFF8B62B8),
+              color: const Color(0xFF7ED0C4),
               route: '/distortion-quiz',
               tooltipTitle: copy.isZhTw ? '你常掉進哪一個' : 'Thinking Traps',
               tooltipDescription: copy.isZhTw
@@ -859,7 +859,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '本週人設' : 'Weekly Persona',
               subtitle: copy.isZhTw ? '這週的你是哪隻動物' : 'Your animal this week',
               icon: Icons.pets_rounded,
-              color: const Color(0xFF5FA8B8),
+              color: const Color(0xFF4A2E6B),
               route: '/weekly-persona',
               tooltipTitle: copy.isZhTw ? '本週人設' : 'Weekly Persona',
               tooltipDescription: copy.isZhTw
@@ -870,7 +870,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '希望盒' : 'Hope Box',
               subtitle: copy.isZhTw ? '撐住你的那些話' : 'Cards that carry you',
               icon: Icons.auto_awesome_rounded,
-              color: const Color(0xFF6A7FC9),
+              color: const Color(0xFF9BB8D9),
               route: '/hope-box',
               tooltipTitle: copy.isZhTw ? '希望盒' : 'Hope Box',
               tooltipDescription: copy.isZhTw
@@ -881,7 +881,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '我的 Pacers' : 'My Pacers',
               subtitle: copy.isZhTw ? '有人這樣對你說過' : 'Words you saved',
               icon: Icons.bookmark_rounded,
-              color: const Color(0xFF7A6BB5),
+              color: const Color(0xFF1A3A5C),
               route: '/bookmark',
               tooltipTitle: copy.isZhTw ? '我的 Pacers' : 'My Pacers',
               tooltipDescription: copy.isZhTw
@@ -892,7 +892,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '嘿，在嗎？' : 'Hey, Luna?',
               subtitle: copy.isZhTw ? '聲控喚醒Luna' : 'Voice wake Luna',
               icon: Icons.mic_rounded,
-              color: const Color(0xFF3E7FB8),
+              color: const Color(0xFFC5A3D9),
               route: '/voice',
               tooltipTitle: copy.isZhTw ? '聲控喚醒' : 'Voice Wake',
               tooltipDescription: copy.isZhTw
@@ -970,6 +970,16 @@ class _InteractiveCardState extends State<_InteractiveCard>
     // 關鍵是不透明：深色模式時深藍頁面就透不上來，
     // 卡片永遠維持亮色版的白底淡彩，深色文字才看得清楚。
     final isDark = _bgIsDark(context);
+    // 文字＝卡片同色相，飽和度拉滿、亮度壓低
+    final hsl = HSLColor.fromColor(widget.color);
+    final onCard = hsl
+        .withSaturation(1.0)
+        .withLightness(0.22)
+        .toColor();
+    final onCardSoft = hsl
+        .withSaturation(0.85)
+        .withLightness(0.36)
+        .toColor();
     final bgColor = Color.alphaBlend(
       widget.color.withValues(alpha: 0.0),
       Colors.white,
@@ -1009,7 +1019,7 @@ class _InteractiveCardState extends State<_InteractiveCard>
               end: Alignment.bottomRight,
               colors: [
                 Colors.white,
-                Color.alphaBlend(widget.color.withValues(alpha: 0.14), Colors.white),
+                Color.alphaBlend(widget.color.withValues(alpha: 0.22), Colors.white),
                 Color.alphaBlend(widget.color.withValues(alpha: 0.34), Colors.white),
               ],
               stops: const [0.0, 0.5, 1.0],
@@ -1064,7 +1074,7 @@ class _InteractiveCardState extends State<_InteractiveCard>
                   fontSize: 15,
                   fontWeight:
                       widget.isBold ? FontWeight.w600 : FontWeight.w600,
-                  color: isDark ? const Color(0xFFEDF2F7) : LumiTheme.textPrimary,
+                  color: onCard,
                   height: 1.15,
                 ),
                 maxLines: 1,
@@ -1075,7 +1085,7 @@ class _InteractiveCardState extends State<_InteractiveCard>
                 widget.subtitle,
                 style: GoogleFonts.nunitoSans(
                   fontSize: 11,
-                  color: isDark ? const Color(0xFF9DB0C4) : LumiTheme.textSecondary,
+                  color: onCardSoft,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -1241,8 +1251,8 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
                             end: Alignment.bottomRight,
                             colors: isDark
                                 ? [
-                                    Color.alphaBlend(widget.riskColor.withValues(alpha: 0.10), const Color(0xFF16202F)),
-                                    Color.alphaBlend(widget.riskColor.withValues(alpha: 0.30), const Color(0xFF0E1522)),
+                                    Color.alphaBlend(const Color(0xFF7A8FA6).withValues(alpha: 0.05), const Color(0xFF16202F)),
+                                    Color.alphaBlend(const Color(0xFF7A8FA6).withValues(alpha: 0.12), const Color(0xFF0E1522)),
                                   ]
                                 : [
                                     Colors.white,
@@ -1251,12 +1261,12 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
                           ),
                           borderRadius: BorderRadius.circular(24),
                           border: Border.all(
-                            color: widget.riskColor.withValues(alpha: isDark ? 0.62 : 0.42),
+                            color: isDark ? const Color(0xFF7A8FA6).withValues(alpha: 0.3) : widget.riskColor.withValues(alpha: 0.42),
                             width: 4,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: widget.riskColor.withValues(alpha: 0.22),
+                              color: isDark ? Colors.transparent : isDark ? Colors.transparent : widget.riskColor.withValues(alpha: 0.10),
                               blurRadius: 16,
                               offset: const Offset(0, 7),
                             ),
@@ -1282,10 +1292,17 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
                                   Text(widget.riskLabel,
                                     style: widget.theme.textTheme.titleLarge?.copyWith(
                                       fontWeight: FontWeight.w600,
-                                      color: LumiTheme.textPrimary,
+                                      color: isDark
+                                          ? const Color(0xFFEDF3F8)
+                                          : LumiTheme.textPrimary,
                                     )),
                                   const SizedBox(height: 4),
-                                  Text(widget.todayStatus, style: widget.theme.textTheme.bodyMedium),
+                                  Text(widget.todayStatus,
+                                    style: widget.theme.textTheme.bodyMedium?.copyWith(
+                                      color: isDark
+                                          ? const Color(0xFFA8BACB)
+                                          : null,
+                                    )),
                                 ],
                               ),
                             ),
