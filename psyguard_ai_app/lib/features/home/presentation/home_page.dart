@@ -953,7 +953,7 @@ class _InteractiveCardState extends State<_InteractiveCard>
     // 關鍵是不透明：深色模式時深藍頁面就透不上來，
     // 卡片永遠維持亮色版的白底淡彩，深色文字才看得清楚。
     final bgColor = Color.alphaBlend(
-      widget.color.withValues(alpha: 0.18),
+      widget.color.withValues(alpha: 0.0),
       Colors.white,
     );
 
@@ -986,11 +986,11 @@ class _InteractiveCardState extends State<_InteractiveCard>
           decoration: BoxDecoration(
             color: bgColor,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: widget.color.withValues(alpha: 0.22)),
+            border: Border.all(color: widget.color.withValues(alpha: 0.55), width: 1.5),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.10),
-                blurRadius: 12,
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
             ],
@@ -2007,7 +2007,7 @@ class _DailyCableCardState extends State<_DailyCableCard> {
                         color: Colors.white,
                         height: 1.55,
                         shadows: [
-                          Shadow(blurRadius: 12, color: Colors.black87),
+                          Shadow(blurRadius: 8, color: Colors.black87),
                           Shadow(blurRadius: 3, color: Colors.black87),
                         ],
                       ),
