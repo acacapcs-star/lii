@@ -512,7 +512,7 @@ class _OrbPainter extends CustomPainter {
         text: 'Luna Pacer',
         style: GoogleFonts.cormorantGaramond(
           fontSize: 10,
-          fontWeight: FontWeight.w300,
+          fontWeight: FontWeight.w400,
           color: const Color(0x66FFFFFF),
         ),
       ),

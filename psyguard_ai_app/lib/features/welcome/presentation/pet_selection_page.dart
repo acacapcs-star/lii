@@ -118,7 +118,7 @@ class _PetSelectionPageState extends ConsumerState<PetSelectionPage> {
                               errorBuilder: (_, __, ___) => const Icon(Icons.pets, size: 60, color: Colors.white)),
                             const SizedBox(height: 8),
                             Text(_isZh ? _pets[key]!['name_zh']! : _pets[key]!['name_en']!,
-                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
                           ],
                         ),
                       ),

@@ -34,7 +34,7 @@ class _ConsentPageState extends ConsumerState<ConsentPage> {
           strings.consentTitle,
           style: GoogleFonts.nunitoSans(
             fontSize: 18,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
             color: LumiTheme.textPrimary,
           ),
         ),
@@ -78,7 +78,7 @@ class _ConsentPageState extends ConsumerState<ConsentPage> {
                                   strings.disclaimerTitle,
                                   style: GoogleFonts.nunitoSans(
                                     fontSize: 16,
-                                    fontWeight: FontWeight.w800,
+                                    fontWeight: FontWeight.w600,
                                     color: LumiTheme.textPrimary,
                                   ),
                                 ),
@@ -171,7 +171,7 @@ class _ConsentPageState extends ConsumerState<ConsentPage> {
                             ),
                             textStyle: GoogleFonts.nunitoSans(
                               fontSize: 16,
-                              fontWeight: FontWeight.w800,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           child: Text(strings.consentAgree),
@@ -184,7 +184,7 @@ class _ConsentPageState extends ConsumerState<ConsentPage> {
                           strings.needImmediateHelp,
                           style: GoogleFonts.nunitoSans(
                             color: LumiTheme.textSecondary,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),

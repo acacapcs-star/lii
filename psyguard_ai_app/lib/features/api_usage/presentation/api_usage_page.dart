@@ -85,7 +85,7 @@ class _ApiUsagePageState extends ConsumerState<ApiUsagePage> {
             const SizedBox(height: 2),
             Text(value,
                 style: TextStyle(
-                    fontSize: 24, fontWeight: FontWeight.w800, color: c)),
+                    fontSize: 24, fontWeight: FontWeight.w600, color: c)),
           ]),
         ]),
       );

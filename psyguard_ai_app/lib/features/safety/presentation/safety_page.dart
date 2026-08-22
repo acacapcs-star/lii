@@ -72,7 +72,7 @@ class SafetyPage extends ConsumerWidget {
                       Text(
                         copy.liiIsHere,
                         style: const TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.bold),
+                            fontSize: 14, fontWeight: FontWeight.w600),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 12),
@@ -197,7 +197,7 @@ class SafetyPage extends ConsumerWidget {
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 18,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -242,7 +242,7 @@ class SafetyPage extends ConsumerWidget {
                         step.title,
                         style: const TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                           color: LumiTheme.textPrimary,
                         ),
                       ),
@@ -332,7 +332,7 @@ class SafetyPage extends ConsumerWidget {
       text,
       style: const TextStyle(
         fontSize: 14,
-        fontWeight: FontWeight.w800,
+        fontWeight: FontWeight.w600,
         color: LumiTheme.textPrimary,
       ),
     );
@@ -390,7 +390,7 @@ class SafetyPage extends ConsumerWidget {
                         name,
                         style: const TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                           color: LumiTheme.textPrimary,
                         ),
                       ),
@@ -426,7 +426,7 @@ class SafetyPage extends ConsumerWidget {
                     contact,
                     style: const TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                       color: LumiTheme.primary,
                     ),
                   ),

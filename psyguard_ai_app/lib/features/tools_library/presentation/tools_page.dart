@@ -139,7 +139,7 @@ class _ToolCard extends ConsumerWidget {
                 copy.todayGuidance,
                 style: TextStyle(
                   fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                   color: LumiTheme.textSecondary,
                 ),
               ),
@@ -290,7 +290,7 @@ class _ToolCard extends ConsumerWidget {
                   toolName,
                   style: const TextStyle(
                     fontSize: 17,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                     color: LumiTheme.textPrimary,
                   ),
                 ),

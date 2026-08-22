@@ -91,7 +91,7 @@ class _WeeklyPersonaPageState extends ConsumerState<WeeklyPersonaPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(isZh ? '本週人設' : 'This Week\'s You',
-            style: const TextStyle(fontWeight: FontWeight.w700)),
+            style: const TextStyle(fontWeight: FontWeight.w600)),
       ),
       body: SafeArea(
         child: Padding(
@@ -149,7 +149,7 @@ class _WeeklyPersonaPageState extends ConsumerState<WeeklyPersonaPage> {
                 const SizedBox(height: 4),
                 Text(info.name,
                     style: const TextStyle(
-                        fontSize: 30, fontWeight: FontWeight.w800, color: Colors.white)),
+                        fontSize: 30, fontWeight: FontWeight.w600, color: Colors.white)),
                 const SizedBox(height: 16),
                 Container(
                   padding: const EdgeInsets.all(14),
@@ -167,7 +167,7 @@ class _WeeklyPersonaPageState extends ConsumerState<WeeklyPersonaPage> {
           const SizedBox(height: 24),
           // 這週數據小結
           Text(isZh ? '這週的你（$_days 天記錄）' : 'Your week ($_days days logged)',
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
           const SizedBox(height: 12),
           _statRow(isZh ? '心情' : 'Mood', _avgMood, const Color(0xFF66BB6A)),
           _statRow(isZh ? '壓力' : 'Stress', _avgStress, const Color(0xFFFFA726)),
@@ -184,7 +184,7 @@ class _WeeklyPersonaPageState extends ConsumerState<WeeklyPersonaPage> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
               child: Text(isZh ? '完成' : 'Done',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             ),
           ),
           const SizedBox(height: 20),

@@ -62,7 +62,7 @@ class _FloatingAppBrandIconState extends ConsumerState<FloatingAppBrandIcon>
               children: [
                 Text(
                   isZh ? '選擇氛圍' : 'Choose a Mood',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 16),
                 Wrap(
@@ -91,7 +91,7 @@ class _FloatingAppBrandIconState extends ConsumerState<FloatingAppBrandIcon>
                           style: TextStyle(
                             fontSize: 13,
                             color: selected ? const Color(0xFF0ABFBC) : Colors.black87,
-                            fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                            fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
                           ),
                         ),
                       ),

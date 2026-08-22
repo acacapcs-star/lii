@@ -89,7 +89,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             const SizedBox(height: 6),
             Text(value,
                 style: TextStyle(
-                    fontSize: 20, fontWeight: FontWeight.w800, color: c)),
+                    fontSize: 20, fontWeight: FontWeight.w600, color: c)),
             const SizedBox(height: 2),
             Text(label,
                 textAlign: TextAlign.center,
@@ -132,7 +132,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                           Text(_ersScore.round().toString(),
                               style: TextStyle(
                                   fontSize: 40,
-                                  fontWeight: FontWeight.w800,
+                                  fontWeight: FontWeight.w600,
                                   color: color,
                                   height: 1)),
                         ]),
@@ -146,7 +146,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                       child: Text(levelText,
                           style: const TextStyle(
                               color: Colors.white,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                               fontSize: 13)),
                     ),
                   ]),
@@ -168,7 +168,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                 Text(zh ? 'ERS 近期趨勢' : 'Recent ERS trend',
                     style: const TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         color: Color(0xFF22343A))),
                 const SizedBox(height: 10),
                 _buildTrend(zh),
@@ -212,7 +212,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
           return Column(mainAxisAlignment: MainAxisAlignment.end, children: [
             Text(v.round().toString(),
                 style: TextStyle(
-                    fontSize: 10, color: c, fontWeight: FontWeight.w700)),
+                    fontSize: 10, color: c, fontWeight: FontWeight.w600)),
             const SizedBox(height: 4),
             Container(
                 width: 22,

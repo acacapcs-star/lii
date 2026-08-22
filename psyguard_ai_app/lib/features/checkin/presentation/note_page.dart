@@ -303,7 +303,7 @@ class _NotePageState extends ConsumerState<NotePage> {
               code,
               style: const TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
                 letterSpacing: 1.5,
                 color: Color(0xFF2C5282),
               ),
@@ -570,7 +570,7 @@ class _NotePageState extends ConsumerState<NotePage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(_isZh ? '📝 清除所有筆記？' : '📝 Clear all notes?', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        title: Text(_isZh ? '📝 清除所有筆記？' : '📝 Clear all notes?', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
         content: Text(_isZh ? '這會刪除今天所有筆記，無法復原。' : 'This will delete all notes for this day. This cannot be undone.'),
         actions: [
           TextButton(
@@ -579,7 +579,7 @@ class _NotePageState extends ConsumerState<NotePage> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(_isZh ? '全部清除' : 'Clear All', style: const TextStyle(color: Color(0xFFEF5350), fontWeight: FontWeight.bold)),
+            child: Text(_isZh ? '全部清除' : 'Clear All', style: const TextStyle(color: Color(0xFFEF5350), fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -600,7 +600,7 @@ class _NotePageState extends ConsumerState<NotePage> {
           children: [
             const Text('💡 ', style: TextStyle(fontSize: 20)),
             Text(_isZh ? 'PsyGuard 筆記指南' : 'Note Guide', style: GoogleFonts.playfairDisplay(
-              fontWeight: FontWeight.bold, color: const Color(0xFF2C5282), fontSize: 18
+              fontWeight: FontWeight.w600, color: const Color(0xFF2C5282), fontSize: 18
             )),
           ],
         ),
@@ -618,7 +618,7 @@ class _NotePageState extends ConsumerState<NotePage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(_isZh ? '我知道了' : 'Got it', style: TextStyle(color: Color(0xFF0ABFBC), fontWeight: FontWeight.bold)),
+            child: Text(_isZh ? '我知道了' : 'Got it', style: TextStyle(color: Color(0xFF0ABFBC), fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -657,7 +657,7 @@ class _NotePageState extends ConsumerState<NotePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(_isZh ? '選擇優先等級' : 'Choose Priority Level', style: GoogleFonts.playfairDisplay(
-              fontSize: 16, fontWeight: FontWeight.bold, color: const Color(0xFF2C5282),
+              fontSize: 16, fontWeight: FontWeight.w600, color: const Color(0xFF2C5282),
             )),
             const SizedBox(height: 12),
             Wrap(
@@ -685,7 +685,7 @@ class _NotePageState extends ConsumerState<NotePage> {
                       priorityLabel(p, isZh: _isZh),
                       style: TextStyle(
                         fontSize: 12,
-                        fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                        fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
                         color: selected ? Colors.white : priorityColor(p),
                       ),
                     ),
@@ -786,7 +786,7 @@ class _NotePageState extends ConsumerState<NotePage> {
                       Icon(Icons.calendar_month_rounded, size: 16, color: _accent),
                       const SizedBox(width: 6),
                       Text(_dateLabel, style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF2D3748)
+                        fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF2D3748)
                       )),
                     ],
                   ),

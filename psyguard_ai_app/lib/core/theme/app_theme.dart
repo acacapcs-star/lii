@@ -51,7 +51,7 @@ class LumiTheme {
             borderRadius: BorderRadius.circular(16),
           ),
           textStyle: GoogleFonts.nunitoSans(
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
             fontSize: 16,
           ),
         ),
@@ -71,13 +71,13 @@ class LumiTheme {
   static final TextTheme textTheme = TextTheme(
     displayLarge: GoogleFonts.varelaRound(
       fontSize: 32,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w600,
       color: textPrimary,
       letterSpacing: -0.5,
     ),
     displayMedium: GoogleFonts.varelaRound(
       fontSize: 28,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w600,
       color: textPrimary,
     ),
     displaySmall: GoogleFonts.varelaRound(
@@ -87,7 +87,7 @@ class LumiTheme {
     ),
     titleLarge: GoogleFonts.nunitoSans(
       fontSize: 20,
-      fontWeight: FontWeight.w700,
+      fontWeight: FontWeight.w600,
       color: textPrimary,
     ),
     titleMedium: GoogleFonts.nunitoSans(

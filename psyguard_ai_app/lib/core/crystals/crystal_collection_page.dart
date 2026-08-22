@@ -73,7 +73,7 @@ class _CrystalCollectionPageState extends State<CrystalCollectionPage>
                 Text(
                   '$got / ${kCrystalRules.length}',
                   style: const TextStyle(
-                      fontSize: 26, fontWeight: FontWeight.w300, color: _ink),
+                      fontSize: 26, fontWeight: FontWeight.w400, color: _ink),
                 ),
                 const SizedBox(height: 4),
                 Text(

@@ -126,7 +126,7 @@ class _UsageStatsPageState extends State<UsageStatsPage> {
             children: [
               Text('開 $o 次',
                   style: const TextStyle(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                       color: Color(0xFF9B5DE5))),
               const SizedBox(height: 2),
               Text('共 ${_fmtSecs(s)}',

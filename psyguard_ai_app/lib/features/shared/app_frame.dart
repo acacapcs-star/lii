@@ -40,7 +40,7 @@ class AppFrame extends ConsumerWidget {
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 26,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -63,7 +63,7 @@ class AppFrame extends ConsumerWidget {
           child: Text(t,
               style: TextStyle(
                   fontSize: 12,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                   letterSpacing: 0.5,
                   color: Colors.grey.shade500)),
         );

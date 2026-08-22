@@ -80,9 +80,9 @@ class _CardStudioPageState extends ConsumerState<CardStudioPage> {
       case 3:
         return GoogleFonts.zhiMangXing(fontSize: size + 4, color: color, height: 1.4);
       case 4:
-        return GoogleFonts.notoSansTc(fontSize: size, color: color, fontWeight: FontWeight.w900, height: 1.4);
+        return GoogleFonts.notoSansTc(fontSize: size, color: color, fontWeight: FontWeight.w600, height: 1.4);
       case 5:
-        return GoogleFonts.mPlusRounded1c(fontSize: size, color: color, fontWeight: FontWeight.w700, height: 1.5);
+        return GoogleFonts.mPlusRounded1c(fontSize: size, color: color, fontWeight: FontWeight.w600, height: 1.5);
       case 6:
         return GoogleFonts.maShanZheng(fontSize: size + 4, color: color, height: 1.4);
       case 7:
@@ -166,7 +166,7 @@ class _CardStudioPageState extends ConsumerState<CardStudioPage> {
           TextButton(
             onPressed: () => _save(),
             child: Text(_zh ? '存檔' : 'Save',
-                style: const TextStyle(fontWeight: FontWeight.w700)),
+                style: const TextStyle(fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -553,7 +553,7 @@ class _CardStudioPageState extends ConsumerState<CardStudioPage> {
         child: Text(t,
             style: const TextStyle(
                 fontSize: 13,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 color: Color(0xFF5F6B85))),
       );
 

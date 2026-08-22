@@ -28,7 +28,7 @@ class CheckinHistoryPage extends ConsumerWidget {
           copy.isZhTw ? '筆記紀錄歷史' : 'Check-in History',
           style: GoogleFonts.varelaRound(
             color: LumiTheme.textPrimary,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
@@ -155,7 +155,7 @@ class CheckinHistoryPage extends ConsumerWidget {
         '$label: $score%',
         style: GoogleFonts.nunitoSans(
           color: color,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w600,
           fontSize: 12,
         ),
       ),

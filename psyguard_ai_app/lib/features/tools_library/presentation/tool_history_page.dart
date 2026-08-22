@@ -175,7 +175,7 @@ class ToolHistoryPage extends ConsumerWidget {
                           style: TextStyle(
                             fontSize: 12,
                             color: LumiTheme.success,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
                       ),

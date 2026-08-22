@@ -102,7 +102,7 @@ class _ReportCard extends StatelessWidget {
                       copy.recentDays(report.rangeDays),
                       style: const TextStyle(
                         color: LumiTheme.primary,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
                         fontSize: 12,
                       ),
                     ),

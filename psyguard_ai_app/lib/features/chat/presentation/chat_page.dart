@@ -395,7 +395,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 const SizedBox(height: 12),
                 const Text(
                   '我注意到你說的話讓我有點擔心你',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
@@ -556,7 +556,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                         copy.highRiskDetected,
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                           color: LumiTheme.textPrimary,
                         ),
                       ),
@@ -675,7 +675,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                             style: TextStyle(
                               color: LumiTheme.textSecondary,
                               fontSize: 17,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
                         ),
@@ -828,7 +828,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               style: TextStyle(
                 fontSize: 12,
                 color: LumiTheme.primary,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w400,
               ),
             ),
           ],

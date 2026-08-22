@@ -142,7 +142,7 @@ class _HongbaoEnvelopeState extends ConsumerState<HongbaoEnvelope>
                   '＄$_amount',
                   style: const TextStyle(
                     fontSize: 13,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                     color: Color(0xFFFFD54F),
                   ),
                 ),

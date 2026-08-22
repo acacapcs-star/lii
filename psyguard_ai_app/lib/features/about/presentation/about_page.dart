@@ -17,7 +17,7 @@ class AboutPage extends ConsumerWidget {
           padding: const EdgeInsets.only(top: 24, bottom: 8),
           child: Text(s,
               style: const TextStyle(
-                  fontSize: 17, fontWeight: FontWeight.w800, color: teal)),
+                  fontSize: 17, fontWeight: FontWeight.w600, color: teal)),
         );
 
     Widget para(String s) => Padding(
@@ -32,7 +32,7 @@ class AboutPage extends ConsumerWidget {
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             const Text('\u2022  ',
                 style: TextStyle(
-                    fontSize: 14, height: 1.6, color: teal, fontWeight: FontWeight.bold)),
+                    fontSize: 14, height: 1.6, color: teal, fontWeight: FontWeight.w600)),
             Expanded(
                 child: Text(s,
                     style: const TextStyle(
@@ -67,7 +67,7 @@ class AboutPage extends ConsumerWidget {
               ),
               const SizedBox(height: 12),
               const Text('PsyGuard AI',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600)),
               const SizedBox(height: 2),
               Text(zh ? '\u9752\u5c11\u5e74\u8eab\u5fc3\u9663\u4f34 App' : 'A companion app for teen wellbeing',
                   style: const TextStyle(fontSize: 13, color: Color(0xFF7A8896))),

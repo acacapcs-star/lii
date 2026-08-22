@@ -254,7 +254,7 @@ class _HopeBoxPageState extends ConsumerState<HopeBoxPage> {
                   Text(
                     text,
                     style: TextStyle(
-                      color: Colors.white, fontSize: 34, fontWeight: FontWeight.w700,
+                      color: Colors.white, fontSize: 34, fontWeight: FontWeight.w600,
                       shadows: [const Shadow(color: Colors.black54, blurRadius: 8, offset: Offset(0, 2))],
                     ),
                   ),
@@ -266,7 +266,7 @@ class _HopeBoxPageState extends ConsumerState<HopeBoxPage> {
                       borderRadius: BorderRadius.circular(24),
                     ),
                     child: Text(isZh ? '👆 點一下翻開' : '👆 Tap to reveal',
-                        style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
+                        style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w400)),
                   ),
                 ] else
                   Text(

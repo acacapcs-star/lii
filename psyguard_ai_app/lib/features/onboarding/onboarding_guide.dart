@@ -189,7 +189,7 @@ class _OnboardingSheetState extends State<_OnboardingSheet> {
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                     fontSize: 20,
-                                    fontWeight: FontWeight.w800,
+                                    fontWeight: FontWeight.w600,
                                     color: Color(0xFF2C3150))),
                             const SizedBox(height: 14),
                             Text(zh ? s.bodyZh : s.bodyEn,
@@ -248,7 +248,7 @@ class _OnboardingSheetState extends State<_OnboardingSheet> {
                               ? (zh ? '開始使用 🌙' : 'Get started 🌙')
                               : (zh ? '下一步' : 'Next'),
                           style: const TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w700)),
+                              fontSize: 15, fontWeight: FontWeight.w600)),
                     ),
                   ),
                 ),

@@ -91,7 +91,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(isZh ? '思考教練' : 'Thought Coach',
-            style: const TextStyle(fontWeight: FontWeight.w700)),
+            style: const TextStyle(fontWeight: FontWeight.w600)),
       ),
       body: SafeArea(
         child: Padding(
@@ -164,7 +164,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
             Expanded(
               child: Text(title,
                   style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.w700)),
+                      fontSize: 20, fontWeight: FontWeight.w600)),
             ),
           ],
         ),
@@ -173,7 +173,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
             textAlign: TextAlign.center,
             style: TextStyle(
                 fontSize: 56,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: _moodColor(value))),
         Slider(
           value: value.toDouble(),
@@ -214,7 +214,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
                     ? '發生什麼事了？你心裡怎麼想的？'
                     : 'What happened? What went through your mind?',
                 style:
-                    const TextStyle(fontSize: 19, fontWeight: FontWeight.w700),
+                    const TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
               ),
             ),
           ],
@@ -269,7 +269,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
                           a.distortion.labelFor(isZh),
                       style: const TextStyle(
                           fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           color: Color(0xFFE0863A)),
                     ),
                   ),
@@ -301,7 +301,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
           // 引導問句
           Text(isZh ? '一起想想：' : 'Let\'s reflect:',
               style: const TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w700)),
+                  fontSize: 14, fontWeight: FontWeight.w600)),
           const SizedBox(height: 10),
           ...a.questions.map((q) => Container(
                 margin: const EdgeInsets.only(bottom: 10),
@@ -345,7 +345,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
               ? (isZh ? '你的心情從 $_moodBefore 分到 $_moodAfter 分 🌱' : 'You went from $_moodBefore to $_moodAfter 🌱')
               : (isZh ? '謝謝你願意花時間整理想法 💙' : 'Thank you for taking time to sort through this 💙'),
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
         Text(
@@ -378,7 +378,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
               Expanded(
                 child: Text(
                   isZh ? '這個想法，證據夠嗎？' : 'Is there real evidence?',
-                  style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w700),
+                  style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
                 ),
               ),
             ],
@@ -393,7 +393,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
           const SizedBox(height: 20),
           Text(isZh ? '✅ 支持這個想法的證據' : '✅ Evidence FOR this thought',
               style: const TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF66BB6A))),
+                  fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF66BB6A))),
           const SizedBox(height: 8),
           TextField(
             controller: _evidenceForController,
@@ -411,7 +411,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
           const SizedBox(height: 18),
           Text(isZh ? '🔍 反對這個想法的證據' : '🔍 Evidence AGAINST this thought',
               style: const TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF5A9B9E))),
+                  fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF5A9B9E))),
           const SizedBox(height: 8),
           TextField(
             controller: _evidenceAgainstController,
@@ -460,7 +460,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
           ),
         ),
         child: Text(label,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
       ),
     );
   }

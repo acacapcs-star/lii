@@ -43,19 +43,19 @@ class AiReportPage extends ConsumerWidget {
         styleSheet: MarkdownStyleSheet(
           h1: const TextStyle(
             fontSize: 24,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
             color: LumiTheme.textPrimary,
             height: 1.5,
           ),
           h2: const TextStyle(
             fontSize: 20,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
             color: LumiTheme.textPrimary,
             height: 1.5,
           ),
           h3: const TextStyle(
             fontSize: 18,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
             color: LumiTheme.textPrimary,
             height: 1.5,
           ),

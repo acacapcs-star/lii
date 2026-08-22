@@ -78,7 +78,7 @@ class _BrandLoadingIndicatorState extends State<BrandLoadingIndicator>
             style: const TextStyle(
               fontSize: 14,
               color: Color(0xFF718096),
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w400,
             ),
           ),
         ],

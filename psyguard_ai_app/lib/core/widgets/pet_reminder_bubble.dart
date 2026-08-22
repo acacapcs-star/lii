@@ -230,7 +230,7 @@ class _PetReminderBubbleState extends State<PetReminderBubble> {
                                 _petName,
                                 style: const TextStyle(
                                   fontSize: 11,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight.w600,
                                   color: Color(0xFF0ABFBC),
                                 ),
                               ),

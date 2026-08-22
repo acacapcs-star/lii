@@ -187,7 +187,7 @@ class _FoxPocketState extends ConsumerState<FoxPocket>
                       'u found me!',
                       style: TextStyle(
                         fontSize: 12,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         color: Color(0xFFB4652F),
                       ),
                     ),
@@ -399,7 +399,7 @@ class _SnowCapState extends ConsumerState<SnowCap>
                       'u found me!',
                       style: TextStyle(
                         fontSize: 12,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         color: Color(0xFFB4652F),
                       ),
                     ),

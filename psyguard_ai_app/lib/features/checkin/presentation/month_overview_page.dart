@@ -124,7 +124,7 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
                 children: [
                   Text(
                     isZh ? '$month月 第${weekIndex + 1}週' : 'Month $month, Week ${weekIndex + 1}',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 12),
                   if (week.redItems.isEmpty && week.yellowItems.isEmpty)
@@ -219,7 +219,7 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
                 isZh ? '選擇年份' : 'Choose a year',
                 style: const TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
@@ -310,7 +310,7 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
                       style: TextStyle(
                         color: _accent,
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
                       )),
                   Text(isZh ? '年度重點總覽' : 'Year Overview',
                       style: const TextStyle(
@@ -384,7 +384,7 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
                               Expanded(
                                 child: Text(
                                   monthName,
-                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15),
                                 ),
                               ),
                               Icon(

@@ -285,7 +285,7 @@ class _VoiceWakePageState extends ConsumerState<VoiceWakePage>
             children: [
               Text(
                 isZh ? '這件事的優先度是？' : "What's the priority for this?",
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 6),
               Text(
@@ -450,7 +450,7 @@ class _VoiceWakePageState extends ConsumerState<VoiceWakePage>
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w400,
               ),
               textAlign: TextAlign.center,
             ),

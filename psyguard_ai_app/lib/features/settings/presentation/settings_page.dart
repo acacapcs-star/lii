@@ -86,7 +86,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           copy.title,
           style: GoogleFonts.nunitoSans(
             fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w600,
             color: LumiTheme.textPrimary,
           ),
         ),
@@ -135,7 +135,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                   o[0] as String,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    fontWeight: FontWeight.w700,
+                                    fontWeight: FontWeight.w600,
                                     color: current == (o[1] as double)
                                         ? Colors.white
                                         : Colors.black87,
@@ -195,7 +195,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       textStyle: WidgetStatePropertyAll(
                         GoogleFonts.nunitoSans(
                           fontSize: 13,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
@@ -226,7 +226,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           aiEnabled ? copy.aiEnabled : copy.aiOffline,
                           style: GoogleFonts.nunitoSans(
                             fontSize: 15,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: LumiTheme.textPrimary,
                           ),
                         ),
@@ -309,7 +309,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         ),
                         textStyle: GoogleFonts.nunitoSans(
                           fontSize: 14,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       child: Text(
@@ -333,7 +333,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         ),
                         textStyle: GoogleFonts.nunitoSans(
                           fontSize: 14,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       child: Text(copy.clearAiSettings),
@@ -365,7 +365,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               copy.currentSpeechRate,
                               style: GoogleFonts.nunitoSans(
                                 fontSize: 13,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 color: LumiTheme.textPrimary,
                               ),
                             ),
@@ -374,7 +374,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               '${_describeTtsSpeechRate(_ttsSpeechRate, copy)} (${_ttsSpeechRate.toStringAsFixed(2)})',
                               style: GoogleFonts.nunitoSans(
                                 fontSize: 13,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w600,
                                 color: LumiTheme.primary,
                               ),
                             ),
@@ -436,7 +436,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               ),
                               textStyle: GoogleFonts.nunitoSans(
                                 fontSize: 14,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                             child: Text(
@@ -515,7 +515,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 : 'Show the red risk tier',
                             style: GoogleFonts.nunitoSans(
                               fontSize: 15,
-                              fontWeight: FontWeight.w800,
+                              fontWeight: FontWeight.w600,
                               color: LumiTheme.textPrimary,
                             ),
                           ),
@@ -576,7 +576,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           : 'Clear ERS smoothing history',
                       style: GoogleFonts.nunitoSans(
                         fontSize: 15,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: LumiTheme.textPrimary,
                       ),
                     ),
@@ -644,7 +644,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               : 'Clear',
                           style: GoogleFonts.nunitoSans(
                             fontSize: 15,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -682,7 +682,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                   : 'Skip ERS smoothing (for filming)',
                               style: GoogleFonts.nunitoSans(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 color: LumiTheme.textPrimary,
                               ),
                             ),
@@ -719,7 +719,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     copy.clearLocalDataTitle,
                     style: GoogleFonts.nunitoSans(
                       fontSize: 15,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                       color: LumiTheme.textPrimary,
                     ),
                   ),
@@ -784,7 +784,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         ),
                         textStyle: GoogleFonts.nunitoSans(
                           fontSize: 14,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       child: Text(copy.clearDataButton),
@@ -914,7 +914,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               isZh ? '自動上鎖時機' : 'Auto-lock',
               style: GoogleFonts.nunitoSans(
                 fontSize: 15,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: LumiTheme.textPrimary,
               ),
             ),
@@ -940,7 +940,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   p.labelFor(isZh),
                   style: GoogleFonts.nunitoSans(
                     fontSize: 14,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                     color: LumiTheme.textPrimary,
                   ),
                 ),
@@ -977,7 +977,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               isZh ? '你的年齡層' : 'Your age group',
               style: GoogleFonts.nunitoSans(
                 fontSize: 15,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
                 color: LumiTheme.textPrimary,
               ),
             ),
@@ -1022,7 +1022,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       b.labelFor(isZh),
                       style: GoogleFonts.nunitoSans(
                         fontSize: 13.5,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         color: on ? Colors.white : LumiTheme.textSecondary,
                       ),
                     ),
@@ -1053,7 +1053,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       text,
       style: GoogleFonts.nunitoSans(
         fontSize: 14,
-        fontWeight: FontWeight.w900,
+        fontWeight: FontWeight.w600,
         color: LumiTheme.textPrimary,
       ),
     );
@@ -1086,7 +1086,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           label,
           style: GoogleFonts.nunitoSans(
             fontSize: 13,
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w600,
             color: LumiTheme.textPrimary,
           ),
         ),

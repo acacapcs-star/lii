@@ -170,7 +170,7 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(copy.todayMentalStateAnalysis, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(copy.todayMentalStateAnalysis, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               const SizedBox(height: 16),
               ERSPercentileWidget(ersResult: ersResult, ageGroup: copy.isZhTw ? '高中' : 'high school'),
               const SizedBox(height: 16),
@@ -272,7 +272,7 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
                       copy.todayNote,
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         color: LumiTheme.textPrimary,
                       ),
                     ),
@@ -317,7 +317,7 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
                                 'Open Today Diary',
                                 style: TextStyle(
                                   fontSize: 14, 
-                                  fontWeight: FontWeight.bold, 
+                                  fontWeight: FontWeight.w600, 
                                   color: Color(0xFF2C5282),
                                 ),
                               ),
@@ -401,7 +401,7 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
                 title,
                 style: const TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   color: LumiTheme.textPrimary,
                 ),
               ),

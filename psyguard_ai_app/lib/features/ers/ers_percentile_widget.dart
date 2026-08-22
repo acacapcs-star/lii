@@ -71,7 +71,7 @@ class ERSPercentileWidget extends ConsumerWidget {
                     maxLines: 1,
                     style: TextStyle(
                       color: _riskColor,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
                   ),
@@ -89,7 +89,7 @@ class ERSPercentileWidget extends ConsumerWidget {
                     maxLines: 1,
                     style: TextStyle(
                       color: _riskColor,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       fontSize: 24,
                     ),
                   ),
@@ -195,7 +195,7 @@ class _StreamBadge extends StatelessWidget {
                     maxLines: 1,
                     style: TextStyle(
                         color: _color,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
                         fontSize: 16),
                   ),
           ],

@@ -566,7 +566,7 @@ class _PlayPainter extends CustomPainter {
       _text(canvas, 'GOAL!', Offset.zero,
           size: 20,
           color: const Color(0xFFFFC107).withValues(alpha: alpha),
-          weight: FontWeight.w900);
+          weight: FontWeight.w600);
       canvas.restore();
     }
   }
@@ -617,7 +617,7 @@ class _PlayPainter extends CustomPainter {
     Offset at, {
     double size = 11,
     Color color = Colors.white,
-    FontWeight weight = FontWeight.w800,
+    FontWeight weight = FontWeight.w600,
     bool center = true,
   }) {
     final tp = TextPainter(

@@ -148,7 +148,7 @@ class TrendsPage extends ConsumerWidget {
                               : LumiTheme.textSecondary,
                           fontWeight: range == days
                               ? FontWeight.w600
-                              : FontWeight.normal,
+                              : FontWeight.w400,
                         ),
                         backgroundColor: LumiTheme.surface,
                         selectedColor: LumiTheme.primary,
@@ -214,7 +214,7 @@ class TrendsPage extends ConsumerWidget {
                             Text(
                               copy.noTrendData,
                               style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w600,
                                 color: LumiTheme.textPrimary,
                               ),
                               textAlign: TextAlign.center,
@@ -263,7 +263,7 @@ class TrendsPage extends ConsumerWidget {
                                 copy.emergencyCase,
                                 style: TextStyle(
                                   fontSize: 36,
-                                  fontWeight: FontWeight.w900,
+                                  fontWeight: FontWeight.w600,
                                   color: Colors.black.withValues(alpha: 0.03),
                                   letterSpacing: 4,
                                 ),
@@ -419,7 +419,7 @@ class TrendsPage extends ConsumerWidget {
               Text(
                 title,
                 style: const TextStyle(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   fontSize: 15,
                   color: LumiTheme.textPrimary,
                 ),
@@ -597,7 +597,7 @@ class TrendsPage extends ConsumerWidget {
                 label,
                 style: TextStyle(
                   fontSize: 12.5,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   color: on ? color : Colors.grey,
                 ),
               ),
@@ -669,7 +669,7 @@ class TrendsPage extends ConsumerWidget {
                 isZh ? '近 $range 天' : 'Last $range days',
                 style: const TextStyle(
                   fontSize: 13,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   color: Color(0xFF2D3748),
                 ),
               ),
@@ -714,7 +714,7 @@ class TrendsPage extends ConsumerWidget {
                 label,
                 style: TextStyle(
                   fontSize: 13,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   color: on ? Colors.white : LumiTheme.textSecondary,
                 ),
               ),

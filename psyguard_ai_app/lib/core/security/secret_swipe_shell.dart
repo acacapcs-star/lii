@@ -276,7 +276,7 @@ class _SecretUnlockScreenState extends State<SecretUnlockScreen> {
               code,
               style: const TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
                 letterSpacing: 1.5,
                 color: kTaroDeep,
               ),

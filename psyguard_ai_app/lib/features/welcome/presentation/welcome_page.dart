@@ -200,7 +200,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
                       style: GoogleFonts.playfairDisplay(
                         fontSize: 16,
                         fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w400,
                         letterSpacing: 4,
                       ),
                     ),
@@ -358,7 +358,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
           child: const Text('ERS',
               style: TextStyle(
                   fontSize: 24,
-                  fontWeight: FontWeight.w300,
+                  fontWeight: FontWeight.w400,
                   letterSpacing: 4,
                   color: Colors.white)),
         ),

@@ -81,7 +81,7 @@ class _ExportPageState extends ConsumerState<ExportPage> {
                     copy.emergencyCase,
                     style: TextStyle(
                       fontSize: 36,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w600,
                       color: Colors.black.withValues(alpha: 0.03),
                       letterSpacing: 4,
                     ),
@@ -117,7 +117,7 @@ class _ExportPageState extends ConsumerState<ExportPage> {
                         copy.exportReportTitle(_days),
                         style: TextStyle(
                           fontSize: 20,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           color: LumiTheme.textPrimary,
                         ),
                       ),
@@ -155,7 +155,7 @@ class _ExportPageState extends ConsumerState<ExportPage> {
                                     : LumiTheme.textSecondary,
                                 fontWeight: _days == days
                                     ? FontWeight.w600
-                                    : FontWeight.normal,
+                                    : FontWeight.w400,
                               ),
                             ),
                         ],
@@ -206,7 +206,7 @@ class _ExportPageState extends ConsumerState<ExportPage> {
                           style: TextStyle(
                             color: LumiTheme.primary,
                             fontSize: 13,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
                       ),

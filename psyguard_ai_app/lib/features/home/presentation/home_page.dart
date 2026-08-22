@@ -314,7 +314,7 @@ class HomePage extends ConsumerWidget {
                     child: Text(item.$2,
                         style: GoogleFonts.nunitoSans(
                             fontSize: 12,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             letterSpacing: 0.5,
                             color: LumiTheme.textSecondary)),
                   );
@@ -346,8 +346,8 @@ class HomePage extends ConsumerWidget {
                             ? LumiTheme.primary
                             : LumiTheme.textPrimary,
                         fontWeight: isActive
-                            ? FontWeight.w700
-                            : FontWeight.w500,
+                            ? FontWeight.w600
+                            : FontWeight.w400,
                       ),
                     ),
                     onTap: () {
@@ -1012,7 +1012,7 @@ class _InteractiveCardState extends State<_InteractiveCard>
                 style: GoogleFonts.nunitoSans(
                   fontSize: 15,
                   fontWeight:
-                      widget.isBold ? FontWeight.w900 : FontWeight.w600,
+                      widget.isBold ? FontWeight.w600 : FontWeight.w600,
                   color: LumiTheme.textPrimary,
                   height: 1.15,
                 ),
@@ -1206,7 +1206,7 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
                                 children: [
                                   Text(widget.riskLabel,
                                     style: widget.theme.textTheme.titleLarge?.copyWith(
-                                      fontWeight: FontWeight.w700,
+                                      fontWeight: FontWeight.w600,
                                       color: LumiTheme.textPrimary,
                                     )),
                                   const SizedBox(height: 4),
@@ -1250,7 +1250,7 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
                         Text(_petName,
                           style: const TextStyle(
                             fontSize: 20,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                             color: Color(0xFF2C5282),
                           )),
                         const SizedBox(height: 4),
@@ -1351,7 +1351,7 @@ class _SunMoonToggle extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(AppStrings.of(ref.watch(appLanguageControllerProvider)).isZhTw ? '選擇底色' : 'Pick a background', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(AppStrings.of(ref.watch(appLanguageControllerProvider)).isZhTw ? '選擇底色' : 'Pick a background', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,

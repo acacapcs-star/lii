@@ -28,7 +28,7 @@ class SleepHistoryPage extends ConsumerWidget {
           copy.isZhTw ? '睡眠歷史紀錄' : 'Sleep History',
           style: GoogleFonts.varelaRound(
             color: LumiTheme.textPrimary,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
@@ -151,7 +151,7 @@ class SleepHistoryPage extends ConsumerWidget {
           value,
           style: GoogleFonts.nunitoSans(
             fontSize: 16,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
             color: isHighlight
                 ? LumiTheme.primary
                 : LumiTheme.textPrimary,
@@ -190,7 +190,7 @@ class SleepHistoryPage extends ConsumerWidget {
         label,
         style: GoogleFonts.nunitoSans(
           color: color,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w600,
           fontSize: 12,
         ),
       ),

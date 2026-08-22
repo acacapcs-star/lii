@@ -388,7 +388,7 @@ class _FishVisualLayerState extends ConsumerState<FishVisualLayer>
                         'GOAL! 🏀',
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w600,
                           color: Colors.white,
                         ),
                       ),
@@ -486,7 +486,7 @@ class _HoopBallPainter extends CustomPainter {
           text: '🏀 ×${pond.score}',
           style: const TextStyle(
             fontSize: 12,
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w600,
             color: Color(0xFFE8622C),
           ),
         ),

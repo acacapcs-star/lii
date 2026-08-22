@@ -92,7 +92,7 @@ class _DistortionQuizPageState extends ConsumerState<DistortionQuizPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(isZh ? '思考陷阱測驗' : 'Thinking Trap Quiz',
-            style: const TextStyle(fontWeight: FontWeight.w700)),
+            style: const TextStyle(fontWeight: FontWeight.w600)),
       ),
       body: SafeArea(
         child: Padding(
@@ -125,7 +125,7 @@ class _DistortionQuizPageState extends ConsumerState<DistortionQuizPage> {
         const SizedBox(height: 40),
         Text(
           isZh ? q.zh : q.en,
-          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, height: 1.4),
+          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600, height: 1.4),
         ),
         const SizedBox(height: 40),
         for (int i = 0; i < options.length; i++) ...[
@@ -171,7 +171,7 @@ class _DistortionQuizPageState extends ConsumerState<DistortionQuizPage> {
           Text(info['name']!,
               textAlign: TextAlign.center,
               style: TextStyle(
-                  fontSize: 26, fontWeight: FontWeight.w800, color: LumiTheme.primary)),
+                  fontSize: 26, fontWeight: FontWeight.w600, color: LumiTheme.primary)),
           const SizedBox(height: 24),
           Container(
             padding: const EdgeInsets.all(18),
@@ -184,13 +184,13 @@ class _DistortionQuizPageState extends ConsumerState<DistortionQuizPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(isZh ? '這是什麼？' : 'What is it?',
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
                 const SizedBox(height: 6),
                 Text(info['desc']!,
                     style: const TextStyle(fontSize: 14, height: 1.5, color: Color(0xFF475467))),
                 const SizedBox(height: 16),
                 Text(isZh ? '下次可以練習問自己：' : 'Next time, try asking yourself:',
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
                 const SizedBox(height: 6),
                 Text(info['tip']!,
                     style: const TextStyle(
@@ -217,7 +217,7 @@ class _DistortionQuizPageState extends ConsumerState<DistortionQuizPage> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
               child: Text(isZh ? '再測一次' : 'Take again',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             ),
           ),
           const SizedBox(height: 12),
@@ -229,7 +229,7 @@ class _DistortionQuizPageState extends ConsumerState<DistortionQuizPage> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
               child: Text(isZh ? '完成' : 'Done',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             ),
           ),
           const SizedBox(height: 20),

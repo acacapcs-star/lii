@@ -118,7 +118,7 @@ class _SleepPageState extends ConsumerState<SleepPage> {
                       copy.sleepDuration,
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         color: LumiTheme.textPrimary,
                       ),
                     ),
@@ -198,7 +198,7 @@ class _SleepPageState extends ConsumerState<SleepPage> {
                       copy.sleepDifficulty,
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         color: LumiTheme.textPrimary,
                       ),
                     ),
@@ -219,7 +219,7 @@ class _SleepPageState extends ConsumerState<SleepPage> {
                             ? Colors.white
                             : LumiTheme.textPrimary,
                         fontSize: 13,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w400,
                       ),
                     );
                   }),
@@ -327,7 +327,7 @@ class _SleepPageState extends ConsumerState<SleepPage> {
               style: TextStyle(
                 fontSize: 15,
                 color: LumiTheme.textSecondary,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w400,
               ),
             ),
             const SizedBox(width: 4),

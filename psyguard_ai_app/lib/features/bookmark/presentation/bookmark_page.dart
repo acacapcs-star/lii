@@ -260,7 +260,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
         title: Text(
           zh ? '🚡 Pacer Lift' : '🚡 Pacer Lift',
           style: const TextStyle(
-              fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF2C3150)),
+              fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF2C3150)),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(52),
@@ -310,7 +310,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 13,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w600,
               color: selected ? Colors.white : const Color(0xFF2C3150),
             ),
           ),
@@ -337,7 +337,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
               Text(zh ? '纜車還空空的' : 'The cable car is empty',
                   style: const TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                       color: Color(0xFF2C3150))),
               const SizedBox(height: 8),
               Padding(
@@ -537,7 +537,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 12.5,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           color: Colors.white,
                           height: 1.3,
                         ),
@@ -769,7 +769,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
                     _grabber(),
                     Text(zh ? '新增一個 Pacer 🔖' : 'Add a Pacer 🔖',
                         style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w800)),
+                            fontSize: 18, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 12),
                     // COLD_START 16 位試用者裡 10 位沒寫成，3 位說「想不出來要寫什麼」。
                     // 空白框對青少年太難 —— 給開頭讓他接，比從無到有容易得多。
@@ -834,7 +834,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
                     const SizedBox(height: 18),
                     Text(zh ? '背景顏色' : 'Background color',
                         style: const TextStyle(
-                            fontSize: 13, fontWeight: FontWeight.w700)),
+                            fontSize: 13, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 10),
                     Wrap(
                       spacing: 12,
@@ -865,7 +865,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
                     const SizedBox(height: 16),
                     Text(zh ? '背景圖片' : 'Background image',
                         style: const TextStyle(
-                            fontSize: 13, fontWeight: FontWeight.w700)),
+                            fontSize: 13, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 10),
                     Wrap(
                       spacing: 12,
@@ -975,7 +975,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
                 Text(zh ? '還沒有觀景台' : 'No decks yet',
                     style: const TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         color: Color(0xFF2C3150))),
                 const SizedBox(height: 8),
                 Padding(
@@ -1044,7 +1044,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
                           '🏔️ ${a.title}',
                           style: const TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: Colors.white,
                           ),
                         ),
@@ -1131,7 +1131,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
                     _grabber(),
                     Text(zh ? '蓋一座觀景台 🏔️' : 'Build a deck 🏔️',
                         style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w800)),
+                            fontSize: 18, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 20),
                     TextField(
                       controller: titleCtrl,
@@ -1156,7 +1156,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
                     const SizedBox(height: 18),
                     Text(zh ? '選觀景台' : 'Pick a deck',
                         style: const TextStyle(
-                            fontSize: 13, fontWeight: FontWeight.w700)),
+                            fontSize: 13, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 10),
                     SizedBox(
                       height: 92,
@@ -1206,7 +1206,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
                     const SizedBox(height: 18),
                     Text(zh ? '牌子顏色' : 'Plaque color',
                         style: const TextStyle(
-                            fontSize: 13, fontWeight: FontWeight.w700)),
+                            fontSize: 13, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 10),
                     Wrap(
                       spacing: 12,
@@ -1279,7 +1279,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
         ),
         onPressed: onTap,
         child: Text(label,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
       ),
     );
   }

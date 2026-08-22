@@ -60,9 +60,9 @@ class _MyCardsPageState extends ConsumerState<MyCardsPage> {
       case 3:
         return GoogleFonts.zhiMangXing(fontSize: size + 4, color: color, height: 1.4);
       case 4:
-        return GoogleFonts.notoSansTc(fontSize: size, color: color, fontWeight: FontWeight.w900, height: 1.4);
+        return GoogleFonts.notoSansTc(fontSize: size, color: color, fontWeight: FontWeight.w600, height: 1.4);
       case 5:
-        return GoogleFonts.mPlusRounded1c(fontSize: size, color: color, fontWeight: FontWeight.w700, height: 1.5);
+        return GoogleFonts.mPlusRounded1c(fontSize: size, color: color, fontWeight: FontWeight.w600, height: 1.5);
       case 6:
         return GoogleFonts.maShanZheng(fontSize: size + 4, color: color, height: 1.4);
       case 7:
@@ -153,7 +153,7 @@ class _MyCardsPageState extends ConsumerState<MyCardsPage> {
             const SizedBox(width: 6),
             Text(author,
                 style: const TextStyle(
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                     fontSize: 15,
                     color: Color(0xFF2C3150))),
             const SizedBox(width: 6),
