@@ -959,41 +959,34 @@ class _InteractiveCardState extends State<_InteractiveCard>
 
     return SnowCap(
       // 雪系氛圍時，卡片頂端會積雪；按住雪堆用手溫融化它
-      child: GestureDetector(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        context.push(widget.route);
-      },
-      onTapDown: (_) => setState(() => _scale = 0.95),
-      onTapUp: (_) => setState(() => _scale = 1.0),
-      onTapCancel: () => setState(() => _scale = 1.0),
-      onLongPress: () {
-        HapticFeedback.mediumImpact();
-        if (widget.tooltipTitle != null && widget.tooltipDescription != null) {
-          showFeatureTooltip(
-            context,
-            title: widget.tooltipTitle!,
-            description: widget.tooltipDescription!,
-          );
-        }
-      },
-      child: AnimatedScale(
-        scale: _scale,
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeOut,
+      child: Material(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(24),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(24),
+          splashColor: widget.color.withValues(alpha: 0.3),
+          highlightColor: widget.color.withValues(alpha: 0.06),
+          onTap: () {
+            HapticFeedback.lightImpact();
+            context.push(widget.route);
+          },
+          onLongPress: () {
+            HapticFeedback.mediumImpact();
+            if (widget.tooltipTitle != null && widget.tooltipDescription != null) {
+              showFeatureTooltip(
+                context,
+                title: widget.tooltipTitle!,
+                description: widget.tooltipDescription!,
+              );
+            }
+          },
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: bgColor,
-            borderRadius: BorderRadius.circular(24),
             border: Border.all(color: widget.color.withValues(alpha: 0.55), width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            borderRadius: BorderRadius.circular(24),
+
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
