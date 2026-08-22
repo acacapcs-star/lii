@@ -564,7 +564,7 @@ class _HomeContentState extends State<_HomeContent> {
         copy.navCheckin,
         copy.emotionalRelease,
         Icons.edit_note_rounded,
-        const Color(0xFFC98A5E),
+        const Color(0xFFD95F5F),
         '/checkin',
         copy.isZhTw
             ? '把心裡的感受寫下來，讓自己慢慢看見、慢慢理解。'
@@ -574,7 +574,7 @@ class _HomeContentState extends State<_HomeContent> {
         copy.trendsTitle,
         copy.healthDataTrends,
         Icons.favorite_rounded,
-        const Color(0xFFD4736F),
+        const Color(0xFFE08A3C),
         '/trends',
         copy.isZhTw
             ? '用溫柔的方式，看見你的變化，一步步找回自己的節奏。'
@@ -584,7 +584,7 @@ class _HomeContentState extends State<_HomeContent> {
         copy.navChat,
         copy.supportiveChat,
         Icons.forum_outlined,
-        const Color(0xFFC96F4A),
+        const Color(0xFFD4A72C),
         '/chat',
         copy.isZhTw
             ? '不用整理好再說，想到什麼就寫什麼。'
@@ -594,7 +594,7 @@ class _HomeContentState extends State<_HomeContent> {
         copy.navSleep,
         copy.sleepStatus,
         Icons.bedtime_outlined,
-        const Color(0xFFB8845C),
+        const Color(0xFF4E9C6B),
         '/sleep',
         copy.isZhTw
             ? '看見每晚的睡眠變化，慢慢找回適合自己的作息節奏。'
@@ -604,7 +604,7 @@ class _HomeContentState extends State<_HomeContent> {
         copy.isZhTw ? '年度總覽' : 'Year Overview',
         copy.isZhTw ? '重點行事曆' : 'Key Calendar',
         Icons.calendar_month_rounded,
-        const Color(0xFFD9A441),
+        const Color(0xFF3E7FB8),
         '/calendar-overview',
         copy.isZhTw
             ? '一眼看見全年重要事項，紅色緊急、黃色重要，一目了然。'
@@ -614,7 +614,7 @@ class _HomeContentState extends State<_HomeContent> {
         copy.isZhTw ? '我的專屬格言' : 'My Quote Cards',
         copy.isZhTw ? '手作暖話卡' : 'Make your own',
         Icons.auto_awesome_rounded,
-        const Color(0xFFCC7A88),
+        const Color(0xFF8B62B8),
         '/my-cards',
         copy.isZhTw
             ? '自己做暖話卡：選底色、字體、加照片，寫下屬於你的格言。'
@@ -801,7 +801,7 @@ class _HomeContentState extends State<_HomeContent> {
                 title: copy.navTools,
                 subtitle: copy.moodFirstAid,
                 icon: Icons.medical_services_rounded,
-                color: const Color(0xFF4A7FA5),
+                color: const Color(0xFF3E9B8F),
                 route: '/tools',
                 isBold: _hasNegativeSignal,
                 tooltipTitle: copy.navTools,
@@ -825,7 +825,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '思考教練' : 'Thought Coach',
               subtitle: copy.isZhTw ? '同一件事，另一種說法' : 'Reframe a thought',
               icon: Icons.psychology_rounded,
-              color: const Color(0xFF4E8C7E),
+              color: const Color(0xFF4E9C6B),
               route: '/thought-coach',
               tooltipTitle: copy.isZhTw ? '思考教練' : 'Thought Coach',
               tooltipDescription: copy.isZhTw
@@ -836,7 +836,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '你常掉進哪一個' : 'Thinking Traps',
               subtitle: copy.isZhTw ? '測你的思考習慣' : 'Discover your patterns',
               icon: Icons.quiz_rounded,
-              color: const Color(0xFF7A6BB5),
+              color: const Color(0xFF8B62B8),
               route: '/distortion-quiz',
               tooltipTitle: copy.isZhTw ? '你常掉進哪一個' : 'Thinking Traps',
               tooltipDescription: copy.isZhTw
@@ -847,7 +847,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '本週人設' : 'Weekly Persona',
               subtitle: copy.isZhTw ? '這週的你是哪隻動物' : 'Your animal this week',
               icon: Icons.pets_rounded,
-              color: const Color(0xFF3E8FA8),
+              color: const Color(0xFFD4739A),
               route: '/weekly-persona',
               tooltipTitle: copy.isZhTw ? '本週人設' : 'Weekly Persona',
               tooltipDescription: copy.isZhTw
@@ -858,7 +858,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '希望盒' : 'Hope Box',
               subtitle: copy.isZhTw ? '撐住你的那些話' : 'Cards that carry you',
               icon: Icons.auto_awesome_rounded,
-              color: const Color(0xFF5A7BA8),
+              color: const Color(0xFFE08A3C),
               route: '/hope-box',
               tooltipTitle: copy.isZhTw ? '希望盒' : 'Hope Box',
               tooltipDescription: copy.isZhTw
@@ -869,7 +869,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '我的 Pacers' : 'My Pacers',
               subtitle: copy.isZhTw ? '有人這樣對你說過' : 'Words you saved',
               icon: Icons.bookmark_rounded,
-              color: const Color(0xFF6E7FB8),
+              color: const Color(0xFF7A6BB5),
               route: '/bookmark',
               tooltipTitle: copy.isZhTw ? '我的 Pacers' : 'My Pacers',
               tooltipDescription: copy.isZhTw
@@ -880,7 +880,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '嘿，在嗎？' : 'Hey, Luna?',
               subtitle: copy.isZhTw ? '聲控喚醒Luna' : 'Voice wake Luna',
               icon: Icons.mic_rounded,
-              color: const Color(0xFF44869B),
+              color: const Color(0xFF3E7FB8),
               route: '/voice',
               tooltipTitle: copy.isZhTw ? '聲控喚醒' : 'Voice Wake',
               tooltipDescription: copy.isZhTw
@@ -952,6 +952,7 @@ class _InteractiveCardState extends State<_InteractiveCard>
     // 白色打底 + 8% 主題色 → 先合成成「不透明」的淡彩白。
     // 關鍵是不透明：深色模式時深藍頁面就透不上來，
     // 卡片永遠維持亮色版的白底淡彩，深色文字才看得清楚。
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = Color.alphaBlend(
       widget.color.withValues(alpha: 0.0),
       Colors.white,
@@ -966,8 +967,8 @@ class _InteractiveCardState extends State<_InteractiveCard>
         child: InkWell(
           borderRadius: BorderRadius.circular(24),
           splashFactory: _FastSplash.factory,
-          splashColor: widget.color.withValues(alpha: 0.3),
-          highlightColor: widget.color.withValues(alpha: 0.06),
+          splashColor: widget.color.withValues(alpha: 0.5),
+          highlightColor: widget.color.withValues(alpha: 0.25),
           onTap: () async {
             HapticFeedback.lightImpact();
             await Future.delayed(const Duration(milliseconds: 280));
@@ -986,7 +987,40 @@ class _InteractiveCardState extends State<_InteractiveCard>
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            border: Border.all(color: widget.color.withValues(alpha: 0.55), width: 1.5),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white,
+                Color.alphaBlend(widget.color.withValues(alpha: 0.14), Colors.white),
+                Color.alphaBlend(widget.color.withValues(alpha: 0.34), Colors.white),
+              ],
+              stops: const [0.0, 0.5, 1.0],
+            ),
+            border: Border.all(color: widget.color.withValues(alpha: isDark ? 0.62 : 0.40), width: 4),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.white.withValues(alpha: isDark ? 0.16 : 1.0),
+                blurRadius: 8,
+                offset: const Offset(-4, -4),
+                spreadRadius: -4,
+                blurStyle: BlurStyle.inner,
+              ),
+              BoxShadow(
+                color: isDark
+                    ? Colors.black.withValues(alpha: 0.45)
+                    : widget.color.withValues(alpha: 0.55),
+                blurRadius: 14,
+                offset: const Offset(5, 6),
+                spreadRadius: -3,
+                blurStyle: BlurStyle.inner,
+              ),
+              BoxShadow(
+                color: widget.color.withValues(alpha: 0.25),
+                blurRadius: 16,
+                offset: const Offset(0, 7),
+              ),
+            ],
             borderRadius: BorderRadius.circular(24),
 
           ),
@@ -1013,7 +1047,7 @@ class _InteractiveCardState extends State<_InteractiveCard>
                   fontSize: 15,
                   fontWeight:
                       widget.isBold ? FontWeight.w600 : FontWeight.w600,
-                  color: LumiTheme.textPrimary,
+                  color: isDark ? const Color(0xFFEDF2F7) : LumiTheme.textPrimary,
                   height: 1.15,
                 ),
                 maxLines: 1,
@@ -1024,7 +1058,7 @@ class _InteractiveCardState extends State<_InteractiveCard>
                 widget.subtitle,
                 style: GoogleFonts.nunitoSans(
                   fontSize: 11,
-                  color: LumiTheme.textSecondary,
+                  color: isDark ? const Color(0xFF9DB0C4) : LumiTheme.textSecondary,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
