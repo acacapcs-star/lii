@@ -74,7 +74,7 @@ class _PetReminderBubbleState extends State<PetReminderBubble> {
 
   Future<void> _prepare() async {
     final prefs = await SharedPreferences.getInstance();
-    _petName = prefs.getString('pet_name') ?? 'Luna';
+    _petName = 'Luna';
 
     final msg = await _pickMessage(prefs);
     if (msg == null || !mounted) return;

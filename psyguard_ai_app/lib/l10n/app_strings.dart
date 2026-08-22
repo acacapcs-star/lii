@@ -11,7 +11,7 @@ class AppStrings {
 
   String get appName => 'Luna';
 
-  String get todayMentalStateAnalysis => isZhTw ? '今日心理狀態分析' : "Today's Mental State Analysis";
+  String get todayMentalStateAnalysis => isZhTw ? '今日情緒狀態分析' : "Today's Emotional State Analysis";
 
   String get welcomeTagline =>
       isZhTw ? '越糟的時候\n說得越少' : 'The worse it gets\nthe less it says';
@@ -20,7 +20,7 @@ class AppStrings {
 
   String get disclaimerBody => isZhTw
       ? '本應用提供心理健康支持與自我覺察工具，非醫療診斷或治療。若有立即危險，請立刻撥打 110 或 119。'
-      : 'This app provides mental health support and self-awareness tools. It is not medical diagnosis or treatment. If you are in immediate danger, call your local emergency number right away.';
+      : 'This app provides emotional wellbeing support and self-awareness tools. It is not medical diagnosis or treatment. If you are in immediate danger, call your local emergency number right away.';
 
   String get getStarted => isZhTw ? '開始使用' : 'Get Started';
 

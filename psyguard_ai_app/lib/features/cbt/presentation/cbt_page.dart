@@ -49,7 +49,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
     final prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
     setState(() {
-      _petName = prefs.getString('pet_name') ?? 'Luna';
+      _petName = 'Luna';
     });
   }
 

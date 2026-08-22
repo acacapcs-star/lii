@@ -61,7 +61,7 @@ const List<_Slide> _slides = [
     'AI 讀你的痕跡\n真人接住你',
     'Someone to talk to.\nSomeone to catch you.',
     '給台灣青少年的\n心理健康夥伴 🌙',
-    'A mental-health companion\nbuilt for youth in Taiwan 🌙',
+    'An emotional wellbeing companion\nbuilt for youth in Taiwan 🌙',
   ),
   _Slide(
     '🔉',

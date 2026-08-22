@@ -1203,7 +1203,7 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
   Future<void> _loadPet() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _petName = prefs.getString('pet_name') ?? 'Luna';
+      _petName = 'Luna';
     });
   }
 

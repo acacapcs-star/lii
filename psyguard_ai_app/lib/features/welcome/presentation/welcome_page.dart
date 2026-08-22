@@ -30,7 +30,7 @@ const _pages = <_Page>[
     titleZh: 'lii',
     titleEn: 'lii',
     bodyZh: '給台灣青少年的\n心理健康夥伴',
-    bodyEn: 'A mental health companion\nbuilt for youth in Taiwan',
+    bodyEn: 'An emotional wellbeing companion\nbuilt for youth in Taiwan',
     bg: [Color(0xFF4A7FA5), Color(0xFF2C5282), Color(0xFF1A3558)],
   ),
   _Page(
