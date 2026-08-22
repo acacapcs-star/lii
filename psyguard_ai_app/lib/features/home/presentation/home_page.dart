@@ -701,7 +701,11 @@ class _HomeContentState extends State<_HomeContent> {
             Flexible(
               child: Text(
                 copy.exploreSelf,
-                style: theme.textTheme.titleMedium,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? const Color(0xFFD8DEE6)
+                      : null,
+                ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -778,7 +782,12 @@ class _HomeContentState extends State<_HomeContent> {
         // ── More Functions ───────────────────────────
         Row(
           children: [
-            Text(copy.moreFeatures, style: theme.textTheme.titleMedium),
+            Text(copy.moreFeatures,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? const Color(0xFFD8DEE6)
+                      : null,
+                )),
             const Spacer(),
             // 🥤 你選的那杯飲料（還沒選就不顯示）
             const ChosenDrinkBadge(),
@@ -814,7 +823,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.navExport,
               subtitle: copy.sevenDaySummary,
               icon: Icons.mark_email_read_rounded,
-              color: const Color(0xFF5B7FC4),
+              color: const Color(0xFF4A7FA5),
               route: '/export',
               tooltipTitle: copy.navExport,
               tooltipDescription: copy.isZhTw
@@ -847,7 +856,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '本週人設' : 'Weekly Persona',
               subtitle: copy.isZhTw ? '這週的你是哪隻動物' : 'Your animal this week',
               icon: Icons.pets_rounded,
-              color: const Color(0xFFD4739A),
+              color: const Color(0xFF5FA8B8),
               route: '/weekly-persona',
               tooltipTitle: copy.isZhTw ? '本週人設' : 'Weekly Persona',
               tooltipDescription: copy.isZhTw
@@ -858,7 +867,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '希望盒' : 'Hope Box',
               subtitle: copy.isZhTw ? '撐住你的那些話' : 'Cards that carry you',
               icon: Icons.auto_awesome_rounded,
-              color: const Color(0xFFE08A3C),
+              color: const Color(0xFF6A7FC9),
               route: '/hope-box',
               tooltipTitle: copy.isZhTw ? '希望盒' : 'Hope Box',
               tooltipDescription: copy.isZhTw
