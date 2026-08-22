@@ -38,11 +38,19 @@ class CrystalStore {
   static const _kSessions = 'crystal_sessions';
   static const _kStreak = 'crystal_streak';
   static const _kLastDay = 'crystal_last_day';
+  static const _kDemoAll = 'crystal_demo_unlock_all';
+  static String _kAt(GlassTone t) => 'crystal_at_${t.name}';
 
   static int sessions = 0;
   static int streak = 0;
   static String lastDay = '';
   static bool _loaded = false;
+
+  /// 展示模式：評審現場需要看到六顆，平常關閉。
+  static bool demoUnlockAll = false;
+
+  /// 每顆水晶的解鎖時間。舊資料沒有紀錄的會是 null。
+  static final Map<GlassTone, DateTime> unlockedAt = {};
 
   static Future<void> ensureLoaded() async {
     if (_loaded) return;
@@ -50,6 +58,14 @@ class CrystalStore {
     sessions = p.getInt(_kSessions) ?? 0;
     streak = p.getInt(_kStreak) ?? 0;
     lastDay = p.getString(_kLastDay) ?? '';
+    demoUnlockAll = p.getBool(_kDemoAll) ?? false;
+    for (final r in kCrystalRules) {
+      final raw = p.getString(_kAt(r.tone));
+      if (raw != null) {
+        final d = DateTime.tryParse(raw);
+        if (d != null) unlockedAt[r.tone] = d;
+      }
+    }
     _loaded = true;
   }
 
@@ -72,11 +88,33 @@ class CrystalStore {
     await p.setInt(_kStreak, streak);
     await p.setString(_kLastDay, lastDay);
 
-    return unlocked().where((t) => !before.contains(t)).toList();
+    final fresh = unlocked().where((t) => !before.contains(t)).toList();
+    final now = DateTime.now();
+    for (final t in fresh) {
+      unlockedAt[t] = now;
+      await p.setString(_kAt(t), now.toIso8601String());
+    }
+    return fresh;
+  }
+
+  static Future<void> setDemoUnlockAll(bool on) async {
+    demoUnlockAll = on;
+    final p = await SharedPreferences.getInstance();
+    await p.setBool(_kDemoAll, on);
+  }
+
+  /// 距離解鎖還差多少。已解鎖回傳 null。
+  static ({int done, int need, bool isStreak})? progress(GlassTone t) {
+    if (isUnlocked(t)) return null;
+    final r = kCrystalRules.firstWhere((e) => e.tone == t);
+    if (r.sessions > 0) {
+      return (done: sessions, need: r.sessions, isStreak: false);
+    }
+    return (done: streak, need: r.streak, isStreak: true);
   }
 
   static bool isUnlocked(GlassTone t) {
-    return true; // DEMO 全解鎖
+    if (demoUnlockAll) return true;
     final r = kCrystalRules.firstWhere((e) => e.tone == t);
     if (r.sessions > 0) return sessions >= r.sessions;
     if (r.streak > 0) return streak >= r.streak;

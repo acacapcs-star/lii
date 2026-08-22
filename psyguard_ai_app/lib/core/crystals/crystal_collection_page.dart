@@ -104,6 +104,21 @@ class _CrystalCollectionPageState extends State<CrystalCollectionPage>
     );
   }
 
+  /// 解鎖了顯示日期，還沒解鎖顯示進度。
+  String _subLabel(CrystalRule r, bool got) {
+    if (got) {
+      final at = CrystalStore.unlockedAt[r.tone];
+      if (at == null) return 'Collected';
+      final m = at.month.toString().padLeft(2, '0');
+      final d = at.day.toString().padLeft(2, '0');
+      return 'Collected · ${at.year}-$m-$d';
+    }
+    final p = CrystalStore.progress(r.tone);
+    if (p == null) return r.requirementEn;
+    final unit = p.isStreak ? 'days' : 'sessions';
+    return '${p.done} / ${p.need} $unit';
+  }
+
   Widget _cell(CrystalRule r) {
     final got = CrystalStore.isUnlocked(r.tone);
 
@@ -126,6 +141,14 @@ class _CrystalCollectionPageState extends State<CrystalCollectionPage>
           child: orb,
         ),
       );
+      orb = Stack(
+        alignment: Alignment.center,
+        children: [
+          orb,
+          Icon(Icons.lock_outline_rounded,
+              size: 22, color: _inkSoft.withAlpha(150)),
+        ],
+      );
     }
 
     return GestureDetector(
@@ -145,7 +168,7 @@ class _CrystalCollectionPageState extends State<CrystalCollectionPage>
         ),
         const SizedBox(height: 2),
         Text(
-          got ? 'Collected' : r.requirementEn,
+          _subLabel(r, got),
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 10.5, color: _inkSoft.withAlpha(160)),
         ),
