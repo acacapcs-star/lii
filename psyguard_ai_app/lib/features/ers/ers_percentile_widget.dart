@@ -30,7 +30,7 @@ class ERSPercentileWidget extends ConsumerWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
             color: _riskColor.withValues(alpha: 0.15),
@@ -52,7 +52,7 @@ class ERSPercentileWidget extends ConsumerWidget {
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: _riskColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(24),
                   ),
                   child: FittedBox(
                     fit: BoxFit.scaleDown,

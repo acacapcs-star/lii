@@ -234,7 +234,7 @@ class _NotePageState extends ConsumerState<NotePage> {
     final code = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text(_isZh ? '輸入復原碼' : 'Enter recovery code'),
         content: TextField(
           controller: ctrl,
@@ -287,7 +287,7 @@ class _NotePageState extends ConsumerState<NotePage> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text(_isZh ? '請抄下復原碼' : 'Write down your recovery code'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -341,7 +341,7 @@ class _NotePageState extends ConsumerState<NotePage> {
     final alsoDelete = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text(_isZh ? '匯入 ${incoming.length} 則筆記' : 'Import ${incoming.length} notes'),
         content: Text(
           _isZh ? '要順便從公開日記刪掉嗎？' : 'Also remove them from the public diary?',
@@ -443,7 +443,7 @@ class _NotePageState extends ConsumerState<NotePage> {
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: const Color(0xFFFDECEC),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         children: [
@@ -473,7 +473,7 @@ class _NotePageState extends ConsumerState<NotePage> {
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                       child: _busy
@@ -648,7 +648,7 @@ class _NotePageState extends ConsumerState<NotePage> {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) => Padding(
         padding: const EdgeInsets.all(16),
@@ -675,7 +675,7 @@ class _NotePageState extends ConsumerState<NotePage> {
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: priorityColor(p).withOpacity(selected ? 1.0 : 0.2),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(24),
                       border: Border.all(
                         color: priorityColor(p),
                         width: selected ? 2 : 1,
@@ -897,7 +897,7 @@ class _QuickButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: const Color(0xFF0ABFBC).withOpacity(0.1),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           border: Border.all(color: const Color(0xFF0ABFBC).withOpacity(0.3)),
         ),
         child: Text(label, style: const TextStyle(fontSize: 13, color: Color(0xFF0ABFBC))),

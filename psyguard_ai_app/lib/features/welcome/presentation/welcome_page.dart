@@ -300,7 +300,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
           padding: const EdgeInsets.all(9),
           decoration: BoxDecoration(
             color: c.withValues(alpha: 0.22),
-            borderRadius: BorderRadius.circular(13),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(color: c.withValues(alpha: 0.7), width: 1.5),
           ),
           child: Column(
@@ -351,7 +351,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
           padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 12),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.14),
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(12),
             border:
                 Border.all(color: Colors.white.withValues(alpha: 0.35)),
           ),
@@ -379,7 +379,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
               height: 40,
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.10),
-                borderRadius: BorderRadius.circular(11),
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
             Container(
@@ -398,7 +398,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
           height: 44,
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.22),
-            borderRadius: BorderRadius.circular(11),
+            borderRadius: BorderRadius.circular(8),
             border: Border.all(color: Colors.white.withValues(alpha: 0.45)),
           ),
         ),
@@ -432,7 +432,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
               height: 76,
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.18),
-                borderRadius: BorderRadius.circular(11),
+                borderRadius: BorderRadius.circular(8),
                 border:
                     Border.all(color: Colors.white.withValues(alpha: 0.5)),
               ),

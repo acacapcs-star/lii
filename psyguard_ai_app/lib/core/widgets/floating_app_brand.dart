@@ -51,7 +51,7 @@ class _FloatingAppBrandIconState extends ConsumerState<FloatingAppBrandIcon>
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (ctx) {
         return SafeArea(
           child: SingleChildScrollView(
@@ -80,7 +80,7 @@ class _FloatingAppBrandIconState extends ConsumerState<FloatingAppBrandIcon>
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                         decoration: BoxDecoration(
                           color: selected ? const Color(0xFF0ABFBC).withValues(alpha: 0.15) : Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(24),
                           border: Border.all(
                             color: selected ? const Color(0xFF0ABFBC) : Colors.grey.shade300,
                             width: selected ? 1.5 : 1,

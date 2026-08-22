@@ -276,7 +276,7 @@ class _VoiceWakePageState extends ConsumerState<VoiceWakePage>
   Future<String?> _pickPriority(bool isZh) async {
     return showModalBottomSheet<String>(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (ctx) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),

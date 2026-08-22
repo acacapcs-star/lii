@@ -375,7 +375,7 @@ class _FishVisualLayerState extends ConsumerState<FishVisualLayer>
                           horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: const Color(0xFFFF8F3C),
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.18),
@@ -423,7 +423,7 @@ class _HoopBallPainter extends CustomPainter {
                     FishPondController.swimTopF) +
             14,
       ),
-      const Radius.circular(18),
+      const Radius.circular(16),
     );
     canvas.drawRRect(
         tankRect,

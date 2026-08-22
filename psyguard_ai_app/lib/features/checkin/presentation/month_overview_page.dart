@@ -112,7 +112,7 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
   void _showWeekDetail(bool isZh, int month, int weekIndex, _WeekSummary week) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (ctx) {
         return SafeArea(
           child: Padding(
@@ -207,7 +207,7 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
     final picked = await showModalBottomSheet<int>(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) => SafeArea(
         child: Column(
@@ -377,7 +377,7 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                           decoration: BoxDecoration(
                             color: _bar,
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                           child: Row(
                             children: [

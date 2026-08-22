@@ -305,7 +305,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         backgroundColor: LumiTheme.primary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         textStyle: GoogleFonts.nunitoSans(
                           fontSize: 14,
@@ -329,7 +329,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           color: Colors.black.withValues(alpha: 0.1),
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         textStyle: GoogleFonts.nunitoSans(
                           fontSize: 14,
@@ -432,7 +432,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               backgroundColor: LumiTheme.primary,
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               textStyle: GoogleFonts.nunitoSans(
                                 fontSize: 14,
@@ -780,7 +780,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         foregroundColor: const Color(0xFFB00020),
                         side: const BorderSide(color: Color(0xFFB00020)),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         textStyle: GoogleFonts.nunitoSans(
                           fontSize: 14,
@@ -807,7 +807,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: const Text('🧪 測試加密'),
         content: const Text(
           '這會重設秘密日記的金鑰與密碼。\n\n'
@@ -853,7 +853,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text(allPassed ? '✅ 全部通過 ($passed/$total)' : '❌ 有問題 ($passed/$total)'),
         content: SizedBox(
           width: double.maxFinite,
@@ -1064,7 +1064,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFF0F0F0)),
       ),
       child: child,
@@ -1105,17 +1105,17 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               vertical: 14,
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
                 color: Colors.black.withValues(alpha: 0.06),
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: LumiTheme.primary),
             ),
           ),

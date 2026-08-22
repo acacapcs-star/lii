@@ -181,7 +181,7 @@ class _CardStudioPageState extends ConsumerState<CardStudioPage> {
             child: LayoutBuilder(builder: (context, cons) {
               final s = cons.maxWidth;
               return ClipRRect(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(24),
                 child: GestureDetector(
                   onTap: () => setState(() => _selected = null),
                   child: Stack(
@@ -317,7 +317,7 @@ class _CardStudioPageState extends ConsumerState<CardStudioPage> {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: const Color(0xFFE2E6EF)),
                   ),
                   child: Text(_stickerPalette[i],

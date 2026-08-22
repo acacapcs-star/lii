@@ -501,7 +501,7 @@ class _HomeContentState extends State<_HomeContent> {
           showDialog(
             context: context,
             builder: (ctx) => AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -985,7 +985,7 @@ class _InteractiveCardState extends State<_InteractiveCard>
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: bgColor,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(24),
             border: Border.all(color: widget.color.withValues(alpha: 0.22)),
             boxShadow: [
               BoxShadow(
@@ -1263,7 +1263,7 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
                             color: const Color(0xFF0ABFBC).withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(24),
                           ),
                           child: Consumer(builder: (context, ref, _) {
                             final zh = AppStrings.of(ref.watch(appLanguageControllerProvider)).isZhTw;
@@ -1339,7 +1339,7 @@ class _SunMoonToggle extends ConsumerWidget {
   void _showColorPicker(BuildContext context, WidgetRef ref, bool isDark) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (ctx) {
         final options = isDark
             ? [
@@ -1525,7 +1525,7 @@ class _CornerPenguinState extends ConsumerState<_CornerPenguin>
                 ? AspectRatio(
                     aspectRatio: 1.15,
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(24),
                       child: Image.asset(
                         'assets/images/igloo.png',
                         fit: BoxFit.cover,
@@ -1576,7 +1576,7 @@ class _CornerPenguinState extends ConsumerState<_CornerPenguin>
             : AspectRatio(
                 aspectRatio: 1.15,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(24),
                   child: Image.asset(
                     'assets/images/mood_fox_lamp.jpg',
                     fit: BoxFit.cover,
@@ -1802,7 +1802,7 @@ class _NyDragonsCornerState extends State<_NyDragonsCorner>
           );
         },
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           child: Image.asset(
             'assets/images/mood_ny_dragons.jpg',
             fit: BoxFit.contain,
@@ -1864,7 +1864,7 @@ class _EasterBunnyCornerState extends State<_EasterBunnyCorner>
           );
         },
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           child: Image.asset(
             'assets/images/mood_easter_bunny.jpg',
             fit: BoxFit.contain,
@@ -1953,7 +1953,7 @@ class _DailyCableCardState extends State<_DailyCableCard> {
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(24),
         color: img == null
             ? kBookmarkBgColors[ci.clamp(0, kBookmarkBgColors.length - 1)]
             : null,
@@ -1964,7 +1964,7 @@ class _DailyCableCardState extends State<_DailyCableCard> {
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         child: Stack(
           fit: StackFit.expand,
           children: [

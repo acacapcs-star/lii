@@ -241,7 +241,7 @@ class _HoopCornerState extends State<HoopCorner>
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(24),
       child: LayoutBuilder(builder: (context, constraints) {
         final size = Size(constraints.maxWidth, constraints.maxHeight);
         _layout(size);

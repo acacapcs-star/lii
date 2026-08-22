@@ -110,7 +110,7 @@ class _ConsentPageState extends ConsumerState<ConsentPage> {
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(18),
+                          borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: const Color(0xFFF0F0F0)),
                         ),
                         child: Row(

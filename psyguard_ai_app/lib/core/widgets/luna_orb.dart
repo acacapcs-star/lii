@@ -423,7 +423,7 @@ class _OrbPainter extends CustomPainter {
       final h = s[2] + s[3] * 1.4 * b;
       c.drawRRect(
         RRect.fromRectAndRadius(
-            Rect.fromLTWH(s[0], 102 - h, s[1], h), const Radius.circular(9)),
+            Rect.fromLTWH(s[0], 102 - h, s[1], h), const Radius.circular(8)),
         Paint()..color = Color.fromRGBO(255, 255, 255, s[4]),
       );
     }

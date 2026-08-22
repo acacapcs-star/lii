@@ -424,7 +424,7 @@ class _OrbPainter extends CustomPainter {
       final h = s[2] + s[3] * amplitude * breath;
       final r = RRect.fromRectAndRadius(
         Rect.fromLTWH(s[0], 102 - h, s[1], h),
-        const Radius.circular(9),
+        const Radius.circular(8),
       );
       c.drawRRect(r, Paint()..color = Color.fromRGBO(255, 255, 255, s[4]));
     }

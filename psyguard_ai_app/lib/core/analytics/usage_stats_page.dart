@@ -109,7 +109,7 @@ class _UsageStatsPageState extends State<UsageStatsPage> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFE9ECF4)),
       ),
       child: Row(

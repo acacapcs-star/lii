@@ -120,7 +120,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                       color: color.withValues(alpha: 0.10),
-                      borderRadius: BorderRadius.circular(20)),
+                      borderRadius: BorderRadius.circular(24)),
                   child: Row(children: [
                     Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

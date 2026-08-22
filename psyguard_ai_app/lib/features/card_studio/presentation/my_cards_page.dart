@@ -192,7 +192,7 @@ class _MyCardsPageState extends ConsumerState<MyCardsPage> {
             child: LayoutBuilder(builder: (context, cons) {
               final s = cons.maxWidth;
               return ClipRRect(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(16),
                 child: Stack(
                   children: [
                     Positioned.fill(

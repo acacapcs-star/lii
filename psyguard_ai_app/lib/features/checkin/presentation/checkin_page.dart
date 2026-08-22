@@ -166,7 +166,7 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -392,7 +392,7 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(icon, color: color, size: 22),
               ),

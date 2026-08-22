@@ -139,7 +139,7 @@ class _OnboardingSheetState extends State<_OnboardingSheet> {
         padding: const EdgeInsets.all(24),
         child: Material(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(24),
           child: SizedBox(
             width: double.infinity,
             height: 470,
@@ -232,7 +232,7 @@ class _OnboardingSheetState extends State<_OnboardingSheet> {
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14)),
+                            borderRadius: BorderRadius.circular(12)),
                       ),
                       onPressed: () {
                         if (last) {

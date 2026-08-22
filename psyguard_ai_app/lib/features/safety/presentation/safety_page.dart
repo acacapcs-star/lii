@@ -162,7 +162,7 @@ class SafetyPage extends ConsumerWidget {
                   gradient: const LinearGradient(
                     colors: [Color(0xFFF5576C), Color(0xFFFF8177)],
                   ),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFFF5576C).withValues(alpha: 0.3),
@@ -298,7 +298,7 @@ class SafetyPage extends ConsumerWidget {
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                         child: Text(copy.copy),
@@ -356,7 +356,7 @@ class SafetyPage extends ConsumerWidget {
                 );
               }
             },
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(24),
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: LumiTheme.softCard,
@@ -373,7 +373,7 @@ class SafetyPage extends ConsumerWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: LumiTheme.primary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
                     Icons.support_agent_rounded,

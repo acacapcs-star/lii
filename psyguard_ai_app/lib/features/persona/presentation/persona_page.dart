@@ -155,7 +155,7 @@ class _WeeklyPersonaPageState extends ConsumerState<WeeklyPersonaPage> {
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.25),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(info.desc,
                       textAlign: TextAlign.center,

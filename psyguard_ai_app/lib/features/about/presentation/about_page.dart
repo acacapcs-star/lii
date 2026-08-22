@@ -61,7 +61,7 @@ class AboutPage extends ConsumerWidget {
                 height: 68,
                 decoration: BoxDecoration(
                   color: teal.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(24),
                 ),
                 child: const Icon(Icons.favorite_rounded, color: teal, size: 36),
               ),

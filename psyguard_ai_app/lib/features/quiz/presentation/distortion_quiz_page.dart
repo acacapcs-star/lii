@@ -144,7 +144,7 @@ class _DistortionQuizPageState extends ConsumerState<DistortionQuizPage> {
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.white,
           side: const BorderSide(color: Color(0xFFDDE3EC)),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         child: Text(label,
             style: const TextStyle(
@@ -177,7 +177,7 @@ class _DistortionQuizPageState extends ConsumerState<DistortionQuizPage> {
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(color: const Color(0xFFE3E8EF)),
             ),
             child: Column(

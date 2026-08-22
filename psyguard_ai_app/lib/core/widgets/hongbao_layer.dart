@@ -136,7 +136,7 @@ class _HongbaoEnvelopeState extends ConsumerState<HongbaoEnvelope>
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: const Color(0xFFC62828),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   '＄$_amount',

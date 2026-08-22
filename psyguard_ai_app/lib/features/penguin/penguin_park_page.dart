@@ -252,7 +252,7 @@ class _PenguinParkPageState extends ConsumerState<PenguinParkPage>
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: const Color(0xFF0ABFBC).withOpacity(0.2),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(24),
               border: Border.all(color: const Color(0xFF0ABFBC)),
             ),
             child: Text('⭐ $_xp XP',
@@ -329,7 +329,7 @@ class _PenguinParkPageState extends ConsumerState<PenguinParkPage>
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.85),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(24),
                   boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8)],
                 ),
                 child: Row(
@@ -423,7 +423,7 @@ class _ActionBtn extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.08),

@@ -153,7 +153,7 @@ class TrendsPage extends ConsumerWidget {
                         backgroundColor: LumiTheme.surface,
                         selectedColor: LumiTheme.primary,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(24),
                           side: BorderSide(
                             color: range == days
                                 ? Colors.transparent
@@ -411,7 +411,7 @@ class TrendsPage extends ConsumerWidget {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(icon, color: color, size: 20),
               ),
@@ -578,7 +578,7 @@ class TrendsPage extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
             color: on ? color.withValues(alpha: 0.14) : Colors.grey.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(24),
             border: Border.all(
               color: on ? color : Colors.grey.withValues(alpha: 0.3),
               width: 1.4,
@@ -706,7 +706,7 @@ class TrendsPage extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
             color: on ? LumiTheme.primary : Colors.transparent,
-            borderRadius: BorderRadius.circular(9),
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
             children: [

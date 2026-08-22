@@ -222,7 +222,7 @@ class _SecretUnlockScreenState extends State<SecretUnlockScreen> {
     final code = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text(_isZh ? '輸入復原碼' : 'Enter recovery code'),
         content: TextField(controller: ctrl, autofocus: true),
         actions: [
@@ -260,7 +260,7 @@ class _SecretUnlockScreenState extends State<SecretUnlockScreen> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text(_isZh ? '請抄下復原碼' : 'Write down your recovery code'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -364,7 +364,7 @@ class _SecretUnlockScreenState extends State<SecretUnlockScreen> {
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                       child: _busy

@@ -255,7 +255,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 color: const Color(0xFFFFF3E0),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(24),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -282,7 +282,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(color: const Color(0xFFB2EBE9)),
             ),
             child: Row(
@@ -308,7 +308,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF0F7FF),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -403,7 +403,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
               filled: true,
               fillColor: Colors.white,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
               ),
             ),
@@ -421,7 +421,7 @@ class _CbtPageState extends ConsumerState<CbtPage> {
               filled: true,
               fillColor: Colors.white,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
               ),
             ),

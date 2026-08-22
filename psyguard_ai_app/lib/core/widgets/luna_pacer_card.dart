@@ -109,7 +109,7 @@ class _LunaPacerCardState extends State<LunaPacerCard>
           padding: const EdgeInsets.fromLTRB(22, 24, 22, 20),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(24),
             boxShadow: const [
               BoxShadow(
                 color: Color(0x1A1B2440),
@@ -170,7 +170,7 @@ class _LunaPacerCardState extends State<LunaPacerCard>
                   child: Container(
                     decoration: BoxDecoration(
                       color: const Color(0xFFEDEAE3),
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(16),
                       border: _photo == null
                           ? Border.all(color: const Color(0xFFD6D1C6), width: 1.5)
                           : null,

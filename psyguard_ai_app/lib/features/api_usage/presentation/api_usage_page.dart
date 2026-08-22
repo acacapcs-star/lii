@@ -75,7 +75,7 @@ class _ApiUsagePageState extends ConsumerState<ApiUsagePage> {
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
             color: c.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(18)),
+            borderRadius: BorderRadius.circular(16)),
         child: Row(children: [
           Icon(icon, color: c, size: 26),
           const SizedBox(width: 14),
@@ -118,7 +118,7 @@ class _ApiUsagePageState extends ConsumerState<ApiUsagePage> {
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
                       color: const Color(0xFFF3F7FC),
-                      borderRadius: BorderRadius.circular(18)),
+                      borderRadius: BorderRadius.circular(16)),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

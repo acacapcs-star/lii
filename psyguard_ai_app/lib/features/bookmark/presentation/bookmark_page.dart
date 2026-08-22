@@ -300,7 +300,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
           padding: const EdgeInsets.symmetric(vertical: 9),
           decoration: BoxDecoration(
             color: selected ? const Color(0xFF7E8FE8) : Colors.white,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(24),
             boxShadow: const [
               BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
             ],
@@ -491,7 +491,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
           child: Container(
             margin: const EdgeInsets.only(top: 2),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(12),
               color: bg,
               image: b.hasCustomImage
                   ? DecorationImage(
@@ -512,7 +512,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
             ),
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(11),
+                borderRadius: BorderRadius.circular(8),
                 gradient: useImage
                     ? LinearGradient(
                         begin: Alignment.topCenter,
@@ -886,7 +886,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
                           width: 48,
                           height: 48,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(8),
                             color: const Color(0xFFEFF1FA),
                             border: Border.all(
                               color: customImagePath.isNotEmpty
@@ -919,7 +919,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
                             width: 48,
                             height: 48,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(8),
                               image: DecorationImage(
                                 image: AssetImage(_bgImages[i]),
                                 fit: BoxFit.cover,
@@ -1028,7 +1028,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
               padding: const EdgeInsets.fromLTRB(18, 14, 18, 14),
               decoration: BoxDecoration(
                 color: color,
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(16),
                 boxShadow: const [
                   BoxShadow(
                       color: Colors.black26, blurRadius: 8, offset: Offset(0, 3)),
@@ -1080,7 +1080,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         content: Text(zh ? '刪除這座觀景台？' : 'Delete this deck?'),
         actions: [
           TextButton(
@@ -1275,7 +1275,7 @@ class _BookmarkPageState extends ConsumerState<BookmarkPage> {
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14)),
+              borderRadius: BorderRadius.circular(12)),
         ),
         onPressed: onTap,
         child: Text(label,
@@ -1437,7 +1437,7 @@ class _QuoteDarkOverlay extends StatelessWidget {
             child: IgnorePointer(
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(16),
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -1564,7 +1564,7 @@ class _PacerCardViewState extends State<_PacerCardView> {
         .last;
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(24),
         color: img == null
             ? widget.bgColors[b.colorIndex.clamp(0, widget.bgColors.length - 1)]
             : null,
@@ -1575,7 +1575,7 @@ class _PacerCardViewState extends State<_PacerCardView> {
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         child: Stack(
           fit: StackFit.expand,
           children: [

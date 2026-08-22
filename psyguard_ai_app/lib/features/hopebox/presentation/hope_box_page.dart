@@ -181,7 +181,7 @@ class _HopeBoxPageState extends ConsumerState<HopeBoxPage> {
                     backgroundColor: const Color(0xFFFFD166),
                     foregroundColor: const Color(0xFF0D1426),
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
               ),
@@ -214,7 +214,7 @@ class _HopeBoxPageState extends ConsumerState<HopeBoxPage> {
     required String text,
   }) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(26),
+      borderRadius: BorderRadius.circular(24),
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -263,7 +263,7 @@ class _HopeBoxPageState extends ConsumerState<HopeBoxPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.25),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(24),
                     ),
                     child: Text(isZh ? '👆 點一下翻開' : '👆 Tap to reveal',
                         style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),

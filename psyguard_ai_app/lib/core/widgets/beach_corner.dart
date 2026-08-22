@@ -169,7 +169,7 @@ class _BeachCornerState extends State<BeachCorner>
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(24),
       child: LayoutBuilder(builder: (context, constraints) {
         final size = Size(constraints.maxWidth, constraints.maxHeight);
         _layout(size);
@@ -413,7 +413,7 @@ class _SummerBeachCornerState extends State<SummerBeachCorner>
           );
         },
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           child: Image.asset(
             _summerCats[_summerCatIndex],
             fit: BoxFit.contain,
@@ -513,12 +513,12 @@ class _DrinkBarCornerState extends ConsumerState<DrinkBarCorner>
     final selected = ref.watch(selectedDrinkProvider);
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(24),
       child: Container(
         decoration: BoxDecoration(
           color: const Color(0xFFFFFBEF),
           border: Border.all(color: const Color(0xFFF2E3B3)),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
         ),
         padding: EdgeInsets.zero,
         child: Stack(
@@ -587,7 +587,7 @@ class DrinkBarStrip extends ConsumerWidget {
               decoration: BoxDecoration(
                 color:
                     selected == i ? const Color(0xFFFFE082) : Colors.transparent,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: selected == i
                       ? const Color(0xFFF5B942)

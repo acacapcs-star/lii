@@ -207,7 +207,7 @@ class _PetReminderBubbleState extends State<PetReminderBubble> {
                         const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: const Color(0xFFB2EBE9)),
                       boxShadow: const [
                         BoxShadow(

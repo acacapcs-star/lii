@@ -309,7 +309,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           backgroundColor: const Color(0xFFFFF8E1),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -386,7 +386,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           context: context,
           barrierDismissible: false,
           builder: (ctx) => AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
             backgroundColor: const Color(0xFFFFEBEE),
             content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -533,7 +533,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
         return SafeArea(
@@ -586,7 +586,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     child: Text(copy.goToSafety),
@@ -602,7 +602,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       foregroundColor: LumiTheme.textPrimary,
                       side: const BorderSide(color: Color(0xFFE5E7EB)),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     child: Text(copy.keepChatting),
@@ -741,8 +741,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         decoration: BoxDecoration(
           color: isUser ? LumiTheme.primary : Colors.white,
           borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(22),
-            topRight: const Radius.circular(22),
+            topLeft: const Radius.circular(24),
+            topRight: const Radius.circular(24),
             bottomLeft: Radius.circular(isUser ? 22 : 6),
             bottomRight: Radius.circular(isUser ? 6 : 22),
           ),
@@ -866,7 +866,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 color: _isListening
                     ? LumiTheme.error.withValues(alpha: 0.1)
                     : LumiTheme.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 _isListening ? Icons.mic_off_rounded : Icons.mic_rounded,
@@ -884,7 +884,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
                 color: LumiTheme.background,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(24),
               ),
               child: TextField(
                 controller: _textController,
@@ -914,7 +914,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: LumiTheme.primary,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
                     color: LumiTheme.primary.withValues(alpha: 0.3),

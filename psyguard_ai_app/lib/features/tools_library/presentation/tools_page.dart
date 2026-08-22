@@ -280,7 +280,7 @@ class _ToolCard extends ConsumerWidget {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: tool.color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(tool.icon, color: tool.color, size: 24),
               ),

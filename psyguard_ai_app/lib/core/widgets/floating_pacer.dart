@@ -222,7 +222,7 @@ class _PacerHostState extends State<_PacerHost> {
           padding: EdgeInsets.symmetric(horizontal: 12, vertical: open ? 10 : 7),
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.92),
-            borderRadius: BorderRadius.circular(11),
+            borderRadius: BorderRadius.circular(8),
           ),
           child: open
               ? Column(
