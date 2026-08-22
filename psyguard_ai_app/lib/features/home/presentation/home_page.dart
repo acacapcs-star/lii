@@ -702,7 +702,7 @@ class _HomeContentState extends State<_HomeContent> {
               child: Text(
                 copy.exploreSelf,
                 style: theme.textTheme.titleMedium?.copyWith(
-                  color: Theme.of(context).brightness == Brightness.dark
+                  color: _bgIsDark(context)
                       ? const Color(0xFFD8DEE6)
                       : null,
                 ),
@@ -784,7 +784,7 @@ class _HomeContentState extends State<_HomeContent> {
           children: [
             Text(copy.moreFeatures,
                 style: theme.textTheme.titleMedium?.copyWith(
-                  color: Theme.of(context).brightness == Brightness.dark
+                  color: _bgIsDark(context)
                       ? const Color(0xFFD8DEE6)
                       : null,
                 )),
@@ -925,6 +925,11 @@ class _HomeContentState extends State<_HomeContent> {
 
 /// Interactive card with micro-zoom press effect, long-press tooltip,
 /// and dynamic bold text.
+bool _bgIsDark(BuildContext context) {
+  final container = ProviderScope.containerOf(context, listen: false);
+  return container.read(backgroundThemeProvider).mode == BgMode.dark;
+}
+
 class _InteractiveCard extends StatefulWidget {
   const _InteractiveCard({
     required this.title,
@@ -961,7 +966,7 @@ class _InteractiveCardState extends State<_InteractiveCard>
     // 白色打底 + 8% 主題色 → 先合成成「不透明」的淡彩白。
     // 關鍵是不透明：深色模式時深藍頁面就透不上來，
     // 卡片永遠維持亮色版的白底淡彩，深色文字才看得清楚。
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = _bgIsDark(context);
     final bgColor = Color.alphaBlend(
       widget.color.withValues(alpha: 0.0),
       Colors.white,
