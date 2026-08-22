@@ -965,11 +965,13 @@ class _InteractiveCardState extends State<_InteractiveCard>
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           borderRadius: BorderRadius.circular(24),
+          splashFactory: _FastSplash.factory,
           splashColor: widget.color.withValues(alpha: 0.3),
           highlightColor: widget.color.withValues(alpha: 0.06),
-          onTap: () {
+          onTap: () async {
             HapticFeedback.lightImpact();
-            context.push(widget.route);
+            await Future.delayed(const Duration(milliseconds: 280));
+            if (mounted) context.push(widget.route);
           },
           onLongPress: () {
             HapticFeedback.mediumImpact();
@@ -1403,13 +1405,13 @@ class _SunMoonToggle extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             AnimatedOpacity(
-              duration: const Duration(milliseconds: 250),
+              duration: const Duration(milliseconds: 280),
               opacity: isDark ? 0.25 : 1.0,
               child: const Icon(Icons.wb_sunny_rounded, size: 20, color: Color(0xFFF5A623)),
             ),
             const SizedBox(width: 4),
             AnimatedOpacity(
-              duration: const Duration(milliseconds: 250),
+              duration: const Duration(milliseconds: 280),
               opacity: isDark ? 1.0 : 0.25,
               child: const Icon(Icons.nightlight_round, size: 18, color: Color(0xFFC8E8FF)),
             ),
@@ -1604,7 +1606,7 @@ class _OrnamentCatCornerState extends State<_OrnamentCatCorner>
     super.initState();
     _swing = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2600),
+      duration: const Duration(milliseconds: 2800),
     )..repeat(reverse: true);
     _jingle = AnimationController(
       vsync: this,
@@ -2027,6 +2029,88 @@ class _DailyCableCardState extends State<_DailyCableCard> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// 320ms 的漣漪 — 比 Flutter 預設俐落，看得到但不拖。
+class _FastSplash extends InteractiveInkFeature {
+  _FastSplash({
+    required super.controller,
+    required super.referenceBox,
+    required Offset position,
+    required super.color,
+    required double radius,
+    super.onRemoved,
+  })  : _position = position,
+        _maxRadius = radius {
+    _ctrl = AnimationController(
+      duration: const Duration(milliseconds: 320),
+      vsync: controller.vsync,
+    )
+      ..addListener(controller.markNeedsPaint)
+      ..addStatusListener((st) {
+        if (st == AnimationStatus.completed) dispose();
+      })
+      ..forward();
+    _r = Tween<double>(begin: 0, end: _maxRadius).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeOutQuart),
+    );
+    _a = Tween<double>(begin: 1, end: 0).animate(
+      CurvedAnimation(parent: _ctrl, curve: const Interval(0.45, 1.0)),
+    );
+    controller.addInkFeature(this);
+  }
+
+  final Offset _position;
+  final double _maxRadius;
+  late final AnimationController _ctrl;
+  late final Animation<double> _r;
+  late final Animation<double> _a;
+
+  static const InteractiveInkFeatureFactory factory = _FastSplashFactory();
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  void paintFeature(Canvas canvas, Matrix4 transform) {
+    final paint = Paint()..color = color.withValues(alpha: color.a * _a.value);
+    canvas.save();
+    canvas.transform(transform.storage);
+    canvas.drawCircle(_position, _r.value, paint);
+    canvas.restore();
+  }
+}
+
+class _FastSplashFactory extends InteractiveInkFeatureFactory {
+  const _FastSplashFactory();
+
+  @override
+  InteractiveInkFeature create({
+    required MaterialInkController controller,
+    required RenderBox referenceBox,
+    required Offset position,
+    required Color color,
+    required TextDirection textDirection,
+    bool containedInkWell = false,
+    RectCallback? rectCallback,
+    BorderRadius? borderRadius,
+    ShapeBorder? customBorder,
+    double? radius,
+    VoidCallback? onRemoved,
+  }) {
+    final size = referenceBox.size;
+    return _FastSplash(
+      controller: controller,
+      referenceBox: referenceBox,
+      position: position,
+      color: color,
+      radius: radius ?? (size.width + size.height) / 2,
+      onRemoved: onRemoved,
     );
   }
 }
