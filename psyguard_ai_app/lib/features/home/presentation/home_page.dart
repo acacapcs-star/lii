@@ -1682,7 +1682,7 @@ class _OrnamentCatCornerState extends State<_OrnamentCatCorner>
         HapticFeedback.lightImpact();
         _jingle.forward(from: 0); // 點貓或球，吊飾都會叮一下
       },
-      child: Column(
+      child: Row(
         children: [
           // 貓貓球（加大版），只有吊飾在搖擺
           Expanded(
@@ -1701,7 +1701,7 @@ class _OrnamentCatCornerState extends State<_OrnamentCatCorner>
                 );
               },
               child: Transform.scale(
-                scale: 1.50,
+                scale: 0.9,
                 alignment: Alignment.topCenter,
                 child: Image.asset(
                   'assets/images/mood_ornament_cat.png',
@@ -1713,15 +1713,15 @@ class _OrnamentCatCornerState extends State<_OrnamentCatCorner>
               ),
             ),
           ),
-          const SizedBox(height: 8), // 貓和毛球分開一點
+          const SizedBox(width: 0), // 貓和毛球分開一點
           // 下面坐著橘貓，抬頭盯著貓貓球（放大並往下坐一點）
           Expanded(
             flex: 8,
             child: Transform.translate(
               // 數字越大貓咪越往下；超過 30 左右會畫出卡片外
-              offset: const Offset(0, 28),
+              offset: const Offset(-26, 0),
               child: Transform.scale(
-                scale: 1.55,
+                scale: 0.9,
                 alignment: Alignment.bottomCenter,
                 child: Image.asset(
                   'assets/images/mood_xmas_cat.png',
