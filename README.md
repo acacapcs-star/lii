@@ -539,25 +539,24 @@ controller, playing once per call.
 | Sleep Log | Sleep Duration, Difficulty Falling Asleep, Bedtime and Wake Time. History page included |
 | Trends | 7/14/30-day slider, personal-vs-group comparison, research baseline |
 | Calendar | Annual overview, red and amber items grouped by week. **Swipe left for the locked secret calendar** |
+| Silence check | After three days without a record, the next time the student opens lii it asks how they are and opens the check-in sliders. No push notification, no streak, no day count. Ignored, it disappears in eight seconds |
 
 ### Practice
 
 | Page | Content |
 |---|---|
-| AI Companion | Text conversation with Luna, with context memory and summarisation of older messages |
+| Talk it out | Text conversation with context memory and summarisation of older messages |
 | Thought Coach | Five-step CBT practice guided by the pet, **with a mood rating before and after** |
 | Thinking Trap Quiz | 12 questions (two per distortion), with results, explanation and practice suggestions |
 | Toolbox | Toolbox, four tools: Self-dialogue Card, 4-7-8 Breathing, 5-4-3-2-1 Grounding, Emotion Dictionary; with practice history |
 
-### Companions
+### More features
 
 | Page | Content |
 |---|---|
 | Hope Box | 8 situations (breathe, low day, not alone, rest, be kind, late night, you got this, mine), 35 cards. Tap to flip, swipe to change, ♡ to favourite, write your own. Chinese and English kept strictly separate |
 | My Pacers | Pacer Lift: quotes as cable cars tagged with who said them, plus a viewing-platform achievements tab |
 | Weekly Persona | One of six animals (otter, capybara, turtle, squirrel, bear, butterfly) computed from that week's actual mood / stress / energy records. **No quiz to fill in** |
-| Luna Park | Pet park: XP, unlockable skins, joke Q&A, feeding interactions |
-| My Pet | Choose and name a companion (otter / capybara) |
 
 The home screen also carries a draggable Luna Pacer orb (night sky on one side, coloured glass on the other, turned by swiping) and the crystal collection: six crystals — ice from the start, sea at 3 breathing sessions, amethyst at 7, amber at 14, moss at a 3-day streak, dawn at 7, with a hint showing how far the next one is.
 
@@ -580,7 +579,7 @@ The home screen also carries a draggable Luna Pacer orb (night sky on one side, 
 
 ### Home screen
 
-A greeting with a light/dark toggle, four swipeable status cards (the first showing today's well-being), then two card sections: **Explore Yourself** (Check-in, Well-being Trends, AI Companion, Sleep Log, Year Overview, My Quote Cards) and **More Features** (Toolbox, Export Report, Thought Coach, Thinking Trap Quiz, Weekly Persona, Hope Box, My Pacers, Luna Park, Hey Luna).
+A greeting with a light/dark toggle, four swipeable status cards (the first showing today's well-being), then two card sections: **Explore Yourself** (Check-in, Trends, Talk it out, Sleep Log, Year Overview, My Quote Cards) and **Tools** (Toolbox, Export, Thought Coach, Thinking Traps, Weekly Persona, Hope Box, My Pacers, Hey Luna).
 
 ### Settings
 
@@ -799,13 +798,9 @@ lii/
             │   └── my_cards_store.dart
             ├── persona/presentation/
             │   └── persona_page.dart           6 animals · no quiz
-            ├── penguin/
-            │   ├── penguin_park_page.dart
-            │   └── joke_data.dart
             ├── welcome/presentation/
             │   ├── welcome_page.dart
-            │   ├── consent_page.dart           granular consent
-            │   └── pet_selection_page.dart
+            │   └── consent_page.dart           granular consent
             ├── onboarding/
             │   └── onboarding_guide.dart       4 cards · shown once
             ├── settings/presentation/

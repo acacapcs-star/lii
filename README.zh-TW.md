@@ -391,20 +391,18 @@ SecretSwipeShell(
 
 | 頁面 | 內容 |
 |---|---|
-| AI Companion | Luna 文字對話,含上下文記憶與舊訊息壓縮摘要 |
+| Talk it out · 說出來 | 文字對話,含上下文記憶與舊訊息壓縮摘要 |
 | Thought Coach | 5 步驟 CBT 練習,寵物引導,**練習前後各評一次情緒** |
 | Thinking Trap Quiz | 12 題測驗(6 種認知扭曲各 2 題),附結果說明與練習建議 |
 | Toolbox | 心理工具箱,四個工具:自我對話卡、4-7-8 呼吸、5-4-3-2-1 著地、情緒詞彙庫;含練習紀錄 |
 
-### Companions · 陪伴
+### 其他功能
 
 | 頁面 | 內容 |
 |---|---|
 | Hope Box | 8 種情境(深呼吸、低落、不孤單、休息、對自己好、深夜、你可以的、我的),35 張卡。點一下翻面、左右滑換卡、♡ 收藏、可自己寫。中英嚴格分開,不混語 |
 | My Pacers | Pacer Lift:語錄纜車(標記誰說的)＋觀景台成就里程碑 |
 | Weekly Persona | 依當週實際的心情/壓力/活力記錄自動算出六隻動物之一(水獺、水豚、烏龜、松鼠、熊、蝴蝶)。**不用做題** |
-| Luna Park | 寵物樂園:XP 累積、造型解鎖、笑話問答、餵食互動 |
-| My Pet | 夥伴選擇與命名(水獺 / 水豚) |
 
 首頁另有可拖曳的 Luna Pacer 浮球(夜空與玻璃兩面,可左右滑動轉面),以及水晶收藏:6 顆,ice 起始、sea 3 次呼吸、amethyst 7 次、amber 14 次、moss 連續 3 天、dawn 連續 7 天,系統會提示下一顆還差多少。
 
@@ -427,7 +425,7 @@ SecretSwipeShell(
 
 ### 首頁
 
-問候語與明暗切換、四張可左右翻的狀態卡(首張為當日 well-being),接著兩區卡片:**Explore Yourself**(Check-in、Well-being Trends、AI Companion、Sleep Log、Year Overview、My Quote Cards)與 **More Features**(Toolbox、Export Report、Thought Coach、Thinking Trap Quiz、Weekly Persona、Hope Box、My Pacers、Luna Park、Hey Luna)。
+問候語與明暗切換、四張可左右翻的狀態卡(首張為當日 well-being),接著兩區卡片:**Explore Yourself · 探索自己**(Check-in、Trends、Talk it out、Sleep Log、Year Overview、My Quote Cards)與 **Tools · 工具**(Toolbox、Export、Thought Coach、Thinking Traps、Weekly Persona、Hope Box、My Pacers、Hey Luna)。
 
 ### 設定頁
 
@@ -638,13 +636,9 @@ lii/
             │   └── my_cards_store.dart
             ├── persona/presentation/
             │   └── persona_page.dart           6 隻動物 · 不用做題
-            ├── penguin/
-            │   ├── penguin_park_page.dart
-            │   └── joke_data.dart
             ├── welcome/presentation/
             │   ├── welcome_page.dart
-            │   ├── consent_page.dart           分項授權
-            │   └── pet_selection_page.dart
+            │   └── consent_page.dart           分項授權
             ├── onboarding/
             │   └── onboarding_guide.dart       4 張卡 · 只跳一次
             ├── settings/presentation/
