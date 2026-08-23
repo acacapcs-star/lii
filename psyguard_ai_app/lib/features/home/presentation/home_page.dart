@@ -749,6 +749,10 @@ class _HomeContentState extends State<_HomeContent> {
                 icon: Icons.nightlight_round,
                 color: const Color(0xFF4A7FA5),
                 route: '/sleep',
+                tooltipTitle: copy.navSleep,
+                tooltipDescription: copy.isZhTw
+                    ? '看見每晚的睡眠變化，慢慢找回適合自己的作息節奏。'
+                    : 'Track nightly sleep changes and rebuild a rhythm that fits you.',
               ),
               _InteractiveCard(
                 title: copy.isZhTw ? '心晴筆記' : 'Check-in',
@@ -756,6 +760,10 @@ class _HomeContentState extends State<_HomeContent> {
                 icon: Icons.edit_note_rounded,
                 color: const Color(0xFF4A7FA5),
                 route: '/checkin',
+                tooltipTitle: copy.isZhTw ? '心晴筆記' : 'Check-in',
+                tooltipDescription: copy.isZhTw
+                    ? '把心裡的感受寫下來，讓自己慢慢看見、慢慢理解。'
+                    : 'Write down what you feel so you can see and understand it more gently.',
               ),
               _InteractiveCard(
                 title: copy.isZhTw ? '聊聊' : 'Talk it out',
@@ -763,6 +771,10 @@ class _HomeContentState extends State<_HomeContent> {
                 icon: Icons.forum_outlined,
                 color: const Color(0xFF4A7FA5),
                 route: '/chat',
+                tooltipTitle: copy.isZhTw ? '聊聊' : 'Talk it out',
+                tooltipDescription: copy.isZhTw
+                    ? '有些時候，你只需要被聽見。'
+                    : 'Sometimes you just need to be heard.',
               ),
               _InteractiveCard(
                 title: copy.isZhTw ? '隨手說' : 'Quick voice',
@@ -770,6 +782,10 @@ class _HomeContentState extends State<_HomeContent> {
                 icon: Icons.mic_rounded,
                 color: const Color(0xFF4A7FA5),
                 route: '/voice',
+                tooltipTitle: copy.isZhTw ? '隨手說' : 'Quick voice',
+                tooltipDescription: copy.isZhTw
+                    ? '說一句就好，語速和停頓會進到今天的狀態。'
+                    : 'One line is enough.',
               ),
             ],
           ),
@@ -1027,7 +1043,7 @@ class _InteractiveCardState extends State<_InteractiveCard>
                   height: 1.15,
                 ),
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                softWrap: true,
               ),
               const SizedBox(height: 2),
               Text(
@@ -1037,7 +1053,7 @@ class _InteractiveCardState extends State<_InteractiveCard>
                   color: onCardSoft,
                 ),
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                softWrap: true,
               ),
             ],
           ),
