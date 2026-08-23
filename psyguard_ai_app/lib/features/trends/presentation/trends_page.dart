@@ -1030,7 +1030,7 @@ class RecordShortcuts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(height: 118, child: _buildRow(context));
+    return _buildRow(context);
   }
 
   Widget _buildRow(BuildContext context) {
@@ -1058,20 +1058,17 @@ class RecordShortcuts extends StatelessWidget {
       ),
     ];
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Column(
       children: [
         for (var i = 0; i < items.length; i++) ...[
-          Expanded(
-            child: _ShortcutCard(
-              title: items[i].$1,
-              subtitle: items[i].$2,
-              icon: items[i].$3,
-              color: items[i].$4,
-              route: items[i].$5,
-            ),
+          _ShortcutCard(
+            title: items[i].$1,
+            subtitle: items[i].$2,
+            icon: items[i].$3,
+            color: items[i].$4,
+            route: items[i].$5,
           ),
-          if (i != items.length - 1) const SizedBox(width: 10),
+          if (i != items.length - 1) const SizedBox(height: 10),
         ],
       ],
     );
