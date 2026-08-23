@@ -688,7 +688,7 @@ class _SquareCard extends StatelessWidget {
     final onCardSoft = hsl.withSaturation(0.85).withLightness(0.36).toColor();
 
     return AspectRatio(
-      aspectRatio: 1.05,
+      aspectRatio: 0.85,
       child: Material(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
