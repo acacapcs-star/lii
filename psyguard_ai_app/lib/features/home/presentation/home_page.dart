@@ -767,13 +767,7 @@ class _HomeContentState extends State<_HomeContent> {
           ),
         ),
         const SizedBox(height: 12),
-        _InteractiveCard(
-          title: copy.isZhTw ? '心晴筆記' : 'Notes',
-          subtitle: copy.isZhTw ? '寫下今天' : 'Write today down',
-          icon: Icons.checklist_rounded,
-          color: const Color(0xFF56C841),
-          route: '/checkin',
-        ),
+        TodayNotesCard(isZh: copy.isZhTw),
 
         // ── 季節氛圍 ──────────────────────────────────
         const SizedBox(height: 24),
@@ -2139,6 +2133,188 @@ class _FastSplashFactory extends InteractiveInkFeatureFactory {
       color: color,
       radius: radius ?? (size.width + size.height) / 2,
       onRemoved: onRemoved,
+    );
+  }
+}
+// 貼到 home_page.dart 檔案最後面（最外層）
+// 今日待辦卡：左邊標題，右邊列出今天的項目，可捲動
+
+class TodayNotesCard extends StatefulWidget {
+  const TodayNotesCard({super.key, required this.isZh});
+
+  final bool isZh;
+
+  @override
+  State<TodayNotesCard> createState() => _TodayNotesCardState();
+}
+
+class _TodayNotesCardState extends State<TodayNotesCard> {
+  List<Map<String, dynamic>> _items = const [];
+  bool _loaded = false;
+
+  static const _color = Color(0xFF56C841);
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final p = await SharedPreferences.getInstance();
+    final n = DateTime.now();
+    final raw = p.getString('note_${n.year}_${n.month}_${n.day}');
+    var list = <Map<String, dynamic>>[];
+    if (raw != null) {
+      try {
+        final decoded = jsonDecode(raw) as List;
+        list = decoded
+            .whereType<Map>()
+            .map((e) => e.cast<String, dynamic>())
+            .where((e) => (e['text'] ?? '').toString().trim().isNotEmpty)
+            .toList();
+      } catch (_) {}
+    }
+    if (mounted) setState(() { _items = list; _loaded = true; });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final zh = widget.isZh;
+    final hsl = HSLColor.fromColor(_color);
+    final onCard = hsl.withSaturation(1.0).withLightness(0.22).toColor();
+    final onCardSoft = hsl.withSaturation(0.85).withLightness(0.36).toColor();
+
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(24),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        splashColor: _color.withValues(alpha: 0.3),
+        onTap: () => context.push('/checkin'),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white,
+                Color.alphaBlend(_color.withValues(alpha: 0.14), Colors.white),
+                Color.alphaBlend(_color.withValues(alpha: 0.38), Colors.white),
+              ],
+              stops: const [0.0, 0.5, 1.0],
+            ),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: _color.withValues(alpha: 0.40), width: 4),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 左：標題
+              SizedBox(
+                width: 108,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 36,
+                      height: 36,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: _color.withValues(alpha: 0.24),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(Icons.checklist_rounded,
+                          color: _color, size: 20),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(zh ? '心晴筆記' : 'Notes',
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: onCard,
+                            height: 1.15)),
+                    const SizedBox(height: 2),
+                    Text(zh ? '寫下今天' : 'Write today down',
+                        style: TextStyle(fontSize: 11, color: onCardSoft)),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 14),
+              // 右：今天的項目
+              Expanded(
+                child: SizedBox(
+                  height: 118,
+                  child: !_loaded
+                      ? const SizedBox.shrink()
+                      : _items.isEmpty
+                          ? Align(
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                zh ? '今天還沒有記錄' : 'Nothing yet today',
+                                style: TextStyle(
+                                    fontSize: 12, color: onCardSoft),
+                              ),
+                            )
+                          : ListView.builder(
+                              padding: EdgeInsets.zero,
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: _items.length,
+                              itemBuilder: (context, i) {
+                                final it = _items[i];
+                                final done = it['checked'] == true;
+                                final text =
+                                    (it['text'] ?? '').toString().trim();
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.only(bottom: 6),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Icon(
+                                        done
+                                            ? Icons.check_circle_rounded
+                                            : Icons.circle_outlined,
+                                        size: 14,
+                                        color: done
+                                            ? onCardSoft
+                                                .withValues(alpha: 0.5)
+                                            : onCard,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Expanded(
+                                        child: Text(
+                                          text,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            height: 1.3,
+                                            color: done
+                                                ? onCardSoft
+                                                    .withValues(alpha: 0.5)
+                                                : onCard,
+                                            decoration: done
+                                                ? TextDecoration.lineThrough
+                                                : null,
+                                          ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

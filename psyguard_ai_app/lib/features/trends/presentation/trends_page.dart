@@ -192,7 +192,13 @@ class TrendsPage extends ConsumerWidget {
                   if (bundle.checkins.isEmpty &&
                       bundle.sleepLogs.isEmpty &&
                       bundle.risks.isEmpty) {
-                    return Center(
+                    return ListView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+                      children: [
+                        RecordShortcuts(isZh: copy.isZhTw),
+                        const SizedBox(height: 28),
+                        Center(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 28),
                         child: Column(
@@ -254,6 +260,8 @@ class TrendsPage extends ConsumerWidget {
                           ],
                         ),
                       ),
+                        ),
+                      ],
                     );
                   }
                   return Stack(
