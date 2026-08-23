@@ -46,7 +46,7 @@ git shortlog -sn --all
 git log --since=2026-07-10 --pretty=format:"%ad  %an  %s" --date=short
 ```
 
-**Scale**: roughly 32,900 lines of Dart under `lib/` (excluding generated
+**Scale**: roughly 34,800 lines of Dart under `lib/` (excluding generated
 files), plus 14 test files totalling about 934 lines — covering the risk
 engine, database, settings service, export service, four page widget tests and
 one integration test.
@@ -544,7 +544,7 @@ The bottom bar lives in `lib/core/widgets/lii_bottom_nav.dart`. The side drawer 
 
 ## Complete feature map
 
-31 routes, grouped into six sections in the navigation drawer.
+33 routes, grouped into six sections in the navigation drawer.
 
 ### Daily
 
@@ -678,11 +678,11 @@ lii/
     │   └── widget_test.dart
     ├── integration_test/
     │   └── app_flow_test.dart
-    └── lib/                                    ~32,900 lines
+    └── lib/                                    ~34,800 lines
         ├── main.dart
         ├── app/
         │   ├── app.dart
-        │   ├── router.dart                     31 routes
+        │   ├── router.dart                     33 routes
         │   └── theme.dart
         ├── l10n/
         │   ├── app_language.dart

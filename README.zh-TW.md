@@ -34,7 +34,7 @@ git shortlog -sn --all
 git log --since=2026-07-10 --pretty=format:"%ad  %an  %s" --date=short
 ```
 
-**規模**:`lib/` 約 32,900 行 Dart(不含產生檔);另有 14 個測試檔約 934 行,涵蓋 risk engine、資料庫、設定服務、匯出服務、四個頁面 widget test 與一個 integration test。
+**規模**:`lib/` 約 34,800 行 Dart(不含產生檔);另有 14 個測試檔約 934 行,涵蓋 risk engine、資料庫、設定服務、匯出服務、四個頁面 widget test 與一個 integration test。
 
 ---
 
@@ -389,7 +389,7 @@ SecretSwipeShell(
 
 ## 完整功能地圖
 
-31 條路由,側邊導覽分為六組。
+33 條路由,側邊導覽分為六組。
 
 ### Daily · 每日
 
@@ -505,11 +505,11 @@ lii/
     │   └── widget_test.dart
     ├── integration_test/
     │   └── app_flow_test.dart
-    └── lib/                                    約 32,900 行
+    └── lib/                                    約 34,800 行
         ├── main.dart
         ├── app/
         │   ├── app.dart
-        │   ├── router.dart                     31 條路由
+        │   ├── router.dart                     33 條路由
         │   └── theme.dart
         ├── l10n/
         │   ├── app_language.dart
