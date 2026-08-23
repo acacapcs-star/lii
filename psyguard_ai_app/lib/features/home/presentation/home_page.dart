@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import '../../../core/widgets/lii_bottom_nav.dart';
 import 'encouragement_banner.dart';
 import '../../ers/silence_detector.dart';
 import '../../ers/cumulative_risk_engine.dart';
@@ -147,6 +148,10 @@ class HomePage extends ConsumerWidget {
         systemNavigationBarColor: LumiTheme.background,
       ),
       child: Scaffold(
+        bottomNavigationBar: LiiBottomNav(
+          isZh: copy.isZhTw,
+          current: LiiTab.home,
+        ),
         backgroundColor: (() {
           final moodIsDark = ref.watch(backgroundThemeProvider).mode == BgMode.dark;
           final moodColor = ref.watch(moodThemeProvider).backgroundColorFor(moodIsDark);

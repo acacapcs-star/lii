@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import '../../../core/widgets/lii_bottom_nav.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -70,6 +71,10 @@ class ToolsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final copy = AppStrings.of(ref.watch(appLanguageControllerProvider));
     return Scaffold(
+      bottomNavigationBar: LiiBottomNav(
+        isZh: Localizations.localeOf(context).languageCode == 'zh',
+        current: LiiTab.tools,
+      ),
       backgroundColor: LumiTheme.background,
       appBar: AppBar(
         title: Text(copy.toolsTitle),

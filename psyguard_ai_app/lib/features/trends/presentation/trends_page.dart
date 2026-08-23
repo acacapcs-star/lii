@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import '../../../core/widgets/lii_bottom_nav.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -91,6 +92,10 @@ class TrendsPage extends ConsumerWidget {
     final copy = AppStrings.of(ref.watch(appLanguageControllerProvider));
 
     return Scaffold(
+      bottomNavigationBar: LiiBottomNav(
+        isZh: Localizations.localeOf(context).languageCode == 'zh',
+        current: LiiTab.records,
+      ),
       backgroundColor: LumiTheme.background,
       appBar: AppBar(
         title: Text(copy.trendsTitle),

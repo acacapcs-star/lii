@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/widgets/lii_bottom_nav.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -78,6 +79,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     }
 
     return Scaffold(
+      bottomNavigationBar: LiiBottomNav(
+        isZh: Localizations.localeOf(context).languageCode == 'zh',
+        current: LiiTab.profile,
+      ),
       backgroundColor: LumiTheme.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
