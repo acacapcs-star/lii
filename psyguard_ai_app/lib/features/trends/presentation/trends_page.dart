@@ -1030,6 +1030,10 @@ class RecordShortcuts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return SizedBox(height: 118, child: _buildRow(context));
+  }
+
+  Widget _buildRow(BuildContext context) {
     final items = <(String, String, IconData, Color, String)>[
       (
         isZh ? '本週人設' : 'Weekly Persona',
