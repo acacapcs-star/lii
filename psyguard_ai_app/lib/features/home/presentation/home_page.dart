@@ -807,12 +807,12 @@ class _HomeContentState extends State<_HomeContent> {
           );
         }),
         SizedBox(
-          height: 120,
+          height: 180,
           child: Align(
             alignment: Alignment.centerRight,
             child: const SizedBox(
               width: 160,
-              height: 120,
+              height: 180,
               child: _CornerPenguin(),
             ),
           ),

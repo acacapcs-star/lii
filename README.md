@@ -526,6 +526,20 @@ controller, playing once per call.
 
 ---
 
+## Information architecture
+
+Fourteen features moved from two card walls to five tabs, sorted by three questions: *would I open this on purpose* (tools), *did I produce it* (records, saved things), *do I set it once and never touch it again* (settings).
+
+| Tab | Route | Holds |
+|---|---|---|
+| Home | `/home` | Today's status, the four inputs, today's notes, this month |
+| Records | `/trends` | Trends, Weekly Persona, Year Overview, diary timeline |
+| Luna | `/voice` | Centre button. Tap for the voice page, long-press to record |
+| Tools | `/tools` | Thought Coach, Thinking Traps, Hope Box, and four in-the-moment tools |
+| Profile | `/profile` | My Pacers, My Quote Cards, Export, Settings |
+
+The bottom bar lives in `lib/core/widgets/lii_bottom_nav.dart`. The side drawer is kept as a second path to the same places.
+
 ## Complete feature map
 
 31 routes, grouped into six sections in the navigation drawer.
@@ -551,6 +565,8 @@ controller, playing once per call.
 | Toolbox | Toolbox, four tools: Self-dialogue Card, 4-7-8 Breathing, 5-4-3-2-1 Grounding, Emotion Dictionary; with practice history |
 
 ### More features
+
+| Exhibition mode | Settings has a switch that unlocks all six crystals so judges can view them. Off by default — crystals are earned by breathing, never bought or drawn |
 
 | Page | Content |
 |---|---|
@@ -579,7 +595,18 @@ The home screen also carries a draggable Luna Pacer orb (night sky on one side, 
 
 ### Home screen
 
-A greeting with a light/dark toggle, four swipeable status cards (the first showing today's well-being), then two card sections: **Explore Yourself** (Check-in, Trends, Talk it out, Sleep Log, Year Overview, My Quote Cards) and **Tools** (Toolbox, Export, Thought Coach, Thinking Traps, Weekly Persona, Hope Box, My Pacers, Hey Luna).
+A greeting with a light/dark toggle, then four swipeable status cards (the first showing today's well-being).
+
+Below that, **the four inputs behind today** — Sleep Log, Check-in, Talk it out, Quick voice — grouped in one blue block so the relationship between input and score can be read off the screen.
+
+Then two live cards rather than links:
+
+| Card | Shows |
+|---|---|
+| **Notes** | Today's items, scrollable inside the card |
+| **This month** | Items marked this month, red and amber dots, expandable |
+
+The seasonal layer sits at the foot of the page: drink bar, chosen-drink badge, red envelope, penguin nest, and the corner character that changes with the mood theme.
 
 ### Settings
 
@@ -798,6 +825,8 @@ lii/
             │   └── my_cards_store.dart
             ├── persona/presentation/
             │   └── persona_page.dart           6 animals · no quiz
+            ├── profile/presentation/
+            │   └── profile_page.dart           saved things and settings
             ├── welcome/presentation/
             │   ├── welcome_page.dart
             │   └── consent_page.dart           granular consent
