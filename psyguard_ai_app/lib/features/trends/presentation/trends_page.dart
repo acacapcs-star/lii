@@ -281,7 +281,6 @@ class TrendsPage extends ConsumerWidget {
                         physics: const BouncingScrollPhysics(),
                         padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
                         children: [
-                          _RecordShortcuts(isZh: copy.isZhTw),
                           const SizedBox(height: 20),
                           RecordShortcuts(isZh: copy.isZhTw),
                           const SizedBox(height: 20),
@@ -902,8 +901,8 @@ class _RecordShortcuts extends StatelessWidget {
         '/weekly-persona',
       ),
       (
-        isZh ? '年度總覽' : 'Year Overview',
-        isZh ? '一個月一個月看' : 'Month by month',
+        isZh ? '月曆總覽' : 'Calendar',
+        isZh ? '依週彙整重要事項' : 'Weekly view of what matters',
         Icons.calendar_month_rounded,
         const Color(0xFF417CC8),
         '/calendar-overview',

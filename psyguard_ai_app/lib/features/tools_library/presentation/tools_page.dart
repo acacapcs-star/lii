@@ -656,7 +656,7 @@ class ToolsLayout extends StatelessWidget {
               const SizedBox(height: 14),
               for (final t in ToolsPage.toolboxItems) ...[
                 _CompactToolCard(tool: t),
-                const SizedBox(height: 14),
+                const SizedBox(height: 10),
               ],
             ],
           ),
@@ -774,7 +774,7 @@ class _CompactToolCard extends ConsumerWidget {
         splashColor: tool.color.withValues(alpha: 0.3),
         onTap: () => _ToolCard(tool: tool)._handleToolAction(context, ref),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
@@ -795,14 +795,14 @@ class _CompactToolCard extends ConsumerWidget {
           child: Row(
             children: [
               Container(
-                width: 32,
-                height: 32,
+                width: 28,
+                height: 28,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: tool.color.withValues(alpha: 0.24),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(tool.icon, color: tool.color, size: 17),
+                child: Icon(tool.icon, color: tool.color, size: 15),
               ),
               const SizedBox(width: 10),
               Expanded(
