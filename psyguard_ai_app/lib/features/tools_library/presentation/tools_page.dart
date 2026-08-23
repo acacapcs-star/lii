@@ -772,7 +772,14 @@ class _CompactToolCard extends ConsumerWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
         splashColor: tool.color.withValues(alpha: 0.3),
-        onTap: () => _ToolCard(tool: tool)._handleToolAction(context, ref),
+        onTap: () {
+          final card = _ToolCard(tool: tool);
+          if (tool.isInteractive) {
+            card._handleToolAction(context, ref);
+          } else {
+            card._logCompletion(context, ref);
+          }
+        },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
           decoration: BoxDecoration(
