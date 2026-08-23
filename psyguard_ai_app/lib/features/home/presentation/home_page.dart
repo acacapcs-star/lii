@@ -564,7 +564,7 @@ class _HomeContentState extends State<_HomeContent> {
         copy.navCheckin,
         copy.emotionalRelease,
         Icons.edit_note_rounded,
-        const Color(0xFFD95F5F),
+        const Color(0xFFC85341),
         '/checkin',
         copy.isZhTw
             ? '把心裡的感受寫下來，讓自己慢慢看見、慢慢理解。'
@@ -574,7 +574,7 @@ class _HomeContentState extends State<_HomeContent> {
         copy.trendsTitle,
         copy.healthDataTrends,
         Icons.favorite_rounded,
-        const Color(0xFFE08A3C),
+        const Color(0xFFC88D41),
         '/trends',
         copy.isZhTw
             ? '用溫柔的方式，看見你的變化，一步步找回自己的節奏。'
@@ -584,7 +584,7 @@ class _HomeContentState extends State<_HomeContent> {
         copy.navChat,
         copy.supportiveChat,
         Icons.forum_outlined,
-        const Color(0xFFD4A72C),
+        const Color(0xFFC8C741),
         '/chat',
         copy.isZhTw
             ? '不用整理好再說，想到什麼就寫什麼。'
@@ -594,7 +594,7 @@ class _HomeContentState extends State<_HomeContent> {
         copy.navSleep,
         copy.sleepStatus,
         Icons.bedtime_outlined,
-        const Color(0xFF4E9C6B),
+        const Color(0xFF8FC841),
         '/sleep',
         copy.isZhTw
             ? '看見每晚的睡眠變化，慢慢找回適合自己的作息節奏。'
@@ -604,7 +604,7 @@ class _HomeContentState extends State<_HomeContent> {
         copy.isZhTw ? '年度總覽' : 'Year Overview',
         copy.isZhTw ? '重點行事曆' : 'Key Calendar',
         Icons.calendar_month_rounded,
-        const Color(0xFF3E7FB8),
+        const Color(0xFF56C841),
         '/calendar-overview',
         copy.isZhTw
             ? '一眼看見全年重要事項，紅色緊急、黃色重要，一目了然。'
@@ -614,7 +614,7 @@ class _HomeContentState extends State<_HomeContent> {
         copy.isZhTw ? '我的專屬格言' : 'My Quote Cards',
         copy.isZhTw ? '手作暖話卡' : 'Make your own',
         Icons.auto_awesome_rounded,
-        const Color(0xFF8B62B8),
+        const Color(0xFF41C866),
         '/my-cards',
         copy.isZhTw
             ? '自己做暖話卡：選底色、字體、加照片，寫下屬於你的格言。'
@@ -813,7 +813,7 @@ class _HomeContentState extends State<_HomeContent> {
                 title: copy.navTools,
                 subtitle: copy.moodFirstAid,
                 icon: Icons.medical_services_rounded,
-                color: const Color(0xFF0E6B5C),
+                color: const Color(0xFF41C8A0),
                 route: '/tools',
                 isBold: _hasNegativeSignal,
                 tooltipTitle: copy.navTools,
@@ -826,7 +826,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.navExport,
               subtitle: copy.sevenDaySummary,
               icon: Icons.mark_email_read_rounded,
-              color: const Color(0xFFB8C2CC),
+              color: const Color(0xFF41B6C8),
               route: '/export',
               tooltipTitle: copy.navExport,
               tooltipDescription: copy.isZhTw
@@ -837,7 +837,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '思考教練' : 'Thought Coach',
               subtitle: copy.isZhTw ? '同一件事，另一種說法' : 'Reframe a thought',
               icon: Icons.psychology_rounded,
-              color: const Color(0xFF2B4C8C),
+              color: const Color(0xFF417CC8),
               route: '/thought-coach',
               tooltipTitle: copy.isZhTw ? '思考教練' : 'Thought Coach',
               tooltipDescription: copy.isZhTw
@@ -848,7 +848,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '你常掉進哪一個' : 'Thinking Traps',
               subtitle: copy.isZhTw ? '測你的思考習慣' : 'Discover your patterns',
               icon: Icons.quiz_rounded,
-              color: const Color(0xFF7ED0C4),
+              color: const Color(0xFF4143C8),
               route: '/distortion-quiz',
               tooltipTitle: copy.isZhTw ? '你常掉進哪一個' : 'Thinking Traps',
               tooltipDescription: copy.isZhTw
@@ -859,7 +859,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '本週人設' : 'Weekly Persona',
               subtitle: copy.isZhTw ? '這週的你是哪隻動物' : 'Your animal this week',
               icon: Icons.pets_rounded,
-              color: const Color(0xFF4A2E6B),
+              color: const Color(0xFF7A41C8),
               route: '/weekly-persona',
               tooltipTitle: copy.isZhTw ? '本週人設' : 'Weekly Persona',
               tooltipDescription: copy.isZhTw
@@ -870,7 +870,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '希望盒' : 'Hope Box',
               subtitle: copy.isZhTw ? '撐住你的那些話' : 'Cards that carry you',
               icon: Icons.auto_awesome_rounded,
-              color: const Color(0xFF9BB8D9),
+              color: const Color(0xFFB341C8),
               route: '/hope-box',
               tooltipTitle: copy.isZhTw ? '希望盒' : 'Hope Box',
               tooltipDescription: copy.isZhTw
@@ -881,7 +881,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '我的 Pacers' : 'My Pacers',
               subtitle: copy.isZhTw ? '有人這樣對你說過' : 'Words you saved',
               icon: Icons.bookmark_rounded,
-              color: const Color(0xFF1A3A5C),
+              color: const Color(0xFFC841A3),
               route: '/bookmark',
               tooltipTitle: copy.isZhTw ? '我的 Pacers' : 'My Pacers',
               tooltipDescription: copy.isZhTw
@@ -892,7 +892,7 @@ class _HomeContentState extends State<_HomeContent> {
               title: copy.isZhTw ? '嘿，在嗎？' : 'Hey, Luna?',
               subtitle: copy.isZhTw ? '聲控喚醒Luna' : 'Voice wake Luna',
               icon: Icons.mic_rounded,
-              color: const Color(0xFFC5A3D9),
+              color: const Color(0xFFC84169),
               route: '/voice',
               tooltipTitle: copy.isZhTw ? '聲控喚醒' : 'Voice Wake',
               tooltipDescription: copy.isZhTw
