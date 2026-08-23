@@ -263,6 +263,8 @@ guidance and crisis lines rather than an error message.
 `core/widgets/micro_shake.dart` gives the help button a continuous subtle
 shake at very high risk, to draw attention to it.
 
+`core/safety/crisis_lines.dart` holds staffed lines for eleven regions plus a user-defined entry. Each line records four things beyond the number: what the operators actually speak, a description in both languages, the official source URL, and the date it was last verified. Three findings from that verification are worth stating — Korea's 1393 was folded into **109** in 2024; Japan's ministry line is *not* 24 hours, so the 24-hour freephone that answers in English on option 2 is listed first; and China's 12356 is mandated for at least 18 hours a day, not necessarily 24. Numbers are re-checked every six months. A number without an official page does not go in.
+
 ---
 
 ## Privacy: three layers, separated at the table level
@@ -566,12 +568,11 @@ The bottom bar lives in `lib/core/widgets/lii_bottom_nav.dart`. The side drawer 
 
 ### More features
 
-| Exhibition mode | Settings has a switch that unlocks all six crystals so judges can view them. Off by default — crystals are earned by breathing, never bought or drawn |
-
 | Page | Content |
 |---|---|
 | Hope Box | 8 situations (breathe, low day, not alone, rest, be kind, late night, you got this, mine), 35 cards. Tap to flip, swipe to change, ♡ to favourite, write your own. Chinese and English kept strictly separate |
 | My Pacers | Pacer Lift: quotes as cable cars tagged with who said them, plus a viewing-platform achievements tab |
+| Exhibition mode | Settings has a switch that unlocks all six crystals so judges can view them. Off by default — crystals are earned by breathing, never bought or drawn |
 | Weekly Persona | One of six animals (otter, capybara, turtle, squirrel, bear, butterfly) computed from that week's actual mood / stress / energy records. **No quiz to fill in** |
 
 The home screen also carries a draggable Luna Pacer orb (night sky on one side, coloured glass on the other, turned by swiping) and the crystal collection: six crystals — ice from the start, sea at 3 breathing sessions, amethyst at 7, amber at 14, moss at a 3-day streak, dawn at 7, with a hint showing how far the next one is.
@@ -697,6 +698,7 @@ lii/
         │   │   └── risk_provider.dart
         │   ├── safety/
         │   │   ├── safety_flow_service.dart    step sequences per tier
+        │   │   ├── crisis_lines.dart          11 regions · source + verified date
         │   │   └── safety_models.dart
         │   ├── security/
         │   │   ├── secret_diary_lock.dart      AES-256-GCM · PBKDF2 · three unlock paths
