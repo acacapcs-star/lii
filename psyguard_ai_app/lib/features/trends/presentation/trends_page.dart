@@ -281,6 +281,10 @@ class TrendsPage extends ConsumerWidget {
                         physics: const BouncingScrollPhysics(),
                         padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
                         children: [
+                          _RecordShortcuts(isZh: copy.isZhTw),
+                          const SizedBox(height: 20),
+                          RecordShortcuts(isZh: copy.isZhTw),
+                          const SizedBox(height: 20),
                           _seriesToggles(context, ref, copy),
                           const SizedBox(height: 4),
                           if (visible.mood)
@@ -878,5 +882,187 @@ $riskSummary
         context,
       ).showSnackBar(SnackBar(content: Text(copy.analysisFailed(e))));
     }
+  }
+}
+
+
+class _RecordShortcuts extends StatelessWidget {
+  const _RecordShortcuts({required this.isZh});
+
+  final bool isZh;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = [
+      (
+        isZh ? '本週人設' : 'Weekly Persona',
+        isZh ? '這週的樣子' : 'How this week looked',
+        Icons.auto_awesome_mosaic_rounded,
+        const Color(0xFF41B6C8),
+        '/weekly-persona',
+      ),
+      (
+        isZh ? '年度總覽' : 'Year Overview',
+        isZh ? '一個月一個月看' : 'Month by month',
+        Icons.calendar_month_rounded,
+        const Color(0xFF417CC8),
+        '/calendar-overview',
+      ),
+      (
+        isZh ? '日記時間軸' : 'Diary timeline',
+        isZh ? '寫過的每一天' : 'Every day you wrote',
+        Icons.timeline_rounded,
+        const Color(0xFF4143C8),
+        '/checkin/history',
+      ),
+    ];
+
+    return Row(
+      children: [
+        for (final it in items) ...[
+          Expanded(
+            child: _ShortcutCard(
+              title: it.$1,
+              subtitle: it.$2,
+              icon: it.$3,
+              color: it.$4,
+              route: it.$5,
+            ),
+          ),
+          if (it != items.last) const SizedBox(width: 10),
+        ],
+      ],
+    );
+  }
+}
+
+class _ShortcutCard extends StatelessWidget {
+  const _ShortcutCard({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+    required this.route,
+  });
+
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+  final String route;
+
+  @override
+  Widget build(BuildContext context) {
+    final hsl = HSLColor.fromColor(color);
+    final onCard = hsl.withSaturation(1.0).withLightness(0.22).toColor();
+    final onCardSoft = hsl.withSaturation(0.85).withLightness(0.36).toColor();
+
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        splashColor: color.withValues(alpha: 0.3),
+        onTap: () => context.push(route),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white,
+                Color.alphaBlend(color.withValues(alpha: 0.14), Colors.white),
+                Color.alphaBlend(color.withValues(alpha: 0.38), Colors.white),
+              ],
+              stops: const [0.0, 0.5, 1.0],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: color.withValues(alpha: 0.40), width: 3),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 30,
+                height: 30,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.24),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: color, size: 16),
+              ),
+              const SizedBox(height: 8),
+              Text(title,
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: onCard),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis),
+              const SizedBox(height: 2),
+              Text(subtitle,
+                  style: TextStyle(fontSize: 9.5, color: onCardSoft),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+// 貼到 trends_page.dart 檔案最後面（最外層，不要放在任何 class 裡面）
+
+class RecordShortcuts extends StatelessWidget {
+  const RecordShortcuts({super.key, required this.isZh});
+
+  final bool isZh;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = <(String, String, IconData, Color, String)>[
+      (
+        isZh ? '本週人設' : 'Weekly Persona',
+        isZh ? '這週的樣子' : 'How this week looked',
+        Icons.auto_awesome_mosaic_rounded,
+        const Color(0xFF41B6C8),
+        '/weekly-persona',
+      ),
+      (
+        isZh ? '年度總覽' : 'Year Overview',
+        isZh ? '一個月一個月看' : 'Month by month',
+        Icons.calendar_month_rounded,
+        const Color(0xFF417CC8),
+        '/calendar-overview',
+      ),
+      (
+        isZh ? '日記時間軸' : 'Diary timeline',
+        isZh ? '寫過的每一天' : 'Every day you wrote',
+        Icons.timeline_rounded,
+        const Color(0xFF4143C8),
+        '/checkin/history',
+      ),
+    ];
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var i = 0; i < items.length; i++) ...[
+          Expanded(
+            child: _ShortcutCard(
+              title: items[i].$1,
+              subtitle: items[i].$2,
+              icon: items[i].$3,
+              color: items[i].$4,
+              route: items[i].$5,
+            ),
+          ),
+          if (i != items.length - 1) const SizedBox(width: 10),
+        ],
+      ],
+    );
   }
 }

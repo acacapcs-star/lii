@@ -700,6 +700,64 @@ class _HomeContentState extends State<_HomeContent> {
           const SizedBox(height: 32),
         ],
 
+        // ── 計算「今天的狀態」的四個輸入 ──────────────
+        const SizedBox(height: 28),
+        Text(
+          copy.isZhTw ? '計算「今天的狀態」的四個輸入' : 'The four inputs behind today',
+          style: theme.textTheme.titleMedium?.copyWith(
+            color: _bgIsDark(context) ? const Color(0xFFD8DEE6) : null,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: const Color(0xFF4A7FA5).withValues(alpha: 0.06),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+                color: const Color(0xFF4A7FA5).withValues(alpha: 0.22)),
+          ),
+          child: GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 2,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 1.35,
+            children: [
+              _InteractiveCard(
+                title: copy.isZhTw ? '睡眠紀錄' : 'Sleep Log',
+                subtitle: copy.isZhTw ? '昨晚睡得如何' : 'How you slept',
+                icon: Icons.nightlight_round,
+                color: const Color(0xFF4A7FA5),
+                route: '/sleep',
+              ),
+              _InteractiveCard(
+                title: copy.isZhTw ? '心晴筆記' : 'Check-in',
+                subtitle: copy.isZhTw ? '寫下今天' : 'Write today down',
+                icon: Icons.edit_note_rounded,
+                color: const Color(0xFF4A7FA5),
+                route: '/checkin',
+              ),
+              _InteractiveCard(
+                title: copy.isZhTw ? '說出來' : 'Talk it out',
+                subtitle: copy.isZhTw ? '好好講一段' : 'Say it properly',
+                icon: Icons.forum_outlined,
+                color: const Color(0xFF4A7FA5),
+                route: '/chat',
+              ),
+              _InteractiveCard(
+                title: copy.isZhTw ? '隨手說' : 'Quick voice',
+                subtitle: copy.isZhTw ? '一句話也可以' : 'One line is enough',
+                icon: Icons.mic_rounded,
+                color: const Color(0xFF4A7FA5),
+                route: '/voice',
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 32),
+
         // ── Explore Section ──────────────────────────
         Row(
           children: [

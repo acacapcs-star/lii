@@ -32,7 +32,7 @@ class LiiBottomNav extends StatelessWidget {
     LiiTab.records: '/trends',
     LiiTab.luna: '/voice',
     LiiTab.tools: '/tools',
-    LiiTab.profile: '/settings',
+    LiiTab.profile: '/profile',
   };
 
   String _label(LiiTab tab) {

@@ -14,6 +14,7 @@ import '../features/bookmark/presentation/bookmark_page.dart';
 import '../features/card_studio/presentation/card_studio_page.dart';
 import '../features/card_studio/presentation/my_cards_page.dart';
 import '../features/settings/presentation/settings_page.dart';
+import '../features/profile/presentation/profile_page.dart';
 import '../features/safety/presentation/safety_page.dart';
 import '../features/sleep/presentation/sleep_history_page.dart';
 import '../features/sleep/presentation/sleep_page.dart';
@@ -223,6 +224,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'usage_stats',
         pageBuilder: (context, state) =>
             _buildPageWithSlide(context, state, const UsageStatsPage()),
+      ),
+      GoRoute(
+        path: '/profile',
+        name: 'profile',
+        pageBuilder: (context, state) =>
+            _buildPageWithSlide(context, state, const ProfilePage()),
       ),
       GoRoute(
         path: '/settings',
