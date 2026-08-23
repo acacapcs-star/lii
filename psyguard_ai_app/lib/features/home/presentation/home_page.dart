@@ -723,7 +723,7 @@ class _HomeContentState extends State<_HomeContent> {
             crossAxisCount: 2,
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
-            childAspectRatio: 1.35,
+            childAspectRatio: 0.95,
             children: [
               _InteractiveCard(
                 title: copy.isZhTw ? '睡眠紀錄' : 'Sleep Log',
@@ -768,6 +768,8 @@ class _HomeContentState extends State<_HomeContent> {
         ),
         const SizedBox(height: 12),
         TodayNotesCard(isZh: copy.isZhTw),
+        const SizedBox(height: 14),
+        ThisMonthCard(isZh: copy.isZhTw),
 
         // ── 季節氛圍 ──────────────────────────────────
         const SizedBox(height: 24),
@@ -2302,6 +2304,232 @@ class _TodayNotesCardState extends State<TodayNotesCard> {
                                           ),
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+// 貼到 home_page.dart 檔案最後面（最外層）
+// 這個月的重點事項，卡片內可捲
+
+class ThisMonthCard extends StatefulWidget {
+  const ThisMonthCard({super.key, required this.isZh});
+
+  final bool isZh;
+
+  @override
+  State<ThisMonthCard> createState() => _ThisMonthCardState();
+}
+
+String _monthName(int m) => const [
+      'January','February','March','April','May','June',
+      'July','August','September','October','November','December'
+    ][m - 1];
+
+class _ThisMonthCardState extends State<ThisMonthCard> {
+  List<Map<String, dynamic>> _items = const [];
+  bool _loaded = false;
+  bool _expanded = false;
+
+  static const _color = Color(0xFF41B6C8);
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final p = await SharedPreferences.getInstance();
+    final now = DateTime.now();
+    final days = DateUtils.getDaysInMonth(now.year, now.month);
+    final out = <Map<String, dynamic>>[];
+
+    for (var d = 1; d <= days; d++) {
+      final raw = p.getString('note_${now.year}_${now.month}_$d');
+      if (raw == null) continue;
+      try {
+        final list = jsonDecode(raw) as List;
+        for (final it in list) {
+          if (it is! Map) continue;
+          final text = (it['text'] ?? '').toString().trim();
+          if (text.isEmpty) continue;
+          if (it['checked'] == true) continue;
+          final pr = (it['priority'] ?? '').toString();
+          out.add({
+            'day': d,
+            'text': text,
+            'red': pr.startsWith('red'),
+            'yellow': pr.startsWith('yellow'),
+          });
+        }
+      } catch (_) {}
+    }
+
+    // 紅的排前面，其次黃的，再照日期
+    out.sort((a, b) {
+      int rank(Map m) => m['red'] == true ? 0 : (m['yellow'] == true ? 1 : 2);
+      final r = rank(a).compareTo(rank(b));
+      return r != 0 ? r : (a['day'] as int).compareTo(b['day'] as int);
+    });
+
+    if (mounted) setState(() { _items = out; _loaded = true; });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final zh = widget.isZh;
+    final now = DateTime.now();
+    final hsl = HSLColor.fromColor(_color);
+    final onCard = hsl.withSaturation(1.0).withLightness(0.22).toColor();
+    final onCardSoft = hsl.withSaturation(0.85).withLightness(0.36).toColor();
+
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(24),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        splashColor: _color.withValues(alpha: 0.3),
+        onTap: () => context.push('/calendar-overview'),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white,
+                Color.alphaBlend(_color.withValues(alpha: 0.14), Colors.white),
+                Color.alphaBlend(_color.withValues(alpha: 0.38), Colors.white),
+              ],
+              stops: const [0.0, 0.5, 1.0],
+            ),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: _color.withValues(alpha: 0.40), width: 4),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 108,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 34,
+                      height: 34,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: _color.withValues(alpha: 0.24),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(Icons.calendar_month_rounded,
+                          color: _color, size: 20),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(zh ? '${now.month} 月' : _monthName(now.month),
+                        softWrap: true,
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: onCard,
+                            height: 1.15)),
+                    const SizedBox(height: 2),
+                    Text(zh ? '重點行事曆' : 'Key Calendar',
+                        style: TextStyle(fontSize: 11, color: onCardSoft)),
+                    const SizedBox(height: 8),
+                    GestureDetector(
+                      onTap: () => setState(() => _expanded = !_expanded),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _expanded
+                                ? Icons.keyboard_arrow_up_rounded
+                                : Icons.keyboard_arrow_down_rounded,
+                            size: 18,
+                            color: onCardSoft,
+                          ),
+                          Text(
+                            _expanded ? (zh ? '收起' : 'Less') : (zh ? '展開' : 'More'),
+                            style: TextStyle(fontSize: 11, color: onCardSoft),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: SizedBox(
+                  height: _expanded ? 260.0 : 118.0,
+                  child: !_loaded
+                      ? const SizedBox.shrink()
+                      : _items.isEmpty
+                          ? Align(
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                zh ? '這個月還沒有重點事項' : 'Nothing marked this month',
+                                style:
+                                    TextStyle(fontSize: 12, color: onCardSoft),
+                              ),
+                            )
+                          : ListView.builder(
+                              padding: EdgeInsets.zero,
+                              physics: const AlwaysScrollableScrollPhysics(
+                                  parent: BouncingScrollPhysics()),
+                              itemCount: _items.length,
+                              itemBuilder: (context, i) {
+                                final it = _items[i];
+                                final dot = it['red'] == true
+                                    ? Colors.red
+                                    : (it['yellow'] == true
+                                        ? Colors.amber
+                                        : onCardSoft.withValues(alpha: 0.45));
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 6),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        width: 7,
+                                        height: 7,
+                                        margin: const EdgeInsets.only(top: 4),
+                                        decoration: BoxDecoration(
+                                            color: dot,
+                                            shape: BoxShape.circle),
+                                      ),
+                                      const SizedBox(width: 7),
+                                      SizedBox(
+                                        width: 26,
+                                        child: Text('${it['day']}日',
+                                            style: TextStyle(
+                                                fontSize: 11,
+                                                color: onCardSoft)),
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          it['text'].toString(),
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              height: 1.3,
+                                              color: onCard),
+                                          softWrap: true,
                                         ),
                                       ),
                                     ],
