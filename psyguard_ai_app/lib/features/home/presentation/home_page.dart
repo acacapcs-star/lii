@@ -740,7 +740,7 @@ class _HomeContentState extends State<_HomeContent> {
                 route: '/checkin',
               ),
               _InteractiveCard(
-                title: copy.isZhTw ? '說出來' : 'Talk it out',
+                title: copy.isZhTw ? '聊聊' : 'Talk it out',
                 subtitle: copy.isZhTw ? '好好講一段' : 'Say it properly',
                 icon: Icons.forum_outlined,
                 color: const Color(0xFF4A7FA5),

@@ -55,11 +55,11 @@ class AppStrings {
   String get copied => isZhTw ? '已複製' : 'Copied';
 
   String get navHome => isZhTw ? '首頁' : 'Home';
-  String get navChat => isZhTw ? '說出來' : 'Talk it out';
+  String get navChat => isZhTw ? '聊聊' : 'Talk it out';
   String get navCheckin => isZhTw ? '筆記紀錄' : 'Check-in';
   String get navSleep => isZhTw ? '睡眠紀錄' : 'Sleep Log';
   String get navTrends => isZhTw ? '趨勢圖' : 'Trends';
-  String get navTools => isZhTw ? '心理工具箱' : 'Toolbox';
+  String get navTools => isZhTw ? '心情工具箱' : 'Toolbox';
   String get navSafety => isZhTw ? '安全流程' : 'Safety Flow';
   String get navExport => isZhTw ? '匯出報告' : 'Export Report';
   String get navSettings => isZhTw ? '設定' : 'Settings';

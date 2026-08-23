@@ -554,7 +554,7 @@ class ToolboxEntry extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(isZh ? '心理工具箱' : 'Toolbox',
+                    Text(isZh ? '心情工具箱' : 'Toolbox',
                         style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -588,7 +588,7 @@ class ToolboxPage extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          copy.isZhTw ? '心理工具箱' : 'Toolbox',
+          copy.isZhTw ? '心情工具箱' : 'Toolbox',
           style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
