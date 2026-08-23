@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/background_theme_service.dart';
 import '../../../core/widgets/lii_bottom_nav.dart';
+import '../../../core/crystals/crystal_collection_page.dart';
 import '../../../l10n/app_strings.dart';
 import '../../../core/security/local_settings_service.dart';
 
@@ -36,6 +37,14 @@ class ProfilePage extends ConsumerWidget {
         icon: Icons.auto_awesome_rounded,
         color: const Color(0xFFB341C8),
         route: '/my-cards',
+      ),
+      _ProfileItem(
+        title: zh ? '我的水晶' : 'My Crystals',
+        subtitle: zh ? '呼吸換來的六顆' : 'Six, earned by breathing',
+        icon: Icons.diamond_outlined,
+        color: const Color(0xFF41B6C8),
+        route: '',
+        onTap: showCrystalCollection,
       ),
       _ProfileItem(
         title: zh ? '匯出報告' : 'Export',
@@ -91,6 +100,7 @@ class _ProfileItem {
     required this.icon,
     required this.color,
     required this.route,
+    this.onTap,
   });
 
   final String title;
@@ -98,6 +108,7 @@ class _ProfileItem {
   final IconData icon;
   final Color color;
   final String route;
+  final void Function(BuildContext)? onTap;
 }
 
 class _ProfileCard extends StatelessWidget {
@@ -120,7 +131,7 @@ class _ProfileCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         splashColor: item.color.withValues(alpha: 0.3),
         highlightColor: item.color.withValues(alpha: 0.1),
-        onTap: () => context.push(item.route),
+        onTap: () => item.onTap != null ? item.onTap!(context) : context.push(item.route),
         child: Container(
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(

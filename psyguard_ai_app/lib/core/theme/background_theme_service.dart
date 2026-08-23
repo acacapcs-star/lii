@@ -70,7 +70,11 @@ class BackgroundThemeController extends StateNotifier<BackgroundThemeState> {
 
   Future<void> toggleMode() async {
     final newMode = state.mode == BgMode.light ? BgMode.dark : BgMode.light;
-    final newColor = newMode == BgMode.dark ? BgColorChoice.navyDark : BgColorChoice.blueLight;
+    final isGreen = state.colorChoice == BgColorChoice.greenLight ||
+        state.colorChoice == BgColorChoice.forestDark;
+    final newColor = newMode == BgMode.dark
+        ? (isGreen ? BgColorChoice.forestDark : BgColorChoice.navyDark)
+        : (isGreen ? BgColorChoice.greenLight : BgColorChoice.blueLight);
     state = state.copyWith(mode: newMode, colorChoice: newColor);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_modeKey, newMode == BgMode.dark ? 'dark' : 'light');
