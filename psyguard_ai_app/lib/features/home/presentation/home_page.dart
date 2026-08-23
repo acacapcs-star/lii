@@ -898,6 +898,7 @@ class _InteractiveCard extends StatefulWidget {
 class _InteractiveCardState extends State<_InteractiveCard>
     with SingleTickerProviderStateMixin {
   double _scale = 1.0;
+  bool _longPressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -922,7 +923,20 @@ class _InteractiveCardState extends State<_InteractiveCard>
 
     return SnowCap(
       // 雪系氛圍時，卡片頂端會積雪；按住雪堆用手溫融化它
-      child: Material(
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onLongPress: () {
+          HapticFeedback.mediumImpact();
+          if (widget.tooltipTitle != null &&
+              widget.tooltipDescription != null) {
+            showFeatureTooltip(
+              context,
+              title: widget.tooltipTitle!,
+              description: widget.tooltipDescription!,
+            );
+          }
+        },
+        child: Material(
         color: bgColor,
         borderRadius: BorderRadius.circular(24),
         clipBehavior: Clip.antiAlias,
@@ -931,14 +945,14 @@ class _InteractiveCardState extends State<_InteractiveCard>
           splashFactory: _FastSplash.factory,
           splashColor: widget.color.withValues(alpha: 0.5),
           highlightColor: widget.color.withValues(alpha: 0.25),
-          onTap: () async {
+          onTap: () {
             HapticFeedback.lightImpact();
-            await Future.delayed(const Duration(milliseconds: 280));
-            if (mounted) context.push(widget.route);
+            context.push(widget.route);
           },
           onLongPress: () {
             HapticFeedback.mediumImpact();
-            if (widget.tooltipTitle != null && widget.tooltipDescription != null) {
+            if (widget.tooltipTitle != null &&
+                widget.tooltipDescription != null) {
               showFeatureTooltip(
                 context,
                 title: widget.tooltipTitle!,
@@ -1030,6 +1044,7 @@ class _InteractiveCardState extends State<_InteractiveCard>
         ),
       ),
       ),
+    ),
     );
   }
 }
