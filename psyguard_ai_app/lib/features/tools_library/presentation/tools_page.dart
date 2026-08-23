@@ -34,7 +34,7 @@ class ToolItem {
 class ToolsPage extends ConsumerWidget {
   const ToolsPage({super.key});
 
-  static const _tools = [
+  static const toolboxItems = [
     ToolItem(
       id: 'self_dialogue',
       name: '自我對話卡',
@@ -94,15 +94,9 @@ class ToolsPage extends ConsumerWidget {
       body: ListView.separated(
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-        itemCount: _tools.length + 1,
+        itemCount: 1,
         separatorBuilder: (_, __) => const SizedBox(height: 16),
-        itemBuilder: (context, index) {
-          if (index == 0) {
-            return ToolShortcuts(isZh: copy.isZhTw);
-          }
-          final tool = _tools[index - 1];
-          return _ToolCard(tool: tool);
-        },
+        itemBuilder: (context, index) => ToolsLayout(isZh: copy.isZhTw),
       ),
     );
   }
@@ -501,5 +495,348 @@ class _ToolShortcutCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+// 貼到 tools_page.dart 檔案最後面（最外層）
+
+/// 工具頁的第四條：心理工具箱入口
+class ToolboxEntry extends StatelessWidget {
+  const ToolboxEntry({super.key, required this.isZh});
+
+  final bool isZh;
+
+  @override
+  Widget build(BuildContext context) {
+    const color = Color(0xFF41C8A0);
+    final hsl = HSLColor.fromColor(color);
+    final onCard = hsl.withSaturation(1.0).withLightness(0.22).toColor();
+    final onCardSoft = hsl.withSaturation(0.85).withLightness(0.36).toColor();
+
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(24),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        splashColor: color.withValues(alpha: 0.3),
+        onTap: () => context.push('/toolbox'),
+        child: Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white,
+                Color.alphaBlend(color.withValues(alpha: 0.14), Colors.white),
+                Color.alphaBlend(color.withValues(alpha: 0.38), Colors.white),
+              ],
+              stops: const [0.0, 0.5, 1.0],
+            ),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: color.withValues(alpha: 0.40), width: 4),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.24),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.medical_services_rounded,
+                    color: color, size: 22),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(isZh ? '心理工具箱' : 'Toolbox',
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: onCard)),
+                    const SizedBox(height: 2),
+                    Text(isZh ? '現在就能用的四個方法' : 'Four things you can do now',
+                        style: TextStyle(fontSize: 11, color: onCardSoft)),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right_rounded,
+                  color: onCardSoft, size: 22),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 心理工具箱 — 四個當下就能用的方法
+class ToolboxPage extends ConsumerWidget {
+  const ToolboxPage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final copy = AppStrings.of(ref.watch(appLanguageControllerProvider));
+    return Scaffold(
+      backgroundColor: const Color(0xFFF7FAFC),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          copy.isZhTw ? '心理工具箱' : 'Toolbox',
+          style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: LumiTheme.textPrimary),
+        ),
+      ),
+      body: ListView.separated(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+        itemCount: ToolsPage.toolboxItems.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 16),
+        itemBuilder: (context, index) =>
+            _ToolCard(tool: ToolsPage.toolboxItems[index]),
+      ),
+    );
+  }
+}
+// 貼到 tools_page.dart 檔案最後面（最外層）
+// 取代舊的 ToolShortcuts：左欄兩張方塊，右欄一張方塊 + 四個橫條工具
+
+class ToolsLayout extends StatelessWidget {
+  const ToolsLayout({super.key, required this.isZh});
+
+  final bool isZh;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 左欄
+        Expanded(
+          child: Column(
+            children: [
+              _SquareCard(
+                title: isZh ? '換個角度' : 'Thought Coach',
+                subtitle: isZh ? '同一件事，另一種說法' : 'Reframe a thought',
+                icon: Icons.refresh_rounded,
+                color: const Color(0xFF41C8A0),
+                route: '/thought-coach',
+              ),
+              const SizedBox(height: 14),
+              _SquareCard(
+                title: isZh ? '希望盒' : 'Hope Box',
+                subtitle: isZh ? '撐住你的那些話' : 'Cards that carry you',
+                icon: Icons.favorite_rounded,
+                color: const Color(0xFF7A41C8),
+                route: '/hope-box',
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 14),
+        // 右欄
+        Expanded(
+          child: Column(
+            children: [
+              _SquareCard(
+                title: isZh ? '你常掉進哪一個' : 'Thinking Traps',
+                subtitle: isZh ? '找出你的慣性' : 'Find your patterns',
+                icon: Icons.search_rounded,
+                color: const Color(0xFF417CC8),
+                route: '/distortion-quiz',
+              ),
+              const SizedBox(height: 14),
+              for (final t in ToolsPage.toolboxItems) ...[
+                _CompactToolCard(tool: t),
+                const SizedBox(height: 14),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SquareCard extends StatelessWidget {
+  const _SquareCard({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+    required this.route,
+  });
+
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+  final String route;
+
+  @override
+  Widget build(BuildContext context) {
+    final hsl = HSLColor.fromColor(color);
+    final onCard = hsl.withSaturation(1.0).withLightness(0.22).toColor();
+    final onCardSoft = hsl.withSaturation(0.85).withLightness(0.36).toColor();
+
+    return AspectRatio(
+      aspectRatio: 1.05,
+      child: Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(24),
+          splashColor: color.withValues(alpha: 0.3),
+          onTap: () => context.push(route),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white,
+                  Color.alphaBlend(color.withValues(alpha: 0.14), Colors.white),
+                  Color.alphaBlend(color.withValues(alpha: 0.38), Colors.white),
+                ],
+                stops: const [0.0, 0.5, 1.0],
+              ),
+              borderRadius: BorderRadius.circular(24),
+              border:
+                  Border.all(color: color.withValues(alpha: 0.40), width: 4),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.24),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: color, size: 20),
+                ),
+                const SizedBox(height: 10),
+                Text(title,
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: onCard,
+                        height: 1.15),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 2),
+                Text(subtitle,
+                    style: TextStyle(fontSize: 11, color: onCardSoft),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+// 貼到 tools_page.dart 檔案最後面（最外層）
+// 右欄用的精簡版：只有圖示與標題，點一下直接觸發原本的功能
+
+class _CompactToolCard extends ConsumerWidget {
+  const _CompactToolCard({required this.tool});
+
+  final ToolItem tool;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final copy = AppStrings.of(ref.watch(appLanguageControllerProvider));
+    final name = copy.isZhTw ? tool.name : _englishName(tool.id, tool.name);
+    final hsl = HSLColor.fromColor(tool.color);
+    final onCard = hsl.withSaturation(1.0).withLightness(0.22).toColor();
+
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        splashColor: tool.color.withValues(alpha: 0.3),
+        onTap: () => _ToolCard(tool: tool)._handleToolAction(context, ref),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white,
+                Color.alphaBlend(
+                    tool.color.withValues(alpha: 0.14), Colors.white),
+                Color.alphaBlend(
+                    tool.color.withValues(alpha: 0.34), Colors.white),
+              ],
+              stops: const [0.0, 0.5, 1.0],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border:
+                Border.all(color: tool.color.withValues(alpha: 0.40), width: 3),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: tool.color.withValues(alpha: 0.24),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(tool.icon, color: tool.color, size: 17),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  name,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: onCard,
+                    height: 1.2,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  static String _englishName(String id, String fallback) {
+    switch (id) {
+      case 'self_dialogue':
+        return 'Self-dialogue Card';
+      case 'breathing_478':
+        return '4-7-8 Breathing';
+      case 'grounding_54321':
+        return '5-4-3-2-1 Grounding';
+      case 'emotion_dict':
+        return 'Emotion Dictionary';
+      default:
+        return fallback;
+    }
   }
 }

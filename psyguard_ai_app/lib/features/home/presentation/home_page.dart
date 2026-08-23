@@ -758,72 +758,39 @@ class _HomeContentState extends State<_HomeContent> {
         ),
         const SizedBox(height: 32),
 
-        // ── Explore Section ──────────────────────────
+        // ── 今日待辦 ──────────────────────────────────
+        const SizedBox(height: 28),
+        Text(
+          copy.isZhTw ? '今日待辦' : "Today's list",
+          style: theme.textTheme.titleMedium?.copyWith(
+            color: _bgIsDark(context) ? const Color(0xFFD8DEE6) : null,
+          ),
+        ),
+        const SizedBox(height: 12),
+        _InteractiveCard(
+          title: copy.isZhTw ? '心晴筆記' : 'Notes',
+          subtitle: copy.isZhTw ? '寫下今天' : 'Write today down',
+          icon: Icons.checklist_rounded,
+          color: const Color(0xFF56C841),
+          route: '/checkin',
+        ),
+
+        // ── 季節氛圍 ──────────────────────────────────
+        const SizedBox(height: 24),
         Row(
           children: [
-            Flexible(
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  copy.exploreSelf,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: _bgIsDark(context)
-                        ? const Color(0xFFD8DEE6)
-                        : null,
-                  ),
-                  maxLines: 1,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            // ☀️🏖️ 夏天/暑假：四杯飲料選單（其他氛圍不顯示）
-            // FittedBox：空間不夠時整排等比縮小，不會擠爆版面
             const Flexible(
               child: FittedBox(
                 fit: BoxFit.scaleDown,
-                alignment: Alignment.centerRight,
+                alignment: Alignment.centerLeft,
                 child: DrinkBarStrip(),
               ),
             ),
+            const Spacer(),
+            const ChosenDrinkBadge(),
+            const HongbaoEnvelope(),
           ],
         ),
-        const SizedBox(height: 16),
-        GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
-          mainAxisSpacing: 14,
-          crossAxisSpacing: 14,
-          childAspectRatio: 1.15,
-          children: [
-            ...exploreCards.map((card) {
-            final isBoldTarget =
-                _hasNegativeSignal &&
-                (card['route'] == '/chat' || card['route'] == '/tools');
-            final isShakeTarget = _isHighRisk && (card['route'] == '/safety');
-
-            return MicroShake(
-              enabled: isShakeTarget,
-              child: _InteractiveCard(
-                title: card['title'] as String,
-                subtitle: card['subtitle'] as String,
-                icon: card['icon'] as IconData,
-                color: card['color'] as Color,
-                route: card['route'] as String,
-                isBold: isBoldTarget,
-                tooltipTitle: card['title'] as String,
-                tooltipDescription: card['tooltip'] as String,
-              ),
-            );
-          }),
-            // 年度總覽旁的空位：雪系氛圍時企鵝來窩著
-            const _CornerPenguin(),
-          ],
-        ),
-        const SizedBox(height: 32),
-
-        // 🐧 冬天顯示企鵝巢；非冬天企鵝回 igloo
         Consumer(builder: (context, ref, _) {
           final m = ref.watch(moodThemeProvider);
           final isWinter = m.fallEffect == FallEffectType.snow;
@@ -837,133 +804,24 @@ class _HomeContentState extends State<_HomeContent> {
                 ? KeyedSubtree(
                     key: const ValueKey('penguin-nest'),
                     child: PenguinNestRow(isZh: copy.isZhTw))
-                // igloo 已經移進第六格了，中間這塊不再顯示東西
                 : const KeyedSubtree(
                     key: ValueKey('penguin-empty'),
                     child: SizedBox.shrink(),
                   ),
           );
         }),
+        SizedBox(
+          height: 120,
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: const SizedBox(
+              width: 160,
+              height: 120,
+              child: _CornerPenguin(),
+            ),
+          ),
+        ),
 
-        // ── More Functions ───────────────────────────
-        Row(
-          children: [
-            Text(copy.moreFeatures,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: _bgIsDark(context)
-                      ? const Color(0xFFD8DEE6)
-                      : null,
-                )),
-            const Spacer(),
-            // 🥤 你選的那杯飲料（還沒選就不顯示）
-            const ChosenDrinkBadge(),
-            // 🧧 過年：紅包固定在這裡（其他氛圍不顯示，和飲料吧不會同框）
-            const HongbaoEnvelope(),
-          ],
-        ),
-        const SizedBox(height: 16),
-        GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
-          mainAxisSpacing: 14,
-          crossAxisSpacing: 14,
-          childAspectRatio: 1.15,
-          children: [
-            MicroShake(
-              enabled: _isHighRisk,
-              child: _InteractiveCard(
-                title: copy.navTools,
-                subtitle: copy.moodFirstAid,
-                icon: Icons.medical_services_rounded,
-                color: const Color(0xFF41C8A0),
-                route: '/tools',
-                isBold: _hasNegativeSignal,
-                tooltipTitle: copy.navTools,
-                tooltipDescription: copy.isZhTw
-                    ? '開始不安的時候，這裡有幾個能穩住自己的方法。'
-                    : 'When you start to feel unsettled, these tools can help you steady yourself.',
-              ),
-            ),
-            _InteractiveCard(
-              title: copy.navExport,
-              subtitle: copy.sevenDaySummary,
-              icon: Icons.mark_email_read_rounded,
-              color: const Color(0xFF41B6C8),
-              route: '/export',
-              tooltipTitle: copy.navExport,
-              tooltipDescription: copy.isZhTw
-                  ? '把你的狀態整理成一份安心，需要時也能分享給專業的人。'
-                  : 'Turn your records into a clear summary you can share with a professional.',
-            ),
-            _InteractiveCard(
-              title: copy.isZhTw ? '思考教練' : 'Thought Coach',
-              subtitle: copy.isZhTw ? '同一件事，另一種說法' : 'Reframe a thought',
-              icon: Icons.psychology_rounded,
-              color: const Color(0xFF417CC8),
-              route: '/thought-coach',
-              tooltipTitle: copy.isZhTw ? '思考教練' : 'Thought Coach',
-              tooltipDescription: copy.isZhTw
-                  ? '卡在同一個念頭時，用 CBT 的方法拆開來看。'
-                  : 'Stuck in a negative thought? Let me guide you to reframe it with CBT.',
-            ),
-            _InteractiveCard(
-              title: copy.isZhTw ? '你常掉進哪一個' : 'Thinking Traps',
-              subtitle: copy.isZhTw ? '測你的思考習慣' : 'Discover your patterns',
-              icon: Icons.quiz_rounded,
-              color: const Color(0xFF4143C8),
-              route: '/distortion-quiz',
-              tooltipTitle: copy.isZhTw ? '你常掉進哪一個' : 'Thinking Traps',
-              tooltipDescription: copy.isZhTw
-                  ? '12 題測驗，找出你最容易掉進的思考陷阱。'
-                  : '12 questions to reveal your most common thinking trap.',
-            ),
-            _InteractiveCard(
-              title: copy.isZhTw ? '本週人設' : 'Weekly Persona',
-              subtitle: copy.isZhTw ? '這週的你是哪隻動物' : 'Your animal this week',
-              icon: Icons.pets_rounded,
-              color: const Color(0xFF7A41C8),
-              route: '/weekly-persona',
-              tooltipTitle: copy.isZhTw ? '本週人設' : 'Weekly Persona',
-              tooltipDescription: copy.isZhTw
-                  ? '根據這週的心情，給你一張專屬的動物人設卡。'
-                  : 'Get an animal persona card based on your week\'s mood.',
-            ),
-            _InteractiveCard(
-              title: copy.isZhTw ? '希望盒' : 'Hope Box',
-              subtitle: copy.isZhTw ? '撐住你的那些話' : 'Cards that carry you',
-              icon: Icons.auto_awesome_rounded,
-              color: const Color(0xFFB341C8),
-              route: '/hope-box',
-              tooltipTitle: copy.isZhTw ? '希望盒' : 'Hope Box',
-              tooltipDescription: copy.isZhTw
-                  ? '平靜時收藏能讓你站起來的話，難過時打開來看。'
-                  : 'Collect words that lift you up.',
-            ),
-            _InteractiveCard(
-              title: copy.isZhTw ? '我的 Pacers' : 'My Pacers',
-              subtitle: copy.isZhTw ? '有人這樣對你說過' : 'Words you saved',
-              icon: Icons.bookmark_rounded,
-              color: const Color(0xFFC841A3),
-              route: '/bookmark',
-              tooltipTitle: copy.isZhTw ? '我的 Pacers' : 'My Pacers',
-              tooltipDescription: copy.isZhTw
-                  ? '存下有人對你說過、想一直記得的話，需要時打開來看。'
-                  : 'Save the words someone said that you want to keep.',
-            ),
-            _InteractiveCard(
-              title: copy.isZhTw ? '嘿，在嗎？' : 'Hey, Luna?',
-              subtitle: copy.isZhTw ? '聲控喚醒Luna' : 'Voice wake Luna',
-              icon: Icons.mic_rounded,
-              color: const Color(0xFFC84169),
-              route: '/voice',
-              tooltipTitle: copy.isZhTw ? '聲控喚醒' : 'Voice Wake',
-              tooltipDescription: copy.isZhTw
-                  ? '說「嘿，在嗎？」，直接講出來就好。'
-                  : 'Say "Hey Luna" to wake up your companion.',
-            ),
-          ],
-        ),
 
         const SizedBox(height: 40),
       ],

@@ -226,6 +226,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             _buildPageWithSlide(context, state, const UsageStatsPage()),
       ),
       GoRoute(
+        path: '/toolbox',
+        name: 'toolbox',
+        pageBuilder: (context, state) =>
+            _buildPageWithSlide(context, state, const ToolboxPage()),
+      ),
+      GoRoute(
         path: '/profile',
         name: 'profile',
         pageBuilder: (context, state) =>
