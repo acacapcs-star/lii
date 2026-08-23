@@ -81,5 +81,6 @@ flutter:
     - assets/icon.png
     - assets/lii_logo.svg
     - assets/images/
+    - assets/images/bg/
     - .env
     - .env.example

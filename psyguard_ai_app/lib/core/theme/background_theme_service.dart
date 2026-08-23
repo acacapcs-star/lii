@@ -8,11 +8,36 @@ enum BgMode { light, dark }
 // 淺色模式下可選的兩種顏色；深色模式下可選的兩種顏色
 enum BgColorChoice { blueLight, greenLight, navyDark, forestDark }
 
+/// 首頁背景圖。none 表示只用底色。
+enum BgImage { none, night, sea, dawn, forest }
+
+extension BgImageAsset on BgImage {
+  String? get asset => switch (this) {
+        BgImage.none => null,
+        BgImage.night => 'assets/images/bg/bg_night.png',
+        BgImage.sea => 'assets/images/bg/bg_sea.png',
+        BgImage.dawn => 'assets/images/bg/bg_dawn.png',
+        BgImage.forest => 'assets/images/bg/bg_forest.png',
+      };
+
+  String label(bool zh) => switch (this) {
+        BgImage.none => zh ? '不用圖片' : 'No image',
+        BgImage.night => zh ? '夜空' : 'Night',
+        BgImage.sea => zh ? '海面' : 'Sea',
+        BgImage.dawn => zh ? '日出' : 'Dawn',
+        BgImage.forest => zh ? '森林' : 'Forest',
+      };
+}
+
 class BackgroundThemeState {
   final BgMode mode;
   final BgColorChoice colorChoice;
 
-  const BackgroundThemeState({required this.mode, required this.colorChoice});
+  const BackgroundThemeState({
+    required this.mode,
+    required this.colorChoice,
+    this.image = BgImage.none,
+  });
 
   Color get backgroundColor {
     switch (colorChoice) {
@@ -27,16 +52,24 @@ class BackgroundThemeState {
     }
   }
 
-  BackgroundThemeState copyWith({BgMode? mode, BgColorChoice? colorChoice}) {
+  final BgImage image;
+
+  BackgroundThemeState copyWith({
+    BgMode? mode,
+    BgColorChoice? colorChoice,
+    BgImage? image,
+  }) {
     return BackgroundThemeState(
       mode: mode ?? this.mode,
       colorChoice: colorChoice ?? this.colorChoice,
+      image: image ?? this.image,
     );
   }
 }
 
 class BackgroundThemeController extends StateNotifier<BackgroundThemeState> {
   static const _modeKey = 'bg_theme_mode';
+  static const _imageKey = 'bg_image';
   static const _colorKey = 'bg_theme_color';
 
   BackgroundThemeController()
@@ -65,7 +98,14 @@ class BackgroundThemeController extends StateNotifier<BackgroundThemeState> {
         colorChoice = mode == BgMode.dark ? BgColorChoice.navyDark : BgColorChoice.blueLight;
     }
 
-    state = BackgroundThemeState(mode: mode, colorChoice: colorChoice);
+    final imgStr = prefs.getString(_imageKey);
+    final img = BgImage.values.firstWhere(
+      (e) => e.name == imgStr,
+      orElse: () => BgImage.none,
+    );
+
+    state = BackgroundThemeState(
+        mode: mode, colorChoice: colorChoice, image: img);
   }
 
   Future<void> toggleMode() async {
@@ -79,6 +119,12 @@ class BackgroundThemeController extends StateNotifier<BackgroundThemeState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_modeKey, newMode == BgMode.dark ? 'dark' : 'light');
     await prefs.setString(_colorKey, newColor.name);
+  }
+
+  Future<void> setImage(BgImage img) async {
+    state = state.copyWith(image: img);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_imageKey, img.name);
   }
 
   Future<void> setColor(BgColorChoice choice) async {
