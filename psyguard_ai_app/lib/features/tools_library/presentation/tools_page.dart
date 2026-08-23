@@ -369,3 +369,137 @@ const _englishSelfCompassionQuotes = [
   'Take a breath. I am here. I am safe in this moment.',
   'I can speak to myself with the same kindness I would offer a good friend.',
 ];
+// 貼到 tools_page.dart 檔案最後面（最外層，不要放在任何 class 裡面）
+
+class ToolShortcuts extends StatelessWidget {
+  const ToolShortcuts({super.key, required this.isZh});
+
+  final bool isZh;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = <(String, String, IconData, Color, String)>[
+      (
+        isZh ? '換個角度' : 'Thought Coach',
+        isZh ? '同一件事，另一種說法' : 'Reframe a thought',
+        Icons.refresh_rounded,
+        const Color(0xFF41C8A0),
+        '/thought-coach',
+      ),
+      (
+        isZh ? '你常掉進哪一個' : 'Thinking Traps',
+        isZh ? '找出你的慣性' : 'Find your patterns',
+        Icons.search_rounded,
+        const Color(0xFF417CC8),
+        '/distortion-quiz',
+      ),
+      (
+        isZh ? '希望盒' : 'Hope Box',
+        isZh ? '撐住你的那些話' : 'Cards that carry you',
+        Icons.favorite_rounded,
+        const Color(0xFF7A41C8),
+        '/hope-box',
+      ),
+    ];
+
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      mainAxisSpacing: 12,
+      crossAxisSpacing: 12,
+      childAspectRatio: 1.25,
+      children: [
+        for (final it in items)
+          _ToolShortcutCard(
+            title: it.$1,
+            subtitle: it.$2,
+            icon: it.$3,
+            color: it.$4,
+            route: it.$5,
+          ),
+      ],
+    );
+  }
+}
+
+class _ToolShortcutCard extends StatelessWidget {
+  const _ToolShortcutCard({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+    required this.route,
+  });
+
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+  final String route;
+
+  @override
+  Widget build(BuildContext context) {
+    final hsl = HSLColor.fromColor(color);
+    final onCard = hsl.withSaturation(1.0).withLightness(0.22).toColor();
+    final onCardSoft = hsl.withSaturation(0.85).withLightness(0.36).toColor();
+
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(24),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        splashColor: color.withValues(alpha: 0.3),
+        onTap: () => context.push(route),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white,
+                Color.alphaBlend(color.withValues(alpha: 0.14), Colors.white),
+                Color.alphaBlend(color.withValues(alpha: 0.38), Colors.white),
+              ],
+              stops: const [0.0, 0.5, 1.0],
+            ),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: color.withValues(alpha: 0.40), width: 4),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.24),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 20),
+              ),
+              const SizedBox(height: 10),
+              Text(title,
+                  style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: onCard,
+                      height: 1.15),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis),
+              const SizedBox(height: 2),
+              Text(subtitle,
+                  style: TextStyle(fontSize: 11, color: onCardSoft),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
