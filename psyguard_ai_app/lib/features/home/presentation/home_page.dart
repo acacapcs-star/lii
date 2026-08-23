@@ -172,6 +172,24 @@ class HomePage extends ConsumerWidget {
           child: Stack(
           children: [
             // ☀️ 夏天全頁魚池（視覺層，墊在卡片後面）
+            Positioned.fill(
+              child: Builder(builder: (context) {
+                final bg = ref.watch(backgroundThemeProvider);
+                final asset = bg.image.asset;
+                if (asset == null) return const SizedBox.shrink();
+                return Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.asset(asset, fit: BoxFit.cover),
+                    Container(
+                      color: bg.mode == BgMode.dark
+                          ? Colors.black.withValues(alpha: 0.40)
+                          : Colors.white.withValues(alpha: 0.20),
+                    ),
+                  ],
+                );
+              }),
+            ),
             const Positioned.fill(child: FishVisualLayer()),
             // 原本的首頁內容
             Positioned.fill(
@@ -1377,6 +1395,8 @@ class _SunMoonToggle extends ConsumerWidget {
               children: [
                 Text(AppStrings.of(ref.watch(appLanguageControllerProvider)).isZhTw ? '選擇底色' : 'Pick a background', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 16),
+                _BgImagePicker(),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: options.map((opt) {
@@ -2543,6 +2563,72 @@ class _ThisMonthCardState extends State<ThisMonthCard> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// 底色選單裡的背景圖片選擇器
+class _BgImagePicker extends ConsumerWidget {
+  const _BgImagePicker();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final current = ref.watch(backgroundThemeProvider).image;
+    final zh =
+        AppStrings.of(ref.watch(appLanguageControllerProvider)).isZhTw;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(height: 20),
+        Text(zh ? '背景圖片' : 'Background image',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          alignment: WrapAlignment.center,
+          children: [
+            for (final img in BgImage.values)
+              GestureDetector(
+                onTap: () =>
+                    ref.read(backgroundThemeProvider.notifier).setImage(img),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 54,
+                      height: 82,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF0F0F0),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: current == img
+                              ? const Color(0xFF2A2E45)
+                              : const Color(0xFFE0E0E0),
+                          width: current == img ? 3 : 1,
+                        ),
+                        image: img.asset == null
+                            ? null
+                            : DecorationImage(
+                                image: AssetImage(img.asset!),
+                                fit: BoxFit.cover,
+                              ),
+                      ),
+                      child: img.asset == null
+                          ? const Icon(Icons.block_rounded,
+                              size: 18, color: Color(0xFF9E9E9E))
+                          : null,
+                    ),
+                    const SizedBox(height: 5),
+                    Text(img.label(zh), style: const TextStyle(fontSize: 10)),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ],
     );
   }
 }
