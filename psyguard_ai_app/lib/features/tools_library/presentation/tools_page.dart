@@ -94,10 +94,13 @@ class ToolsPage extends ConsumerWidget {
       body: ListView.separated(
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-        itemCount: _tools.length,
+        itemCount: _tools.length + 1,
         separatorBuilder: (_, __) => const SizedBox(height: 16),
         itemBuilder: (context, index) {
-          final tool = _tools[index];
+          if (index == 0) {
+            return ToolShortcuts(isZh: copy.isZhTw);
+          }
+          final tool = _tools[index - 1];
           return _ToolCard(tool: tool);
         },
       ),
