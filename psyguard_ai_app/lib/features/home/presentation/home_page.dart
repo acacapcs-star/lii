@@ -594,14 +594,14 @@ class _HomeContentState extends State<_HomeContent> {
             : 'Write down what you feel so you can see and understand it more gently.',
       ),
       _cardData(
-        copy.trendsTitle,
-        copy.healthDataTrends,
-        Icons.favorite_rounded,
-        const Color(0xFFC88D41),
-        '/trends',
+        copy.navSleep,
+        copy.sleepStatus,
+        Icons.bedtime_outlined,
+        const Color(0xFF8FC841),
+        '/sleep',
         copy.isZhTw
-            ? '用溫柔的方式，看見你的變化，一步步找回自己的節奏。'
-            : 'See your changes gently and find your rhythm step by step.',
+            ? '看見每晚的睡眠變化，慢慢找回適合自己的作息節奏。'
+            : 'Track nightly sleep changes and rebuild a rhythm that fits you.',
       ),
       _cardData(
         copy.navChat,
@@ -614,34 +614,14 @@ class _HomeContentState extends State<_HomeContent> {
             : "You don't have to organise it first. Just write.",
       ),
       _cardData(
-        copy.navSleep,
-        copy.sleepStatus,
-        Icons.bedtime_outlined,
-        const Color(0xFF8FC841),
-        '/sleep',
+        copy.isZhTw ? '嘿，在嗎？' : 'Hey, Luna?',
+        copy.isZhTw ? '聲控喚醒Luna' : 'Voice wake Luna',
+        Icons.mic_rounded,
+        const Color(0xFFC84169),
+        '/voice',
         copy.isZhTw
-            ? '看見每晚的睡眠變化，慢慢找回適合自己的作息節奏。'
-            : 'Track nightly sleep changes and rebuild a rhythm that fits you.',
-      ),
-      _cardData(
-        copy.isZhTw ? '我的專屬格言' : 'My Quote Cards',
-        copy.isZhTw ? '手作暖話卡' : 'Make your own',
-        Icons.auto_awesome_rounded,
-        const Color(0xFF41C866),
-        '/my-cards',
-        copy.isZhTw
-            ? '自己做暖話卡：選底色、字體、加照片，寫下屬於你的格言。'
-            : 'Make your own quote card — pick a color, font, photo, and words.',
-      ),
-      _cardData(
-        copy.isZhTw ? '我的水晶' : 'My Crystals',
-        copy.isZhTw ? '呼吸換來的六顆' : 'Earned by breathing',
-        Icons.diamond_outlined,
-        const Color(0xFF41B6C8),
-        'crystal',
-        copy.isZhTw
-            ? '六顆水晶只能靠呼吸換來，不是買的也不是抽的。'
-            : 'Six crystals, each earned by breathing — never bought or drawn.',
+            ? '說「嘿，在嗎？」，直接講出來就好。'
+            : 'Say "Hey Luna" to wake up your companion.',
       ),
     ];
 
@@ -833,6 +813,29 @@ class _HomeContentState extends State<_HomeContent> {
           crossAxisSpacing: 14,
           childAspectRatio: 1.15,
           children: [
+            _InteractiveCard(
+              title: copy.isZhTw ? '我的水晶' : 'My Crystals',
+              subtitle: copy.isZhTw ? '呼吸換來的六顆' : 'Earned by breathing',
+              icon: Icons.diamond_outlined,
+              color: const Color(0xFF41B6C8),
+              route: 'crystal',
+              onTapOverride: () => showCrystalCollection(context),
+              tooltipTitle: copy.isZhTw ? '我的水晶' : 'My Crystals',
+              tooltipDescription: copy.isZhTw
+                  ? '六顆水晶只能靠呼吸換來，不是買的也不是抽的。'
+                  : 'Six crystals, each earned by breathing.',
+            ),
+            _InteractiveCard(
+              title: copy.trendsTitle,
+              subtitle: copy.healthDataTrends,
+              icon: Icons.favorite_rounded,
+              color: const Color(0xFFC88D41),
+              route: '/trends',
+              tooltipTitle: copy.trendsTitle,
+              tooltipDescription: copy.isZhTw
+                  ? '用溫柔的方式，看見你的變化，一步步找回自己的節奏。'
+                  : 'See your changes gently and find your rhythm step by step.',
+            ),
             MicroShake(
               enabled: _isHighRisk,
               child: _InteractiveCard(
@@ -859,6 +862,37 @@ class _HomeContentState extends State<_HomeContent> {
                   ? '把你的狀態整理成一份安心，需要時也能分享給專業的人。'
                   : 'Turn your records into a clear summary you can share with a professional.',
             ),
+          ],
+        ),
+
+        // ── 看看自己 ──────────────────────────────────
+        const SizedBox(height: 32),
+        Text(
+          copy.isZhTw ? '看看自己' : 'Look back',
+          style: theme.textTheme.titleMedium?.copyWith(
+            color: _bgIsDark(context) ? const Color(0xFFD8DEE6) : null,
+          ),
+        ),
+        const SizedBox(height: 16),
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          mainAxisSpacing: 14,
+          crossAxisSpacing: 14,
+          childAspectRatio: 1.15,
+          children: [
+            _InteractiveCard(
+              title: copy.isZhTw ? '我的專屬格言' : 'My Quote Cards',
+              subtitle: copy.isZhTw ? '手作暖話卡' : 'Make your own',
+              icon: Icons.auto_awesome_rounded,
+              color: const Color(0xFF41C866),
+              route: '/my-cards',
+              tooltipTitle: copy.isZhTw ? '我的專屬格言' : 'My Quote Cards',
+              tooltipDescription: copy.isZhTw
+                  ? '自己寫一張卡片，難過的時候拿出來看。'
+                  : 'Write your own card and keep it for a hard day.',
+            ),
             _InteractiveCard(
               title: copy.isZhTw ? '我的 Pacers' : 'My Pacers',
               subtitle: copy.isZhTw ? '有人這樣對你說過' : 'Words you saved',
@@ -869,17 +903,6 @@ class _HomeContentState extends State<_HomeContent> {
               tooltipDescription: copy.isZhTw
                   ? '存下有人對你說過、想一直記得的話，需要時打開來看。'
                   : 'Save the words someone said that you want to keep.',
-            ),
-            _InteractiveCard(
-              title: copy.isZhTw ? '嘿，在嗎？' : 'Hey, Luna?',
-              subtitle: copy.isZhTw ? '聲控喚醒Luna' : 'Voice wake Luna',
-              icon: Icons.mic_rounded,
-              color: const Color(0xFFC84169),
-              route: '/voice',
-              tooltipTitle: copy.isZhTw ? '聲控喚醒' : 'Voice Wake',
-              tooltipDescription: copy.isZhTw
-                  ? '說「嘿，在嗎？」，直接講出來就好。'
-                  : 'Say "Hey Luna" to wake up your companion.',
             ),
           ],
         ),
