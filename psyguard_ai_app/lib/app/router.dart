@@ -7,6 +7,7 @@ import '../core/security/local_settings_service.dart';
 import '../features/chat/presentation/chat_page.dart';
 import '../features/checkin/presentation/checkin_history_page.dart';
 import '../features/checkin/presentation/checkin_page.dart';
+import '../features/checkin/presentation/note_page.dart';
 import '../features/export/presentation/export_page.dart';
 import '../features/home/presentation/home_page.dart';
 import '../features/hopebox/presentation/hope_box_page.dart';
@@ -230,6 +231,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'toolbox',
         pageBuilder: (context, state) =>
             _buildPageWithSlide(context, state, const ToolboxPage()),
+      ),
+      GoRoute(
+        path: '/notes',
+        name: 'notes',
+        pageBuilder: (context, state) =>
+            _buildPageWithSlide(context, state, const NotePage()),
       ),
       GoRoute(
         path: '/profile',

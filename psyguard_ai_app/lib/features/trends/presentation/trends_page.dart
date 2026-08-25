@@ -1059,6 +1059,7 @@ class RecordShortcuts extends StatelessWidget {
     ];
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (var i = 0; i < items.length; i++) ...[
           _ShortcutCard(

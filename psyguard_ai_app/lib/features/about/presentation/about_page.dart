@@ -66,10 +66,10 @@ class AboutPage extends ConsumerWidget {
                 child: const Icon(Icons.favorite_rounded, color: teal, size: 36),
               ),
               const SizedBox(height: 12),
-              const Text('PsyGuard AI',
+              const Text('lii',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
               const SizedBox(height: 2),
-              Text(zh ? '\u9752\u5c11\u5e74\u8eab\u5fc3\u9663\u4f34 App' : 'A companion app for teen wellbeing',
+              Text(zh ? '\u8d8a\u7cdf\u7684\u6642\u5019\uff0c\u8aaa\u5f97\u8d8a\u5c11' : 'The worse it gets, the less lii says',
                   style: const TextStyle(fontSize: 13, color: Color(0xFF7A8896))),
               const SizedBox(height: 2),
               const Text('v1.0.0',
@@ -95,6 +95,25 @@ class AboutPage extends ConsumerWidget {
           para(zh
               ? '\u8aa0\u5be6\u8072\u660e\uff1a\u7db2\u9801\u7248\u7f3a\u5c11\u786c\u9ad4\u7d1a\u4fdd\u8b77\uff0c\u6700\u5f37\u7684\u4fdd\u8b77\u5728\u539f\u751f iOS / Android \u7248\u672c\uff1b\u7db2\u9801\u7248\u9069\u5408\u5c55\u793a\u8207\u8a66\u7528\u3002'
               : 'Honest note: the web build lacks hardware-backed protection; the strongest guarantees are on native iOS / Android. The web build is for demo and trial.'),
+          sectionTitle(zh ? '\ud83c\udfdb \u4e3b\u7ba1\u6a5f\u95dc\u6307\u5c0e' : '\ud83c\udfdb Regulatory alignment'),
+          para(zh
+              ? '\u53f0\u4e2d\u5e02\u653f\u5e9c\u6559\u80b2\u5c40\u65bc 2026 \u5e74 4 \u6708 23 \u65e5\u63d0\u4f9b\u66f8\u9762\u884c\u653f\u6307\u5c0e\uff08\u6848\u865f 115-E018647\uff09\u3002\u4ee5\u4e0b\u662f lii \u4f9d\u64da\u8a72\u6307\u5c0e\u6240\u505a\u7684\u8a2d\u8a08\u3002'
+              : 'The Taichung City Education Bureau issued written guidance on 23 April 2026 (case no. 115-E018647). Below is how lii is designed against it.'),
+          bullet(zh
+              ? '\u500b\u8cc7\u6cd5\uff1a\u555f\u52d5\u6642\u53d6\u5f97\u540c\u610f\uff1b\u8f14\u5c0e\u7d71\u8a08\u8207\u7d05\u71c8\u901a\u5831\u662f\u5169\u500b\u7368\u7acb\u3001\u53ef\u5206\u5225\u64a4\u56de\u7684\u6388\u6b0a\u3002'
+              : 'Personal Data Protection Act: consent at launch; counsellor statistics and red-tier notification are two independent, separately withdrawable permissions.'),
+          bullet(zh
+              ? '\u5152\u5c11\u6b0a\u6cd5\uff1a\u7d05\u71c8\u6642\u64a4\u56de\u6392\u540d\u8207\u6bd4\u8f03\uff1b\u8001\u5e2b\u53ea\u770b\u5f97\u5230\u4e00\u500b\u53bb\u8b58\u5225\u5316\u7684\u6578\u5b57\uff0c\u770b\u4e0d\u5230\u65e5\u8a18\u7684\u4efb\u4f55\u4e00\u884c\u3002'
+              : 'Child and Youth Welfare Act: ranking and comparison are withdrawn at the red tier; a teacher sees one de-identified number and never a line of the journal.'),
+          bullet(zh
+              ? '\u5b78\u751f\u8f14\u5c0e\u6cd5\uff1a\u65e5\u8a18\u4ee5 AES-256-GCM \u5728\u672c\u6a5f\u52a0\u5bc6\uff1b\u91d1\u9470\u53ea\u5b58\u65bc Keychain / Secure Enclave / Keystore\uff0c\u4e0d\u96e2\u958b\u624b\u6a5f\u3002'
+              : 'Student Guidance Act: the journal is encrypted on device with AES-256-GCM; the key lives only in Keychain / Secure Enclave / Keystore and never leaves the phone.'),
+          bullet(zh
+              ? '\u4e09\u7d1a\u9810\u9632\uff1a\u7da0\u71c8\u4e0d\u6253\u64fe\uff1b\u9ec3\u71c8\u4e00\u53e5\u8a71\u5f8c\u9000\u958b\uff1b\u7d05\u71c8\u81ea\u52d5\u958b\u555f\u5b89\u5168\u6d41\u7a0b\u4e26\u6307\u5411\u5177\u540d\u670d\u52d9\u3002'
+              : 'Three-tier prevention: green does not interrupt; amber leaves one note and steps back; red opens the safety flow and points to staffed services.'),
+          para(zh
+              ? '\u8a72\u56de\u51fd\u70ba\u5efa\u8b70\u6027\u884c\u653f\u6307\u5c0e\uff0c\u4e0d\u662f\u80cc\u66f8\u3001\u8a8d\u8b49\u6216\u6838\u51c6\u3002'
+              : 'The reply is advisory guidance — not an endorsement, certification or approval.'),
           sectionTitle(zh ? '\u26a0\ufe0f \u4f7f\u7528\u8072\u660e' : '\u26a0\ufe0f Disclaimer'),
           para(zh
               ? '\u672c App \u70ba\u8eab\u5fc3\u9663\u4f34\u8207\u81ea\u6211\u89ba\u5bdf\u5de5\u5177\uff0c\u4e0d\u80fd\u53d6\u4ee3\u5c08\u696d\u91ab\u7642\u3001\u8ae2\u5546\u6216\u5371\u6a5f\u8655\u7406\u3002\u82e5\u4f60\u6216\u8eab\u908a\u7684\u4eba\u6709\u7acb\u5373\u5371\u96aa\uff0c\u8acb\u806f\u7d61\u7576\u5730\u7dca\u6025\u670d\u52d9\u6216\u4fe1\u4efb\u7684\u5927\u4eba\u3002'
