@@ -624,16 +624,6 @@ class _HomeContentState extends State<_HomeContent> {
             : 'Track nightly sleep changes and rebuild a rhythm that fits you.',
       ),
       _cardData(
-        copy.isZhTw ? '年度總覽' : 'Year Overview',
-        copy.isZhTw ? '重點行事曆' : 'Key Calendar',
-        Icons.calendar_month_rounded,
-        const Color(0xFF56C841),
-        '/calendar-overview',
-        copy.isZhTw
-            ? '一眼看見全年重要事項，紅色緊急、黃色重要，一目了然。'
-            : 'See all important items at a glance — red for urgent, yellow for important.',
-      ),
-      _cardData(
         copy.isZhTw ? '我的專屬格言' : 'My Quote Cards',
         copy.isZhTw ? '手作暖話卡' : 'Make your own',
         Icons.auto_awesome_rounded,
@@ -642,6 +632,16 @@ class _HomeContentState extends State<_HomeContent> {
         copy.isZhTw
             ? '自己做暖話卡：選底色、字體、加照片，寫下屬於你的格言。'
             : 'Make your own quote card — pick a color, font, photo, and words.',
+      ),
+      _cardData(
+        copy.isZhTw ? '我的水晶' : 'My Crystals',
+        copy.isZhTw ? '呼吸換來的六顆' : 'Earned by breathing',
+        Icons.diamond_outlined,
+        const Color(0xFF41B6C8),
+        'crystal',
+        copy.isZhTw
+            ? '六顆水晶只能靠呼吸換來，不是買的也不是抽的。'
+            : 'Six crystals, each earned by breathing — never bought or drawn.',
       ),
     ];
 
@@ -771,6 +771,9 @@ class _HomeContentState extends State<_HomeContent> {
                 icon: card['icon'] as IconData,
                 color: card['color'] as Color,
                 route: card['route'] as String,
+                onTapOverride: card['route'] == 'crystal'
+                    ? () => showCrystalCollection(context)
+                    : null,
                 isBold: isBoldTarget,
                 tooltipTitle: card['title'] as String,
                 tooltipDescription: card['tooltip'] as String,
@@ -855,50 +858,6 @@ class _HomeContentState extends State<_HomeContent> {
               tooltipDescription: copy.isZhTw
                   ? '把你的狀態整理成一份安心，需要時也能分享給專業的人。'
                   : 'Turn your records into a clear summary you can share with a professional.',
-            ),
-            _InteractiveCard(
-              title: copy.isZhTw ? '思考教練' : 'Thought Coach',
-              subtitle: copy.isZhTw ? '同一件事，另一種說法' : 'Reframe a thought',
-              icon: Icons.psychology_rounded,
-              color: const Color(0xFF417CC8),
-              route: '/thought-coach',
-              tooltipTitle: copy.isZhTw ? '思考教練' : 'Thought Coach',
-              tooltipDescription: copy.isZhTw
-                  ? '卡在同一個念頭時，用 CBT 的方法拆開來看。'
-                  : 'Stuck in a negative thought? Let me guide you to reframe it with CBT.',
-            ),
-            _InteractiveCard(
-              title: copy.isZhTw ? '你常掉進哪一個' : 'Thinking Traps',
-              subtitle: copy.isZhTw ? '測你的思考習慣' : 'Discover your patterns',
-              icon: Icons.quiz_rounded,
-              color: const Color(0xFF4143C8),
-              route: '/distortion-quiz',
-              tooltipTitle: copy.isZhTw ? '你常掉進哪一個' : 'Thinking Traps',
-              tooltipDescription: copy.isZhTw
-                  ? '12 題測驗，找出你最容易掉進的思考陷阱。'
-                  : '12 questions to reveal your most common thinking trap.',
-            ),
-            _InteractiveCard(
-              title: copy.isZhTw ? '本週人設' : 'Weekly Persona',
-              subtitle: copy.isZhTw ? '這週的你是哪隻動物' : 'Your animal this week',
-              icon: Icons.pets_rounded,
-              color: const Color(0xFF7A41C8),
-              route: '/weekly-persona',
-              tooltipTitle: copy.isZhTw ? '本週人設' : 'Weekly Persona',
-              tooltipDescription: copy.isZhTw
-                  ? '根據這週的心情，給你一張專屬的動物人設卡。'
-                  : 'Get an animal persona card based on your week\'s mood.',
-            ),
-            _InteractiveCard(
-              title: copy.isZhTw ? '希望盒' : 'Hope Box',
-              subtitle: copy.isZhTw ? '撐住你的那些話' : 'Cards that carry you',
-              icon: Icons.auto_awesome_rounded,
-              color: const Color(0xFFB341C8),
-              route: '/hope-box',
-              tooltipTitle: copy.isZhTw ? '希望盒' : 'Hope Box',
-              tooltipDescription: copy.isZhTw
-                  ? '平靜時收藏能讓你站起來的話，難過時打開來看。'
-                  : 'Collect words that lift you up.',
             ),
             _InteractiveCard(
               title: copy.isZhTw ? '我的 Pacers' : 'My Pacers',
@@ -1028,6 +987,7 @@ class _InteractiveCard extends StatefulWidget {
     this.isFullWidth = false,
     this.tooltipTitle,
     this.tooltipDescription,
+    this.onTapOverride,
   });
 
   final String title;
@@ -1039,6 +999,7 @@ class _InteractiveCard extends StatefulWidget {
   final bool isFullWidth;
   final String? tooltipTitle;
   final String? tooltipDescription;
+  final VoidCallback? onTapOverride;
 
   @override
   State<_InteractiveCard> createState() => _InteractiveCardState();
@@ -1096,7 +1057,11 @@ class _InteractiveCardState extends State<_InteractiveCard>
           highlightColor: widget.color.withValues(alpha: 0.25),
           onTap: () {
             HapticFeedback.lightImpact();
-            context.push(widget.route);
+            if (widget.onTapOverride != null) {
+              widget.onTapOverride!();
+            } else {
+              context.push(widget.route);
+            }
           },
           onLongPress: () {
             HapticFeedback.mediumImpact();

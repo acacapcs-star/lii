@@ -96,7 +96,17 @@ class ToolsPage extends ConsumerWidget {
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         itemCount: 1,
         separatorBuilder: (_, __) => const SizedBox(height: 16),
-        itemBuilder: (context, index) => ToolsLayout(isZh: copy.isZhTw),
+        itemBuilder: (context, index) => GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          mainAxisSpacing: 14,
+          crossAxisSpacing: 14,
+          childAspectRatio: 1.05,
+          children: [
+            for (final t in toolboxItems) _ToolSquare(tool: t),
+          ],
+        ),
       ),
     );
   }
@@ -845,5 +855,108 @@ class _CompactToolCard extends ConsumerWidget {
       default:
         return fallback;
     }
+  }
+}
+
+/// 工具頁的方塊卡：圖示在上、標題與說明在下，點一下直接執行
+class _ToolSquare extends ConsumerWidget {
+  const _ToolSquare({required this.tool});
+
+  final ToolItem tool;
+
+  static String _en(String id, String fallback) {
+    switch (id) {
+      case 'self_dialogue':
+        return 'Self-dialogue Card';
+      case 'breathing_478':
+        return '4-7-8 Breathing';
+      case 'grounding_54321':
+        return '5-4-3-2-1 Grounding';
+      case 'emotion_dict':
+        return 'Emotion Dictionary';
+      default:
+        return fallback;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final copy = AppStrings.of(ref.watch(appLanguageControllerProvider));
+    final zh = copy.isZhTw;
+    final name = zh ? tool.name : _en(tool.id, tool.name);
+    final hsl = HSLColor.fromColor(tool.color);
+    final onCard = hsl.withSaturation(1.0).withLightness(0.22).toColor();
+    final onCardSoft = hsl.withSaturation(0.85).withLightness(0.36).toColor();
+
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(24),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        splashColor: tool.color.withValues(alpha: 0.3),
+        onTap: () {
+          final card = _ToolCard(tool: tool);
+          if (tool.isInteractive) {
+            card._handleToolAction(context, ref);
+          } else {
+            card._logCompletion(context, ref);
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white,
+                Color.alphaBlend(
+                    tool.color.withValues(alpha: 0.14), Colors.white),
+                Color.alphaBlend(
+                    tool.color.withValues(alpha: 0.38), Colors.white),
+              ],
+              stops: const [0.0, 0.5, 1.0],
+            ),
+            borderRadius: BorderRadius.circular(24),
+            border:
+                Border.all(color: tool.color.withValues(alpha: 0.40), width: 4),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: tool.color.withValues(alpha: 0.24),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(tool.icon, color: tool.color, size: 22),
+              ),
+              const SizedBox(height: 12),
+              Text(name,
+                  style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      height: 1.15,
+                      color: onCard),
+                  softWrap: true),
+              const SizedBox(height: 3),
+              Text(
+                zh
+                    ? tool.description
+                    : (tool.isInteractive ? 'Tap to start' : 'Tap when done'),
+                style: TextStyle(fontSize: 11, height: 1.25, color: onCardSoft),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
