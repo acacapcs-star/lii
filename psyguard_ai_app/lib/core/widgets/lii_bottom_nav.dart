@@ -74,9 +74,7 @@ class LiiBottomNav extends StatelessWidget {
             children: [
               _item(context, LiiTab.home, Icons.home_rounded),
               _item(context, LiiTab.records, Icons.event_note_rounded),
-              _centerItem(context),
               _item(context, LiiTab.tools, Icons.grid_view_rounded),
-              _item(context, LiiTab.profile, Icons.person_rounded),
             ],
           ),
         ),
