@@ -2390,8 +2390,8 @@ class _TodayNotesCardState extends State<TodayNotesCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 左：標題
-              SizedBox(
-                width: 108,
+              Flexible(
+                flex: 4,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -2600,8 +2600,8 @@ class _ThisMonthCardState extends State<ThisMonthCard> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 108,
+              Flexible(
+                flex: 4,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
