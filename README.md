@@ -530,17 +530,17 @@ controller, playing once per call.
 
 ## Information architecture
 
-Fourteen features moved from two card walls to five tabs, sorted by three questions: *would I open this on purpose* (tools), *did I produce it* (records, saved things), *do I set it once and never touch it again* (settings).
+Fourteen features are grouped into four sections on the home screen, sorted by three questions: *would I open this on purpose* (tools), *did I produce it* (things you saved), *do I set it once and never touch it again* (settings, kept in the drawer).
+
+A three-tab bar sits at the foot of the app:
 
 | Tab | Route | Holds |
 |---|---|---|
-| Home | `/home` | Today's status, the four inputs, today's notes, this month |
-| Records | `/trends` | Trends, Weekly Persona, Year Overview, diary timeline |
-| Luna | `/voice` | Centre button. Tap for the voice page, long-press to record |
-| Tools | `/tools` | Thought Coach, Thinking Traps, Hope Box, and four in-the-moment tools |
-| Profile | `/profile` | My Pacers, My Quote Cards, Export, Settings |
+| Home | `/home` | The four sections above |
+| Records | `/trends` | Trend charts, 7/14/30-day slider, personal-vs-group comparison |
+| Tools | `/tools` | Four in-the-moment tools as square cards: Self-dialogue Card, 4-7-8 Breathing, 5-4-3-2-1 Grounding, Emotion Dictionary |
 
-The bottom bar lives in `lib/core/widgets/lii_bottom_nav.dart`. The side drawer is kept as a second path to the same places.
+The bar lives in `lib/core/widgets/lii_bottom_nav.dart`. The side drawer is kept as a second path to everything, including reports, safety flow and settings.
 
 ## Complete feature map
 
@@ -596,18 +596,18 @@ The home screen also carries a draggable Luna Pacer orb (night sky on one side, 
 
 ### Home screen
 
-A greeting with a light/dark toggle, then four swipeable status cards (the first showing today's well-being).
+A greeting with a light/dark toggle, then four swipeable status cards (the first showing today's well-being). Below that, four sections:
 
-Below that, **the four inputs behind today** — Sleep Log, Check-in, Talk it out, Quick voice — grouped in one blue block so the relationship between input and score can be read off the screen.
-
-Then two live cards rather than links:
-
-| Card | Shows |
+| Section | Cards |
 |---|---|
-| **Notes** | Today's items, scrollable inside the card |
-| **This month** | Items marked this month, red and amber dots, expandable |
+| **Explore Yourself** | Check-in · Sleep Log · Talk it out · Hey, Luna? |
+| **Tools** | My Crystals · Trends · Toolbox · Export Report |
+| **Look back** | My Quote Cards · My Pacers |
+| **Today's list** | Notes (today's items, scrollable in-card) · Calendar (this month's marked items, expandable) |
 
-The seasonal layer sits at the foot of the page: drink bar, chosen-drink badge, red envelope, penguin nest, and the corner character that changes with the mood theme.
+The last two are live cards rather than links — they read straight from storage and show content in place.
+
+The seasonal layer sits at the foot of the page: drink bar, chosen-drink badge, red envelope, penguin nest, and the corner character that changes with the mood theme. An administrative-support card appears above everything when the risk tier is high.
 
 ### Settings
 
