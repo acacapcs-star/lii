@@ -649,6 +649,112 @@ bilingual and attributed), `core/settings/font_scale_provider.dart`,
 
 ---
 
+## How the code is layered
+
+The pipeline, end to end:
+
+```
+Input        voice              three sliders         sleep & routine
+               │                      │                     │
+               ▼                      ▼                     ▼
+Features   speech_metrics       stepped normalisation   Drift + SQLite
+           rate·neg·pause       both ends are risk      encrypted on device
+               │                      │                     │
+               └──────────────────────┼─────────────────────┘
+                                      ▼
+Engine                           ers_engine
+                    0.40·language + 0.35·emotion + 0.25·routine
+                     3-day rolling mean · missing stream renormalised
+                                      │
+                 ┌────────────────────┼────────────────────┐
+                 ▼                    ▼                    ▼
+Tiers        GREEN 0–44          AMBER 45–69          RED 70–100
+             nothing withdrawn   prompting withdrawn  ranking withdrawn
+                 │                    │                    │
+                 ▼                    ▼                    ▼
+Output       trend charts        one saved Pacer      safety flow · lines
+```
+
+Four sentences: three inputs; the voice stream yields three features, each stepped rather than mapped linearly because both extremes are risk; the three streams are weighted into one 0–100 score with a 3-day rolling mean, and a missing stream redistributes its weight rather than being zero-filled; the score sets the tier, and **the tier is the only control signal in the system** — it decides how much the interface withdraws.
+
+Running alongside:
+
+```
+user message  ─→ risk_engine         keyword match + protective factors → explainable reasons
+daily close   ─→ cumulative_risk     12-stage scale, asymmetric hysteresis (red +1, three greens −1)
+no entries    ─→ silence_detector    3 days warning, 7 days critical
+written text  ─→ incongruence        severe events, flat affect — the gap is the signal
+```
+
+### Where the lines are
+
+| Layer | Directory | Files | Lines |
+|---|---|---|---|
+| Features | `core/ers/` | 2 | 409 |
+| Engine | `features/ers/` | 7 | 764 |
+| Present-moment risk | `core/risk_engine/` | 3 | 440 |
+| Tiers | `features/ai_safety/` | 1 | 99 |
+| Safety | `core/safety/` | 3 | 694 |
+| Encryption | `core/security/` | 3 | 974 |
+| Privacy | `features/privacy/` | 3 | 105 |
+| Breathing | `core/pacer/` | 2 | 448 |
+| Network | `core/network/` | 6 | 1,132 |
+| Storage | `core/storage/` | 5 | 572 |
+| Crystals | `core/crystals/` | 2 | 412 |
+| CBT | `core/cbt/` | 1 | 246 |
+
+### How the Dart is split
+
+Dart projects are often one undifferentiated pile of widgets. This one is split four ways, and the test is whether a file can be run without an emulator.
+
+**Pure logic — imports no Flutter.**
+
+| File | Lines | Method |
+|---|---|---|
+| `core/pacer/breath_plan.dart` | 317 | Four-stage state machine (overture → ramp → main → outro), linear interpolation from the user's current rate to the target rhythm |
+| `core/risk_engine/risk_engine.dart` | 290 | Bilingual keyword matching with weighted accumulation; protective factors carry negative weight; returns a list of reasons rather than one number |
+| `core/ers/speech_metrics.dart` | 275 | Rate = characters ÷ speaking seconds × 60; negative-word density = word-list intersection ÷ total; pause frequency = count of gaps above threshold |
+| `core/cbt/cbt_service.dart` | 246 | Rule matching across six distortions, with a fallback path when no AI is configured |
+| `core/safety/crisis_lines.dart` | 437 | Immutable constant table; every entry carries a source URL and a `verifiedOn` date |
+| `features/ers/ers_engine.dart` | — | Stepped normalisation, missing-stream renormalisation, personal-baseline offset |
+| `features/ers/cumulative_risk_engine.dart` | — | 12-state finite state machine with asymmetric hysteresis |
+| `features/ers/incongruence_detector.dart` | — | Four-dimension scoring; the gap between event severity and emotional intensity is the output |
+
+These import no Flutter, so `flutter test` runs them without starting an emulator. `breath_plan.dart` is 317 lines of nothing but algorithm — deliberately, because a wrong breathing rhythm does not crash, it just makes an anxious person more anxious. **Errors that do not raise can only be caught by tests.**
+
+**Service layer — state and IO, no drawing.**
+
+| File | Method |
+|---|---|
+| `core/storage/app_database.dart` | Declarative Drift tables; `build_runner` generates `app_database.g.dart` (5,231 lines, excluded from the handwritten count). Native and web executors share one schema |
+| `core/security/secret_diary_lock.dart` | AES-256-GCM; the key is wrapped in an envelope with three unwrap paths — PBKDF2 at 30,000 iterations, Keychain biometrics, recovery code |
+| `core/network/ai_chat_repository.dart` | Sliding-window context with summarisation: past a threshold the earlier turns are compressed into a summary before sending |
+| `core/safety/safety_flow_service.dart` | Different step sequences per tier; high risk begins at Step 0 — secure immediate safety first |
+
+**Widget layer — and the constraints behind it.**
+
+| File | Decision |
+|---|---|
+| `core/widgets/lii_orb.dart` | Gradients and paths only, **no blur or glow filters** — on Flutter web those either have no equivalent or drop frames, whereas gradients map one to one |
+| `core/audio/tide_sound.dart` | Synthesised in Dart at runtime, **no audio files** — nothing to license, no multi-megabyte asset |
+| `core/widgets/frost_touch_layer.dart` | `HitTestBehavior.translucent` — observes touches without consuming gestures, so it never blocks a button |
+| `core/widgets/geometric_stress_indicator.dart` | Risk encoded as shape rather than number or colour, which also removes the red-green colour-vision problem |
+
+**Generated — not counted as handwritten.**
+
+`core/storage/app_database.g.dart`, 5,231 lines, produced by `build_runner` from the Drift schema.
+
+### Other languages
+
+| Language | File | Origin | Written here |
+|---|---|---|---|
+| JavaScript | `web/drift_worker.js` | Drift's official web worker | No |
+| WebAssembly | `web/sqlite3.wasm` | SQLite's official wasm build | No |
+| Swift / Kotlin | `ios/` · `android/` | Flutter's platform shells | No, configuration only |
+| YAML | `pubspec.yaml` | Dependency and asset manifest | Yes |
+
+lii is a single-language project — Dart is over 99% of the handwritten code. Everything else comes from packages or the Flutter toolchain. **Listing them as part of the stack would overstate it.**
+
 ## Project structure
 
 ```

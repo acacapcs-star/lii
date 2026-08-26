@@ -483,6 +483,112 @@ SecretSwipeShell(
 
 ---
 
+## 程式碼怎麼分層
+
+完整的資料流：
+
+```
+輸入層        語音              三個滑桿            睡眠與作息
+               │                   │                    │
+               ▼                   ▼                    ▼
+特徵層    speech_metrics       分段正規化          Drift + SQLite
+          語速·負向詞·停頓      兩端皆為風險         本機加密儲存
+               │                   │                    │
+               └───────────────────┼────────────────────┘
+                                   ▼
+引擎層                        ers_engine
+                  0.40·語言 ＋ 0.35·情緒 ＋ 0.25·作息
+                     三日滾動平均　缺串重新正規化
+                                   │
+               ┌───────────────────┼───────────────────┐
+               ▼                   ▼                   ▼
+分層層      GREEN 0–44         AMBER 45–69         RED 70–100
+            不撤回              撤回追問             撤回排名比較
+               │                   │                   │
+               ▼                   ▼                   ▼
+輸出層      趨勢圖            一句 Pacer          安全流程 · 專線
+```
+
+四句話：三種輸入；語音抽三個特徵，各自分段正規化而非線性映射，因為兩端都是風險；三串加權融合成 0–100 的分數，三日滾動平均，缺串重新分配權重而不補值；分數決定分層，**分層是全系統唯一的控制訊號**——它決定介面撤回多少。
+
+並行的第二層：
+
+```
+使用者訊息 ─→ risk_engine        關鍵詞比對 ＋ 保護因子扣分 → 可解釋的理由清單
+每日結算   ─→ cumulative_risk    12 階量尺，非對稱遲滯（紅 +1，三綠 −1）
+無紀錄     ─→ silence_detector   三日警示，七日危急
+文字內容   ─→ incongruence       語意嚴重但情緒平坦，落差即訊號
+```
+
+### 各層的規模
+
+| 層 | 目錄 | 檔數 | 行數 |
+|---|---|---|---|
+| 特徵 | `core/ers/` | 2 | 409 |
+| 引擎 | `features/ers/` | 7 | 764 |
+| 當下判讀 | `core/risk_engine/` | 3 | 440 |
+| 分層 | `features/ai_safety/` | 1 | 99 |
+| 安全 | `core/safety/` | 3 | 694 |
+| 加密 | `core/security/` | 3 | 974 |
+| 隱私 | `features/privacy/` | 3 | 105 |
+| 呼吸 | `core/pacer/` | 2 | 448 |
+| 網路 | `core/network/` | 6 | 1,132 |
+| 儲存 | `core/storage/` | 5 | 572 |
+| 水晶 | `core/crystals/` | 2 | 412 |
+| CBT | `core/cbt/` | 1 | 246 |
+
+### Dart 內部怎麼分
+
+Dart 專案常被當成一坨 widget。這個專案分成四類，判準是**能不能在沒有模擬器的情況下跑起來**。
+
+**甲 · 純邏輯——不 import Flutter**
+
+| 檔案 | 行 | 方法 |
+|---|---|---|
+| `core/pacer/breath_plan.dart` | 317 | 四段狀態機（序曲 → 爬升 → 主段 → 收尾），從使用者當前呼吸速率線性插值到目標節律 |
+| `core/risk_engine/risk_engine.dart` | 290 | 雙語關鍵詞比對加權累加；保護因子為負權重；回傳理由清單而非單一分數 |
+| `core/ers/speech_metrics.dart` | 275 | 語速＝字數÷說話秒數×60；負向詞密度＝詞表交集÷總詞數；停頓頻率＝間隔超過門檻的計數 |
+| `core/cbt/cbt_service.dart` | 246 | 六類認知扭曲的規則比對，無 AI 時有 fallback 路徑 |
+| `core/safety/crisis_lines.dart` | 437 | 不可變常數表，每筆帶來源網址與查證日期 |
+| `features/ers/ers_engine.dart` | — | 分段正規化、缺串重新正規化、個人基線位移校正 |
+| `features/ers/cumulative_risk_engine.dart` | — | 12 階有限狀態機，非對稱遲滯 |
+| `features/ers/incongruence_detector.dart` | — | 四維度計分，取事件嚴重度與情緒強度的落差 |
+
+這些檔案不 import Flutter，所以 `flutter test` 不用啟動模擬器就能跑。`breath_plan.dart` 317 行全是演算法——那是刻意的，因為呼吸節律算錯不會 crash，只會讓一個焦慮的人更焦慮。**不會拋錯的錯誤，只能靠測試抓。**
+
+**乙 · 服務層——有狀態、有 IO，但不畫 UI**
+
+| 檔案 | 方法 |
+|---|---|
+| `core/storage/app_database.dart` | 宣告式 Drift table；`build_runner` 產生 `app_database.g.dart`（5,231 行，不列入手寫規模）。原生與 web executor 共用同一份 schema |
+| `core/security/secret_diary_lock.dart` | AES-256-GCM；金鑰以 envelope 包裝，三條解封路徑——PBKDF2 三萬次推導、Keychain 生物辨識、還原碼 |
+| `core/network/ai_chat_repository.dart` | 滑動視窗上下文加摘要壓縮：超過門檻時把前段對話壓成摘要再送出 |
+| `core/safety/safety_flow_service.dart` | 依分層回傳不同步驟序列；高風險從 Step 0 開始——先確保當下安全 |
+
+**丙 · Widget 層——以及背後的限制**
+
+| 檔案 | 判斷 |
+|---|---|
+| `core/widgets/lii_orb.dart` | 只用漸層與 path，**不用 blur 或 glow filter**——Flutter web 上這些要不是沒有等價實作、就是會掉幀，漸層與 path 則是一對一映射 |
+| `core/audio/tide_sound.dart` | Dart 執行時合成，**沒有音檔**——不用授權，bundle 不會多出好幾 MB |
+| `core/widgets/frost_touch_layer.dart` | `HitTestBehavior.translucent`——觀察觸控但不消耗手勢，所以永遠不會擋住按鈕 |
+| `core/widgets/geometric_stress_indicator.dart` | 以形狀而非數字或顏色編碼風險，同時解決紅綠色覺障礙的問題 |
+
+**丁 · 產生檔——不列入手寫規模**
+
+`core/storage/app_database.g.dart`，5,231 行，由 `build_runner` 依 Drift schema 產生。
+
+### 其他語言
+
+| 語言 | 檔案 | 來源 | 是否自撰 |
+|---|---|---|---|
+| JavaScript | `web/drift_worker.js` | Drift 官方 web worker | 否 |
+| WebAssembly | `web/sqlite3.wasm` | SQLite 官方 wasm 建置 | 否 |
+| Swift / Kotlin | `ios/` · `android/` | Flutter 產生的平台殼層 | 否，僅改組態 |
+| YAML | `pubspec.yaml` | 依賴與資源宣告 | 是 |
+
+lii 是單一語言專案，Dart 佔手寫程式碼 99% 以上。其他語言的檔案都來自套件或 Flutter 工具鏈。**把它們列進技術棧會是誇大。**
+
 ## 專案結構
 
 ```
