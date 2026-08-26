@@ -1,6 +1,9 @@
 import 'dart:math' as math;
 import 'dart:convert';
 
+import 'dart:async';
+import '../../../core/network/ai_chat_repository.dart';
+import '../../../core/network/app_config_controller.dart';
 import 'package:flutter/material.dart';
 import '../../../core/widgets/lii_bottom_nav.dart';
 import 'encouragement_banner.dart';
@@ -1230,7 +1233,7 @@ class StickyNotePageState extends State<StickyNotePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final card = Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: widget.color,
@@ -1266,6 +1269,17 @@ class StickyNotePageState extends State<StickyNotePage> {
           ),
         ],
       ),
+    );
+    return Stack(
+      children: [
+        card,
+        Positioned.fill(
+          child: LunaNoteReaction(
+            noteText: () => _ctrl.text,
+            accent: widget.borderColor,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -1411,10 +1425,10 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
                   ),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                      color: const Color(0xFF4A7FA5).withValues(alpha: 0.42), width: 4),
+                      color: const Color(0xFF4179C8).withValues(alpha: 0.42), width: 4),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF4A7FA5).withValues(alpha: 0.22),
+                      color: const Color(0xFF4179C8).withValues(alpha: 0.22),
                       blurRadius: 16,
                       offset: const Offset(0, 7),
                     ),
@@ -1445,20 +1459,20 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF2C5282),
+                            color: Color(0xFF002F70),
                           )),
                         const SizedBox(height: 4),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF0ABFBC).withOpacity(0.15),
+                            color: const Color(0xFF41B4C8).withOpacity(0.15),
                             borderRadius: BorderRadius.circular(24),
                           ),
                           child: Consumer(builder: (context, ref, _) {
                             final zh = AppStrings.of(ref.watch(appLanguageControllerProvider)).isZhTw;
                             return Text(
                               zh ? '一直都在' : 'Always here',
-                              style: const TextStyle(fontSize: 12, color: Color(0xFF0ABFBC)),
+                              style: const TextStyle(fontSize: 12, color: Color(0xFF41B4C8)),
                             );
                           }),
                         ),
@@ -1469,15 +1483,15 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
               ),
               // 頁3：桃紅便條紙
               StickyNotePage(
-                color: const Color(0xFFFFE4EC),
-                borderColor: const Color(0xFFFFB3C6),
+                color: const Color(0xFFF7E4EF),
+                borderColor: const Color(0xFFC841A0),
                 hintText: 'Jot anything down... 🌸',
                 storageKey: 'sticky_pink',
               ),
               // 頁4：薄荷綠便條紙
               StickyNotePage(
-                color: const Color(0xFFE4F9F0),
-                borderColor: const Color(0xFF9FDEBD),
+                color: const Color(0xFFE4F5F0),
+                borderColor: const Color(0xFF41C8A2),
                 hintText: 'Key priorities today... 🌿',
                 storageKey: 'sticky_mint',
               ),
@@ -1491,7 +1505,7 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
           children: [
             IconButton(
               icon: const Icon(Icons.arrow_back_ios_rounded, size: 16),
-              color: _page > 0 ? const Color(0xFF0ABFBC) : Colors.grey.shade300,
+              color: _page > 0 ? const Color(0xFF41B4C8) : Colors.grey.shade300,
               onPressed: _page > 0 ? () => _ctrl.previousPage(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
@@ -1503,13 +1517,13 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
                 margin: const EdgeInsets.symmetric(horizontal: 3),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: i == _page ? const Color(0xFF0ABFBC) : Colors.grey.shade300,
+                  color: i == _page ? const Color(0xFF41B4C8) : Colors.grey.shade300,
                 ),
               )),
             ),
             IconButton(
               icon: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
-              color: _page < pages - 1 ? const Color(0xFF0ABFBC) : Colors.grey.shade300,
+              color: _page < pages - 1 ? const Color(0xFF41B4C8) : Colors.grey.shade300,
               onPressed: _page < pages - 1 ? () => _ctrl.nextPage(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
@@ -2785,6 +2799,163 @@ class _BgImagePicker extends ConsumerWidget {
                 ),
               ),
           ],
+        ),
+      ],
+    );
+  }
+}
+// 貼到 home_page.dart 檔案最後面（最外層）
+//
+// 便條紙上的 Luna 吐槽：
+// - 只有設定過 API 金鑰時才出現按鈕
+// - 高風險（紅燈）時按鈕消失，那是刻意的沉默
+// - 回應以浮水印蓋在便條上，打字機效果滾出來，六秒後自己淡掉
+// - 便條本身不動
+
+class LunaNoteReaction extends ConsumerStatefulWidget {
+  const LunaNoteReaction({
+    super.key,
+    required this.noteText,
+    required this.accent,
+    this.isHighRisk = false,
+  });
+
+  final String Function() noteText;
+  final Color accent;
+  final bool isHighRisk;
+
+  @override
+  ConsumerState<LunaNoteReaction> createState() => _LunaNoteReactionState();
+}
+
+class _LunaNoteReactionState extends ConsumerState<LunaNoteReaction> {
+  String _full = '';
+  String _shown = '';
+  bool _busy = false;
+  Timer? _typer;
+  Timer? _fader;
+
+  @override
+  void dispose() {
+    _typer?.cancel();
+    _fader?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _ask() async {
+    final text = widget.noteText().trim();
+    if (text.isEmpty || _busy) return;
+
+    setState(() {
+      _busy = true;
+      _full = '';
+      _shown = '';
+    });
+
+    final zh = AppStrings.of(ref.read(appLanguageControllerProvider)).isZhTw;
+    final prompt = zh
+        ? '這是使用者隨手寫的便條，請用兩到三句話輕鬆回應，可以吐槽但不要說教，'
+            '不要給建議、不要問問題、不要安慰。便條內容：$text'
+        : 'This is a quick note the user jotted down. React in two or three short '
+            'sentences, light and a bit cheeky. No advice, no questions, no comfort. '
+            'Note: $text';
+
+    try {
+      final reply = await ref.read(aiChatRepositoryProvider).sendMessage(
+            sessionId: 'sticky_note_reaction',
+            userText: prompt,
+          );
+      if (!mounted) return;
+      _full = reply.content.trim();
+      _startTyping();
+    } catch (_) {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  void _startTyping() {
+    var i = 0;
+    _typer?.cancel();
+    _typer = Timer.periodic(const Duration(milliseconds: 42), (t) {
+      if (!mounted || i >= _full.length) {
+        t.cancel();
+        _scheduleFade();
+        return;
+      }
+      i++;
+      setState(() => _shown = _full.substring(0, i));
+    });
+  }
+
+  void _scheduleFade() {
+    _fader?.cancel();
+    _fader = Timer(const Duration(seconds: 6), () {
+      if (!mounted) return;
+      setState(() {
+        _shown = '';
+        _full = '';
+        _busy = false;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cfg = ref.watch(appConfigProvider);
+    final hasKey = cfg.isConfigured;
+    if (!hasKey) return const SizedBox.shrink();
+
+    // 紅燈時 Luna 安靜下來
+    if (widget.isHighRisk) return const SizedBox.shrink();
+
+    return Stack(
+      children: [
+        // 浮水印
+        if (_shown.isNotEmpty)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: AnimatedOpacity(
+                opacity: _shown.isEmpty ? 0 : 1,
+                duration: const Duration(milliseconds: 420),
+                child: Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  color: Colors.white.withValues(alpha: 0.72),
+                  child: Text(
+                    _shown,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 13,
+                      height: 1.7,
+                      color: widget.accent,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        // 右下角的小按鈕
+        Positioned(
+          right: 0,
+          bottom: 0,
+          child: GestureDetector(
+            onTap: _busy ? null : _ask,
+            child: Container(
+              width: 30,
+              height: 30,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: widget.accent.withValues(alpha: _busy ? 0.10 : 0.18),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                _busy ? Icons.more_horiz_rounded : Icons.auto_awesome_rounded,
+                size: 15,
+                color: widget.accent,
+              ),
+            ),
+          ),
         ),
       ],
     );
