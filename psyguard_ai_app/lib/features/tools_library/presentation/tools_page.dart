@@ -1076,6 +1076,9 @@ class _ToolSquare extends ConsumerWidget {
 
 /// 5-4-3-2-1 著地：五個頁面，一頁一個感官，各配一種飄落效果。
 /// 每頁可以寫下來，五頁走完會存成一筆紀錄。
+
+/// 5-4-3-2-1 著地：五個頁面，一頁一個感官。
+/// 每頁分成 N 個小格，填一格上面的數字減一。
 class GroundingPage extends ConsumerStatefulWidget {
   const GroundingPage({super.key});
 
@@ -1086,44 +1089,66 @@ class GroundingPage extends ConsumerStatefulWidget {
 class _GroundingPageState extends ConsumerState<GroundingPage> {
   final _page = PageController();
   final _fall = MoodFallController();
-  final List<TextEditingController> _ctrls =
-      List.generate(5, (_) => TextEditingController());
   int _index = 0;
+
+  /// 五頁各自的輸入框：5、4、3、2、1 格
+  late final List<List<TextEditingController>> _ctrls = [
+    List.generate(5, (_) => TextEditingController()),
+    List.generate(4, (_) => TextEditingController()),
+    List.generate(3, (_) => TextEditingController()),
+    List.generate(2, (_) => TextEditingController()),
+    List.generate(1, (_) => TextEditingController()),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    for (final page in _ctrls) {
+      for (final c in page) {
+        c.addListener(_onType);
+      }
+    }
+  }
+
+  void _onType() => setState(() {});
 
   @override
   void dispose() {
     _page.dispose();
-    for (final c in _ctrls) {
-      c.dispose();
+    for (final page in _ctrls) {
+      for (final c in page) {
+        c.removeListener(_onType);
+        c.dispose();
+      }
     }
     super.dispose();
   }
 
+  /// 這一頁還剩幾格沒填
+  int _remaining(int i) =>
+      _ctrls[i].where((c) => c.text.trim().isEmpty).length;
+
   Future<void> _save() async {
-    final entries = <String>[];
+    final keys = ['see', 'touch', 'hear', 'smell', 'feel'];
+    final data = <String, dynamic>{'at': DateTime.now().toIso8601String()};
+    var any = false;
     for (var i = 0; i < 5; i++) {
-      entries.add(_ctrls[i].text.trim());
+      final filled = _ctrls[i]
+          .map((c) => c.text.trim())
+          .where((t) => t.isNotEmpty)
+          .toList();
+      if (filled.isNotEmpty) any = true;
+      data[keys[i]] = filled;
     }
-    if (entries.every((e) => e.isEmpty)) return; // 都沒寫就不存
+    if (!any) return;
 
     try {
       final prefs = await SharedPreferences.getInstance();
       final raw = prefs.getString('grounding_log');
       final list = raw == null ? <dynamic>[] : jsonDecode(raw) as List<dynamic>;
-      list.insert(0, {
-        'at': DateTime.now().toIso8601String(),
-        'see': entries[0],
-        'touch': entries[1],
-        'hear': entries[2],
-        'smell': entries[3],
-        'feel': entries[4],
-      });
-      // 只留最近 50 筆
-      final trimmed = list.take(50).toList();
-      await prefs.setString('grounding_log', jsonEncode(trimmed));
-    } catch (_) {
-      // 存不起來不該擋住使用者完成練習
-    }
+      list.insert(0, data);
+      await prefs.setString('grounding_log', jsonEncode(list.take(50).toList()));
+    } catch (_) {}
   }
 
   Future<void> _next() async {
@@ -1145,54 +1170,30 @@ class _GroundingPageState extends ConsumerState<GroundingPage> {
     final zh = copy.isZhTw;
 
     final steps = <_GroundStep>[
-      _GroundStep(
-        5,
-        FallEffectType.petals,
-        const Color(0xFFC8418E),
-        zh ? '看見' : 'See',
-        zh ? '說出你現在看得見的五樣東西' : 'Name five things you can see',
-        zh ? '不用找特別的，桌上那支筆也算。' : 'Nothing special. The pen counts.',
-        zh ? '例如：檯燈、窗外的樹、我的手' : 'e.g. lamp, tree outside, my hand',
-      ),
-      _GroundStep(
-        4,
-        FallEffectType.leaves,
-        const Color(0xFFC87C41),
-        zh ? '摸到' : 'Touch',
-        zh ? '說出你摸得到的四樣東西' : 'Name four things you can touch',
-        zh ? '真的伸手去摸，不是想像。' : 'Actually reach out and touch them.',
-        zh ? '例如：桌面、衣服的袖口' : 'e.g. the desk, my sleeve',
-      ),
-      _GroundStep(
-        3,
-        FallEffectType.splash,
-        const Color(0xFF41A8C8),
-        zh ? '聽到' : 'Hear',
-        zh ? '說出你聽得見的三個聲音' : 'Name three sounds you can hear',
-        zh ? '包括你自己的呼吸。' : 'Your own breathing counts.',
-        zh ? '例如：冷氣、樓下的車聲' : 'e.g. the fan, cars outside',
-      ),
-      _GroundStep(
-        2,
-        FallEffectType.snow,
-        const Color(0xFF6A41C8),
-        zh ? '聞到' : 'Smell',
-        zh ? '說出你聞得到的兩種氣味' : 'Name two things you can smell',
-        zh ? '聞不到也沒關係，那也是一個答案。' : 'Nothing? That is an answer too.',
-        zh ? '例如：洗髮精、剛下過雨' : 'e.g. shampoo, rain',
-      ),
-      _GroundStep(
-        1,
-        FallEffectType.none,
-        const Color(0xFF41C86F),
-        zh ? '感覺' : 'Feel',
-        zh ? '說出你此刻身體的一種感覺' : 'Name one thing you can feel',
-        zh ? '腳踩在地上，那就是你在這裡的證據。' : 'Your feet on the floor. You are here.',
-        zh ? '例如：肩膀有點緊' : 'e.g. my shoulders are tight',
-      ),
+      _GroundStep(5, FallEffectType.petals, const Color(0xFFC8418E),
+          zh ? '看見' : 'See',
+          zh ? '寫下你現在看得見的東西' : 'Things you can see',
+          zh ? '不用找特別的，桌上那支筆也算。' : 'Nothing special. The pen counts.'),
+      _GroundStep(4, FallEffectType.leaves, const Color(0xFFC87C41),
+          zh ? '摸到' : 'Touch',
+          zh ? '寫下你摸得到的東西' : 'Things you can touch',
+          zh ? '真的伸手去摸，不是想像。' : 'Actually reach out and touch them.'),
+      _GroundStep(3, FallEffectType.splash, const Color(0xFF41A8C8),
+          zh ? '聽到' : 'Hear',
+          zh ? '寫下你聽得見的聲音' : 'Sounds you can hear',
+          zh ? '包括你自己的呼吸。' : 'Your own breathing counts.'),
+      _GroundStep(2, FallEffectType.snow, const Color(0xFF6A41C8),
+          zh ? '聞到' : 'Smell',
+          zh ? '寫下你聞得到的氣味' : 'Things you can smell',
+          zh ? '聞不到也沒關係，那也是一個答案。' : 'Nothing? That is an answer too.'),
+      _GroundStep(1, FallEffectType.none, const Color(0xFF41C86F),
+          zh ? '感覺' : 'Feel',
+          zh ? '寫下你此刻身體的一種感覺' : 'One thing your body feels',
+          zh ? '腳踩在地上，那就是你在這裡的證據。' : 'Your feet on the floor. You are here.'),
     ];
 
     final s = steps[_index];
+    final left = _remaining(_index);
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -1245,112 +1246,17 @@ class _GroundingPageState extends ConsumerState<GroundingPage> {
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: steps.length,
                     onPageChanged: (i) => setState(() => _index = i),
-                    itemBuilder: (context, i) {
-                      final st = steps[i];
-                      final onCard = HSLColor.fromColor(st.color)
-                          .withSaturation(1.0)
-                          .withLightness(0.22)
-                          .toColor();
-                      final onSoft = HSLColor.fromColor(st.color)
-                          .withSaturation(0.85)
-                          .withLightness(0.38)
-                          .toColor();
-
-                      return SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(28, 12, 28, 12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${st.count}',
-                              style: TextStyle(
-                                fontSize: 84,
-                                height: 1,
-                                fontWeight: FontWeight.w600,
-                                color: st.color.withValues(alpha: 0.30),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              st.name,
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.w600,
-                                color: onCard,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              st.prompt,
-                              style: TextStyle(
-                                  fontSize: 16, height: 1.6, color: onSoft),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              st.hint,
-                              style: TextStyle(
-                                fontSize: 13,
-                                height: 1.6,
-                                color: onSoft.withValues(alpha: 0.72),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            TextField(
-                              controller: _ctrls[i],
-                              maxLines: 4,
-                              minLines: 3,
-                              textInputAction: TextInputAction.newline,
-                              style: const TextStyle(
-                                  fontSize: 15, height: 1.65),
-                              decoration: InputDecoration(
-                                hintText: st.example,
-                                hintStyle: TextStyle(
-                                    color: onSoft.withValues(alpha: 0.45),
-                                    fontSize: 14),
-                                filled: true,
-                                fillColor: Colors.white,
-                                contentPadding: const EdgeInsets.all(14),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                  borderSide: BorderSide(
-                                      color: st.color
-                                          .withValues(alpha: 0.28)),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                  borderSide: BorderSide(
-                                      color: st.color
-                                          .withValues(alpha: 0.28)),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                  borderSide:
-                                      BorderSide(color: st.color, width: 2),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              zh ? '想寫就寫，不寫也可以。' : 'Write if you want to.',
-                              style: TextStyle(
-                                fontSize: 12.5,
-                                color: onSoft.withValues(alpha: 0.6),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                    itemBuilder: (context, i) => _stepBody(steps[i], i, zh),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(28, 6, 28, 20),
+                  padding: const EdgeInsets.fromLTRB(24, 6, 24, 18),
                   child: SizedBox(
                     width: double.infinity,
                     child: FilledButton(
                       style: FilledButton.styleFrom(
                         backgroundColor: s.color,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -1359,7 +1265,9 @@ class _GroundingPageState extends ConsumerState<GroundingPage> {
                       child: Text(
                         _index == 4
                             ? (zh ? '完成' : 'Done')
-                            : (zh ? '好了' : 'Got it'),
+                            : (left == 0
+                                ? (zh ? '下一個' : 'Next')
+                                : (zh ? '先跳過' : 'Skip for now')),
                         style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w600),
                       ),
@@ -1373,11 +1281,137 @@ class _GroundingPageState extends ConsumerState<GroundingPage> {
       ),
     );
   }
+
+  Widget _stepBody(_GroundStep st, int i, bool zh) {
+    final onCard = HSLColor.fromColor(st.color)
+        .withSaturation(1.0).withLightness(0.22).toColor();
+    final onSoft = HSLColor.fromColor(st.color)
+        .withSaturation(0.85).withLightness(0.38).toColor();
+    final left = _remaining(i);
+    final done = left == 0;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(24, 4, 24, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 倒數的大數字
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 260),
+                transitionBuilder: (child, anim) => ScaleTransition(
+                  scale: anim,
+                  child: FadeTransition(opacity: anim, child: child),
+                ),
+                child: Text(
+                  done ? '✓' : '$left',
+                  key: ValueKey(done ? 'done' : left),
+                  style: TextStyle(
+                    fontSize: 62,
+                    height: 1,
+                    fontWeight: FontWeight.w600,
+                    color: st.color.withValues(alpha: done ? 0.55 : 0.32),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  st.name,
+                  style: TextStyle(
+                      fontSize: 23,
+                      fontWeight: FontWeight.w600,
+                      color: onCard),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            done
+                ? (zh ? '都寫完了。' : 'All written down.')
+                : (zh ? '還剩 $left 個　·　${st.prompt}' : '$left left　·　${st.prompt}'),
+            style: TextStyle(fontSize: 14.5, height: 1.6, color: onSoft),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            st.hint,
+            style: TextStyle(
+                fontSize: 12.5,
+                height: 1.6,
+                color: onSoft.withValues(alpha: 0.7)),
+          ),
+          const SizedBox(height: 18),
+
+          // N 個小格
+          for (var k = 0; k < _ctrls[i].length; k++)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 26,
+                    child: Text(
+                      '${k + 1}.',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: _ctrls[i][k].text.trim().isEmpty
+                            ? onSoft.withValues(alpha: 0.45)
+                            : st.color,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: _ctrls[i][k],
+                      style: const TextStyle(fontSize: 15),
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        isDense: true,
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 12),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(13),
+                          borderSide: BorderSide(
+                              color: st.color.withValues(alpha: 0.26)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(13),
+                          borderSide: BorderSide(
+                              color: st.color.withValues(alpha: 0.26)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(13),
+                          borderSide: BorderSide(color: st.color, width: 2),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          const SizedBox(height: 6),
+          Text(
+            zh ? '寫不滿也可以，做過就算。' : 'Partial is fine. Doing it counts.',
+            style: TextStyle(
+                fontSize: 12, color: onSoft.withValues(alpha: 0.6)),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _GroundStep {
-  const _GroundStep(this.count, this.effect, this.color, this.name,
-      this.prompt, this.hint, this.example);
+  const _GroundStep(
+      this.count, this.effect, this.color, this.name, this.prompt, this.hint);
 
   final int count;
   final FallEffectType effect;
@@ -1385,10 +1419,7 @@ class _GroundStep {
   final String name;
   final String prompt;
   final String hint;
-  final String example;
 }
-
-/// 著地練習的紀錄：讀 grounding_log，一筆一張卡。
 class GroundingLogPage extends ConsumerStatefulWidget {
   const GroundingLogPage({super.key});
 
