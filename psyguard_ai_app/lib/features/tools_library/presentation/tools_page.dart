@@ -1,6 +1,12 @@
 import 'dart:math';
 
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
+import '../../../core/widgets/mood_fall_overlay.dart';
+import '../../../core/pacer/breath_plan.dart';
+import '../../../core/widgets/lii_breath_page.dart';
+import '../../../core/widgets/tooltip_bubble.dart';
 import '../../../core/widgets/lii_bottom_nav.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -20,12 +26,23 @@ class ToolItem {
     required this.description,
     required this.icon,
     required this.color,
+    this.whenToUse = '',
+    this.how = '',
     this.isInteractive = false,
   });
 
   final String id;
   final String name;
+
+  /// 卡片上顯示的一句話
   final String description;
+
+  /// 什麼時候該用這個工具
+  final String whenToUse;
+
+  /// 詳細做法與原理，長按時顯示
+  final String how;
+
   final IconData icon;
   final Color color;
   final bool isInteractive;
@@ -38,31 +55,46 @@ class ToolsPage extends ConsumerWidget {
     ToolItem(
       id: 'self_dialogue',
       name: '自我對話卡',
-      description: '抽出一張指引卡片，轉化自我責備的念頭。',
+      description: '抽一張卡，把責備自己的話換個說法。',
+      whenToUse: '一直在心裡罵自己的時候',
+      how: '抽出一張自我疼惜的句子，對照你現在對自己說的話，'
+          '看看能不能換一種說法。卡片是從語錄庫抽的，不是 AI 生成的。',
       icon: Icons.style_rounded,
-      color: Color(0xFFF2A365), // Orange
+      color: Color(0xFFC87C41),
       isInteractive: true,
     ),
     ToolItem(
       id: 'breathing_478',
       name: '4-7-8 呼吸',
       description: '吸氣 4 秒、閉氣 7 秒、吐氣 8 秒，做 3 回合。',
+      whenToUse: '心跳很快、快喘不過氣的時候',
+      how: '吐氣比吸氣長，會讓副交感神經接手，心跳自然慢下來。'
+          '第一次做通常閉不滿 7 秒，那沒關係——按自己的節奏，'
+          '三回合之後再試一次完整的。',
       icon: Icons.air_rounded,
-      color: Color(0xFF667EEA), // Blue
+      color: Color(0xFF415AC8),
     ),
     ToolItem(
       id: 'grounding_54321',
       name: '5-4-3-2-1 著地',
-      description: '說出你看見 5 樣、摸到 4 樣、聽到 3 樣、聞到 2 樣、感受 1 樣。',
+      description: '說出看見 5 樣、摸到 4 樣、聽到 3 樣、聞到 2 樣、感受 1 樣。',
+      whenToUse: '腦袋停不下來、覺得自己飄走的時候',
+      how: '用五種感官把注意力從念頭拉回身體所在的地方。'
+          '重點不是數對，是每說一樣就真的去看、去摸一次。'
+          '做到一半分心了就從頭開始，那也算。',
       icon: Icons.nature_people_rounded,
-      color: Color(0xFF43E97B), // Green
+      color: Color(0xFF41C86F),
     ),
     ToolItem(
       id: 'emotion_dict',
       name: '情緒詞彙庫',
-      description: '除了「不開心」，試著精準描述你的感受。',
+      description: '除了「不開心」，找一個更準的詞。',
+      whenToUse: '知道自己不對勁，但講不出來的時候',
+      how: '從幾個大類往下找更細的詞。'
+          '「不開心」可能是失望、可能是被辜負、可能只是累。'
+          '講得出來的情緒比較好處理——這是這個工具唯一的用意。',
       icon: Icons.menu_book_rounded,
-      color: Color(0xFFE5989B), // Pink
+      color: Color(0xFFC84147),
       isInteractive: true,
     ),
   ];
@@ -116,6 +148,44 @@ class _ToolCard extends ConsumerWidget {
   const _ToolCard({required this.tool});
 
   final ToolItem tool;
+
+  /// 呼吸與著地開專屬頁面，其餘走原本的對話框
+  Future<void> _openOrLog(BuildContext context, WidgetRef ref) async {
+    if (tool.id == 'grounding_54321') {
+      final done = await Navigator.of(context).push<bool>(
+        MaterialPageRoute(builder: (_) => const GroundingPage()),
+      );
+      if (done == true && context.mounted) {
+        _logCompletion(context, ref);
+        await Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const GroundingLogPage()),
+        );
+      }
+      return;
+    }
+    if (tool.id == 'breathing_478') {
+      await Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => const LiiBreathPage(
+          mood: BreathMood.anxious,
+          mode: LiiBreathMode.daily,
+        ),
+      ));
+      if (context.mounted) _logCompletion(context, ref);
+      return;
+    }
+    if (tool.id == 'emotion_dict') {
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const EmotionDictPage()),
+      );
+      if (context.mounted) _logCompletion(context, ref);
+      return;
+    }
+    if (tool.isInteractive) {
+      _handleToolAction(context, ref);
+    } else {
+      _logCompletion(context, ref);
+    }
+  }
 
   void _handleToolAction(BuildContext context, WidgetRef ref) {
     final copy = AppStrings.of(ref.read(appLanguageControllerProvider));
@@ -782,13 +852,43 @@ class _CompactToolCard extends ConsumerWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
         splashColor: tool.color.withValues(alpha: 0.3),
-        onTap: () {
+        onTap: () async {
           final card = _ToolCard(tool: tool);
-          if (tool.isInteractive) {
+          if (tool.id == 'breathing_478') {
+            await Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => const LiiBreathPage(
+                mood: BreathMood.anxious,
+                mode: LiiBreathMode.daily,
+              ),
+            ));
+            if (context.mounted) card._logCompletion(context, ref);
+          } else if (tool.id == 'grounding_54321') {
+            bool? done;
+            try {
+              done = await Navigator.of(context).push<bool>(
+                MaterialPageRoute(
+                  builder: (_) => const GroundingPage(),
+                ),
+              );
+            } catch (e, st) {
+              debugPrint('GROUNDING FAILED: $e\n$st');
+            }
+            if (done == true && context.mounted) {
+              card._logCompletion(context, ref);
+            }
+          } else if (tool.isInteractive) {
             card._handleToolAction(context, ref);
           } else {
             card._logCompletion(context, ref);
           }
+        },
+        onLongPress: () {
+          if (tool.how.isEmpty) return;
+          showFeatureTooltip(
+            context,
+            title: tool.name,
+            description: '${tool.whenToUse}\n\n${tool.how}',
+          );
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
@@ -864,6 +964,21 @@ class _ToolSquare extends ConsumerWidget {
 
   final ToolItem tool;
 
+  static String _enDesc(String id) {
+    switch (id) {
+      case 'self_dialogue':
+        return 'Draw a card and reword what you tell yourself.';
+      case 'breathing_478':
+        return 'In for 4, hold for 7, out for 8. Three rounds.';
+      case 'grounding_54321':
+        return 'Name 5 you see, 4 you touch, 3 you hear, 2 you smell, 1 you feel.';
+      case 'emotion_dict':
+        return 'Past "not okay" toward a more precise word.';
+      default:
+        return '';
+    }
+  }
+
   static String _en(String id, String fallback) {
     switch (id) {
       case 'self_dialogue':
@@ -895,14 +1010,7 @@ class _ToolSquare extends ConsumerWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(24),
         splashColor: tool.color.withValues(alpha: 0.3),
-        onTap: () {
-          final card = _ToolCard(tool: tool);
-          if (tool.isInteractive) {
-            card._handleToolAction(context, ref);
-          } else {
-            card._logCompletion(context, ref);
-          }
-        },
+        onTap: () => _ToolCard(tool: tool)._openOrLog(context, ref),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -946,9 +1054,7 @@ class _ToolSquare extends ConsumerWidget {
                   softWrap: true),
               const SizedBox(height: 3),
               Text(
-                zh
-                    ? tool.description
-                    : (tool.isInteractive ? 'Tap to start' : 'Tap when done'),
+                zh ? tool.description : _enDesc(tool.id),
                 style: TextStyle(fontSize: 11, height: 1.25, color: onCardSoft),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -959,4 +1065,773 @@ class _ToolSquare extends ConsumerWidget {
       ),
     );
   }
+}
+// 貼到 tools_page.dart 檔案最後面（最外層）
+//
+// 5-4-3-2-1 著地的引導頁：五個步驟，每步一個感官。
+// 可以打字，也可以只按「下一個」——重點不是寫下來，是真的去看、去摸一次。
+
+
+/// 5-4-3-2-1 著地：五個頁面，一頁一個感官，各配一種飄落效果。
+
+/// 5-4-3-2-1 著地：五個頁面，一頁一個感官，各配一種飄落效果。
+/// 每頁可以寫下來，五頁走完會存成一筆紀錄。
+class GroundingPage extends ConsumerStatefulWidget {
+  const GroundingPage({super.key});
+
+  @override
+  ConsumerState<GroundingPage> createState() => _GroundingPageState();
+}
+
+class _GroundingPageState extends ConsumerState<GroundingPage> {
+  final _page = PageController();
+  final _fall = MoodFallController();
+  final List<TextEditingController> _ctrls =
+      List.generate(5, (_) => TextEditingController());
+  int _index = 0;
+
+  @override
+  void dispose() {
+    _page.dispose();
+    for (final c in _ctrls) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    final entries = <String>[];
+    for (var i = 0; i < 5; i++) {
+      entries.add(_ctrls[i].text.trim());
+    }
+    if (entries.every((e) => e.isEmpty)) return; // 都沒寫就不存
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString('grounding_log');
+      final list = raw == null ? <dynamic>[] : jsonDecode(raw) as List<dynamic>;
+      list.insert(0, {
+        'at': DateTime.now().toIso8601String(),
+        'see': entries[0],
+        'touch': entries[1],
+        'hear': entries[2],
+        'smell': entries[3],
+        'feel': entries[4],
+      });
+      // 只留最近 50 筆
+      final trimmed = list.take(50).toList();
+      await prefs.setString('grounding_log', jsonEncode(trimmed));
+    } catch (_) {
+      // 存不起來不該擋住使用者完成練習
+    }
+  }
+
+  Future<void> _next() async {
+    FocusScope.of(context).unfocus();
+    if (_index < 4) {
+      _page.nextPage(
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      await _save();
+      if (mounted) Navigator.of(context).pop(true);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final copy = AppStrings.of(ref.watch(appLanguageControllerProvider));
+    final zh = copy.isZhTw;
+
+    final steps = <_GroundStep>[
+      _GroundStep(
+        5,
+        FallEffectType.petals,
+        const Color(0xFFC8418E),
+        zh ? '看見' : 'See',
+        zh ? '說出你現在看得見的五樣東西' : 'Name five things you can see',
+        zh ? '不用找特別的，桌上那支筆也算。' : 'Nothing special. The pen counts.',
+        zh ? '例如：檯燈、窗外的樹、我的手' : 'e.g. lamp, tree outside, my hand',
+      ),
+      _GroundStep(
+        4,
+        FallEffectType.leaves,
+        const Color(0xFFC87C41),
+        zh ? '摸到' : 'Touch',
+        zh ? '說出你摸得到的四樣東西' : 'Name four things you can touch',
+        zh ? '真的伸手去摸，不是想像。' : 'Actually reach out and touch them.',
+        zh ? '例如：桌面、衣服的袖口' : 'e.g. the desk, my sleeve',
+      ),
+      _GroundStep(
+        3,
+        FallEffectType.splash,
+        const Color(0xFF41A8C8),
+        zh ? '聽到' : 'Hear',
+        zh ? '說出你聽得見的三個聲音' : 'Name three sounds you can hear',
+        zh ? '包括你自己的呼吸。' : 'Your own breathing counts.',
+        zh ? '例如：冷氣、樓下的車聲' : 'e.g. the fan, cars outside',
+      ),
+      _GroundStep(
+        2,
+        FallEffectType.snow,
+        const Color(0xFF6A41C8),
+        zh ? '聞到' : 'Smell',
+        zh ? '說出你聞得到的兩種氣味' : 'Name two things you can smell',
+        zh ? '聞不到也沒關係，那也是一個答案。' : 'Nothing? That is an answer too.',
+        zh ? '例如：洗髮精、剛下過雨' : 'e.g. shampoo, rain',
+      ),
+      _GroundStep(
+        1,
+        FallEffectType.none,
+        const Color(0xFF41C86F),
+        zh ? '感覺' : 'Feel',
+        zh ? '說出你此刻身體的一種感覺' : 'Name one thing you can feel',
+        zh ? '腳踩在地上，那就是你在這裡的證據。' : 'Your feet on the floor. You are here.',
+        zh ? '例如：肩膀有點緊' : 'e.g. my shoulders are tight',
+      ),
+    ];
+
+    final s = steps[_index];
+
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      backgroundColor:
+          Color.alphaBlend(s.color.withValues(alpha: 0.05), Colors.white),
+      body: Stack(
+        children: [
+          if (s.effect != FallEffectType.none)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: MoodFallOverlay(
+                  controller: _fall,
+                  effect: s.effect,
+                  particleCount: 14,
+                ),
+              ),
+            ),
+          SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 16, 0),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded, size: 22),
+                        color: s.color,
+                        onPressed: () => Navigator.of(context).pop(false),
+                      ),
+                      const Spacer(),
+                      for (var i = 0; i < steps.length; i++) ...[
+                        Container(
+                          width: i == _index ? 20 : 7,
+                          height: 7,
+                          decoration: BoxDecoration(
+                            color: i <= _index
+                                ? s.color
+                                : s.color.withValues(alpha: 0.20),
+                            borderRadius: BorderRadius.circular(99),
+                          ),
+                        ),
+                        if (i != steps.length - 1) const SizedBox(width: 5),
+                      ],
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: PageView.builder(
+                    controller: _page,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: steps.length,
+                    onPageChanged: (i) => setState(() => _index = i),
+                    itemBuilder: (context, i) {
+                      final st = steps[i];
+                      final onCard = HSLColor.fromColor(st.color)
+                          .withSaturation(1.0)
+                          .withLightness(0.22)
+                          .toColor();
+                      final onSoft = HSLColor.fromColor(st.color)
+                          .withSaturation(0.85)
+                          .withLightness(0.38)
+                          .toColor();
+
+                      return SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(28, 12, 28, 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${st.count}',
+                              style: TextStyle(
+                                fontSize: 84,
+                                height: 1,
+                                fontWeight: FontWeight.w600,
+                                color: st.color.withValues(alpha: 0.30),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              st.name,
+                              style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.w600,
+                                color: onCard,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              st.prompt,
+                              style: TextStyle(
+                                  fontSize: 16, height: 1.6, color: onSoft),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              st.hint,
+                              style: TextStyle(
+                                fontSize: 13,
+                                height: 1.6,
+                                color: onSoft.withValues(alpha: 0.72),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            TextField(
+                              controller: _ctrls[i],
+                              maxLines: 4,
+                              minLines: 3,
+                              textInputAction: TextInputAction.newline,
+                              style: const TextStyle(
+                                  fontSize: 15, height: 1.65),
+                              decoration: InputDecoration(
+                                hintText: st.example,
+                                hintStyle: TextStyle(
+                                    color: onSoft.withValues(alpha: 0.45),
+                                    fontSize: 14),
+                                filled: true,
+                                fillColor: Colors.white,
+                                contentPadding: const EdgeInsets.all(14),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                      color: st.color
+                                          .withValues(alpha: 0.28)),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                      color: st.color
+                                          .withValues(alpha: 0.28)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide:
+                                      BorderSide(color: st.color, width: 2),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              zh ? '想寫就寫，不寫也可以。' : 'Write if you want to.',
+                              style: TextStyle(
+                                fontSize: 12.5,
+                                color: onSoft.withValues(alpha: 0.6),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(28, 6, 28, 20),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: s.color,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      onPressed: _next,
+                      child: Text(
+                        _index == 4
+                            ? (zh ? '完成' : 'Done')
+                            : (zh ? '好了' : 'Got it'),
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GroundStep {
+  const _GroundStep(this.count, this.effect, this.color, this.name,
+      this.prompt, this.hint, this.example);
+
+  final int count;
+  final FallEffectType effect;
+  final Color color;
+  final String name;
+  final String prompt;
+  final String hint;
+  final String example;
+}
+
+/// 著地練習的紀錄：讀 grounding_log，一筆一張卡。
+class GroundingLogPage extends ConsumerStatefulWidget {
+  const GroundingLogPage({super.key});
+
+  @override
+  ConsumerState<GroundingLogPage> createState() => _GroundingLogPageState();
+}
+
+class _GroundingLogPageState extends ConsumerState<GroundingLogPage> {
+  List<Map<String, dynamic>> _items = [];
+  bool _loading = true;
+
+  static const _accent = Color(0xFF41C86F);
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString('grounding_log');
+      if (raw != null) {
+        final list = jsonDecode(raw) as List<dynamic>;
+        _items = list
+            .whereType<Map>()
+            .map((e) => e.cast<String, dynamic>())
+            .toList();
+      }
+    } catch (_) {
+      _items = [];
+    }
+    if (mounted) setState(() => _loading = false);
+  }
+
+  String _when(String iso, bool zh) {
+    final d = DateTime.tryParse(iso);
+    if (d == null) return '';
+    final hh = d.hour.toString().padLeft(2, '0');
+    final mm = d.minute.toString().padLeft(2, '0');
+    return zh
+        ? '${d.month} 月 ${d.day} 日　$hh:$mm'
+        : '${d.month}/${d.day}　$hh:$mm';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final copy = AppStrings.of(ref.watch(appLanguageControllerProvider));
+    final zh = copy.isZhTw;
+    final onCard = HSLColor.fromColor(_accent)
+        .withSaturation(1.0)
+        .withLightness(0.22)
+        .toColor();
+    final onSoft = HSLColor.fromColor(_accent)
+        .withSaturation(0.85)
+        .withLightness(0.38)
+        .toColor();
+
+    final labels = zh
+        ? ['看見', '摸到', '聽到', '聞到', '感覺']
+        : ['See', 'Touch', 'Hear', 'Smell', 'Feel'];
+    const keys = ['see', 'touch', 'hear', 'smell', 'feel'];
+    const counts = [5, 4, 3, 2, 1];
+
+    return Scaffold(
+      backgroundColor:
+          Color.alphaBlend(_accent.withValues(alpha: 0.04), Colors.white),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          zh ? '著地紀錄' : 'Grounding log',
+          style: TextStyle(
+              fontSize: 17, fontWeight: FontWeight.w600, color: onCard),
+        ),
+      ),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _items.isEmpty
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Text(
+                      zh
+                          ? '還沒有紀錄。\n做一次 5-4-3-2-1，寫下來的東西會留在這裡。'
+                          : 'Nothing yet.\nRun 5-4-3-2-1 once and what you write stays here.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 14.5, height: 1.8, color: onSoft),
+                    ),
+                  ),
+                )
+              : ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+                  itemCount: _items.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 14),
+                  itemBuilder: (context, i) {
+                    final e = _items[i];
+                    return Container(
+                      padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                            color: _accent.withValues(alpha: 0.28), width: 2),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _when((e['at'] ?? '').toString(), zh),
+                            style: TextStyle(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w600,
+                                color: onSoft),
+                          ),
+                          const SizedBox(height: 10),
+                          for (var k = 0; k < keys.length; k++)
+                            if ((e[keys[k]] ?? '').toString().trim().isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Row(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      width: 26,
+                                      height: 26,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: _accent.withValues(alpha: 0.16),
+                                        borderRadius:
+                                            BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        '${counts[k]}',
+                                        style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                            color: onCard),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            labels[k],
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: onSoft.withValues(
+                                                    alpha: 0.75)),
+                                          ),
+                                          Text(
+                                            e[keys[k]].toString(),
+                                            style: TextStyle(
+                                                fontSize: 14.5,
+                                                height: 1.55,
+                                                color: onCard),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+    );
+  }
+}
+
+/// 情緒詞彙庫：六個大類，點進去看更精準的詞，選了會存成紀錄。
+class EmotionDictPage extends ConsumerStatefulWidget {
+  const EmotionDictPage({super.key});
+
+  @override
+  ConsumerState<EmotionDictPage> createState() => _EmotionDictPageState();
+}
+
+class _EmotionDictPageState extends ConsumerState<EmotionDictPage> {
+  static const _accent = Color(0xFFC84147);
+  int? _open;
+  String? _picked;
+
+  static const _groups = <_EmotionGroup>[
+    _EmotionGroup(
+      '生氣', 'Angry', Icons.local_fire_department_outlined,
+      Color(0xFFC84147),
+      [
+        _Word('惱怒', 'Irritated', '事情不順，但還撐得住', 'Things are off, but manageable'),
+        _Word('委屈', 'Wronged', '被誤解了，說不出口', 'Misread, and I cannot say it'),
+        _Word('被冒犯', 'Offended', '對方越過了一條線', 'Someone crossed a line'),
+        _Word('不甘心', 'Resentful', '努力過但沒被看見', 'I tried and it went unseen'),
+      ],
+    ),
+    _EmotionGroup(
+      '難過', 'Sad', Icons.water_drop_outlined,
+      Color(0xFF4179C8),
+      [
+        _Word('失落', 'Let down', '本來期待的沒有發生', 'What I hoped for did not happen'),
+        _Word('孤單', 'Lonely', '身邊有人，但沒人懂', 'People around, none who get it'),
+        _Word('想念', 'Missing someone', '有個位置空著', 'There is an empty place'),
+        _Word('心痛', 'Aching', '想到就會揪一下', 'It tightens when I think of it'),
+      ],
+    ),
+    _EmotionGroup(
+      '害怕', 'Afraid', Icons.bolt_outlined,
+      Color(0xFF9741C8),
+      [
+        _Word('緊張', 'Nervous', '事情還沒發生，身體先反應', 'My body reacts before it happens'),
+        _Word('不安', 'Uneasy', '說不上來哪裡不對', 'Something is off, I cannot name it'),
+        _Word('擔心', 'Worried', '在意的人事出了狀況', 'Something is wrong for someone I care about'),
+        _Word('沒把握', 'Unsure', '不知道自己做不做得到', 'I do not know if I can'),
+      ],
+    ),
+    _EmotionGroup(
+      '累', 'Tired', Icons.battery_2_bar_outlined,
+      Color(0xFFC87C41),
+      [
+        _Word('疲憊', 'Worn out', '睡了還是累', 'Slept, still tired'),
+        _Word('厭倦', 'Fed up', '同樣的事一直重複', 'The same thing keeps repeating'),
+        _Word('提不起勁', 'Flat', '知道該做但動不了', 'I know I should, and I cannot'),
+        _Word('麻木', 'Numb', '什麼感覺都很淡', 'Everything feels muted'),
+      ],
+    ),
+    _EmotionGroup(
+      '有壓力', 'Pressured', Icons.compress_outlined,
+      Color(0xFF41A8C8),
+      [
+        _Word('不知所措', 'Overwhelmed', '太多事一起來', 'Too much at once'),
+        _Word('被逼著走', 'Pushed', '沒有選擇的感覺', 'It feels like I have no choice'),
+        _Word('怕做不好', 'Afraid to fail', '怕辜負誰的期待', 'Afraid of letting someone down'),
+        _Word('喘不過氣', 'Suffocated', '連休息都覺得有罪惡感', 'Even resting feels wrong'),
+      ],
+    ),
+    _EmotionGroup(
+      '還可以', 'Okay', Icons.wb_twilight_outlined,
+      Color(0xFF41C86F),
+      [
+        _Word('平靜', 'Calm', '沒什麼特別的，那也很好', 'Nothing special, and that is fine'),
+        _Word('放鬆', 'At ease', '肩膀鬆下來了', 'My shoulders dropped'),
+        _Word('有點期待', 'Looking forward', '有件事在前面等著', 'Something is waiting ahead'),
+        _Word('感謝', 'Grateful', '有人做了什麼讓你記得', 'Someone did something I remember'),
+      ],
+    ),
+  ];
+
+  Future<void> _save(String word) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString('emotion_log');
+      final list = raw == null ? <dynamic>[] : jsonDecode(raw) as List<dynamic>;
+      list.insert(0, {
+        'at': DateTime.now().toIso8601String(),
+        'word': word,
+      });
+      await prefs.setString('emotion_log', jsonEncode(list.take(60).toList()));
+    } catch (_) {}
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final copy = AppStrings.of(ref.watch(appLanguageControllerProvider));
+    final zh = copy.isZhTw;
+    final onCard = HSLColor.fromColor(_accent)
+        .withSaturation(1.0).withLightness(0.22).toColor();
+    final onSoft = HSLColor.fromColor(_accent)
+        .withSaturation(0.85).withLightness(0.38).toColor();
+
+    return Scaffold(
+      backgroundColor:
+          Color.alphaBlend(_accent.withValues(alpha: 0.04), Colors.white),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          zh ? '情緒詞彙庫' : 'Emotion Dictionary',
+          style: TextStyle(
+              fontSize: 17, fontWeight: FontWeight.w600, color: onCard),
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
+        children: [
+          Text(
+            zh
+                ? '先選一個大概的方向，再往下找更準的詞。'
+                : 'Pick a rough direction, then look for the closer word.',
+            style: TextStyle(fontSize: 14, height: 1.7, color: onSoft),
+          ),
+          const SizedBox(height: 18),
+          for (var gi = 0; gi < _groups.length; gi++) ...[
+            _groupTile(gi, zh),
+            const SizedBox(height: 12),
+          ],
+          if (_picked != null) ...[
+            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: _accent.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: _accent.withValues(alpha: 0.30)),
+              ),
+              child: Text(
+                zh
+                    ? '記下來了：$_picked\n講得出來的情緒比較好處理。'
+                    : 'Noted: $_picked\nA feeling you can name is easier to work with.',
+                style: TextStyle(fontSize: 14, height: 1.7, color: onCard),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _groupTile(int gi, bool zh) {
+    final g = _groups[gi];
+    final isOpen = _open == gi;
+    final gOn = HSLColor.fromColor(g.color)
+        .withSaturation(1.0).withLightness(0.22).toColor();
+    final gSoft = HSLColor.fromColor(g.color)
+        .withSaturation(0.85).withLightness(0.38).toColor();
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+            color: g.color.withValues(alpha: isOpen ? 0.45 : 0.24), width: 2),
+      ),
+      child: Column(
+        children: [
+          InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: () => setState(() => _open = isOpen ? null : gi),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+              child: Row(
+                children: [
+                  Container(
+                    width: 36, height: 36, alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: g.color.withValues(alpha: 0.18),
+                      borderRadius: BorderRadius.circular(11),
+                    ),
+                    child: Icon(g.icon, size: 19, color: g.color),
+                  ),
+                  const SizedBox(width: 13),
+                  Text(
+                    zh ? g.zh : g.en,
+                    style: TextStyle(
+                        fontSize: 16.5,
+                        fontWeight: FontWeight.w600,
+                        color: gOn),
+                  ),
+                  const Spacer(),
+                  AnimatedRotation(
+                    turns: isOpen ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 220),
+                    child: Icon(Icons.keyboard_arrow_down_rounded,
+                        color: gSoft, size: 22),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (isOpen)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+              child: Column(
+                children: [
+                  for (final w in g.words)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(13),
+                        onTap: () async {
+                          final word = zh ? w.zh : w.en;
+                          await _save(word);
+                          if (mounted) setState(() => _picked = word);
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.fromLTRB(14, 11, 14, 11),
+                          decoration: BoxDecoration(
+                            color: g.color.withValues(alpha: 0.07),
+                            borderRadius: BorderRadius.circular(13),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                zh ? w.zh : w.en,
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: gOn),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                zh ? w.zhWhen : w.enWhen,
+                                style: TextStyle(
+                                    fontSize: 12.5,
+                                    height: 1.5,
+                                    color: gSoft),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EmotionGroup {
+  const _EmotionGroup(this.zh, this.en, this.icon, this.color, this.words);
+  final String zh;
+  final String en;
+  final IconData icon;
+  final Color color;
+  final List<_Word> words;
+}
+
+class _Word {
+  const _Word(this.zh, this.en, this.zhWhen, this.enWhen);
+  final String zh;
+  final String en;
+  final String zhWhen;
+  final String enWhen;
 }
