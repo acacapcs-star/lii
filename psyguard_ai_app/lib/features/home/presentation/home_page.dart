@@ -907,6 +907,17 @@ class _HomeContentState extends State<_HomeContent> {
                   ? '存下有人對你說過、想一直記得的話，需要時打開來看。'
                   : 'Save the words someone said that you want to keep.',
             ),
+            _InteractiveCard(
+              title: copy.isZhTw ? '本週人設' : 'Weekly Persona',
+              subtitle: copy.isZhTw ? '這週的你是哪隻動物' : 'Your animal this week',
+              icon: Icons.pets_rounded,
+              color: const Color(0xFF7A41C8),
+              route: '/weekly-persona',
+              tooltipTitle: copy.isZhTw ? '本週人設' : 'Weekly Persona',
+              tooltipDescription: copy.isZhTw
+                  ? '根據這週的心情，給你一張專屬的動物人設卡。'
+                  : 'Get an animal persona card based on your week\'s mood.',
+            ),
           ],
         ),
 
