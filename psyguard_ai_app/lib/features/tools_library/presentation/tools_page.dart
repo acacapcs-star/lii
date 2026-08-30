@@ -1456,6 +1456,19 @@ class _GroundingLogPageState extends ConsumerState<GroundingLogPage> {
     if (mounted) setState(() => _loading = false);
   }
 
+  /// 舊格式是字串，新格式是陣列，兩種都吃
+  List<String> _lines(dynamic v) {
+    if (v == null) return const [];
+    if (v is List) {
+      return v
+          .map((e) => e.toString().trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+    }
+    final t = v.toString().trim();
+    return t.isEmpty ? const [] : [t];
+  }
+
   String _when(String iso, bool zh) {
     final d = DateTime.tryParse(iso);
     if (d == null) return '';
@@ -1539,7 +1552,7 @@ class _GroundingLogPageState extends ConsumerState<GroundingLogPage> {
                           ),
                           const SizedBox(height: 10),
                           for (var k = 0; k < keys.length; k++)
-                            if ((e[keys[k]] ?? '').toString().trim().isNotEmpty)
+                            if (_lines(e[keys[k]]).isNotEmpty)
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 8),
                                 child: Row(
@@ -1577,7 +1590,7 @@ class _GroundingLogPageState extends ConsumerState<GroundingLogPage> {
                                                     alpha: 0.75)),
                                           ),
                                           Text(
-                                            e[keys[k]].toString(),
+                                            _lines(e[keys[k]]).join('、'),
                                             style: TextStyle(
                                                 fontSize: 14.5,
                                                 height: 1.55,

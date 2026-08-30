@@ -384,7 +384,7 @@ class _LiiBreathPageState extends State<LiiBreathPage>
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content:
-                                    Text('\${t.labelEn}: \${r.requirementEn}'),
+                                    Text('${t.labelEn}: ${r.requirementEn}'),
                                 duration: const Duration(seconds: 2),
                               ),
                             );
