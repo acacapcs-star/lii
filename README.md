@@ -444,6 +444,26 @@ Clinical literature is cited as design provenance, not as therapy.
 
 ---
 
+## AI reply language
+
+The AI reply language is a separate setting from the interface language, because they answer different questions. The interface language is what you read; the reply language is what Luna writes back in.
+
+| Mode | Behaviour |
+|---|---|
+| **Follow what I type** (default) | The reply matches the language of that message. Chinese gets Chinese, Japanese gets Japanese, and a message mixing Chinese and English gets a mixed reply |
+| **Always Traditional Chinese** | Replies in Chinese regardless of input |
+| **Always English** | Replies in English regardless of input |
+
+The default is implemented as a line appended to the system prompt asking the model to answer in the language the user just used — not as character-range detection in Dart. A hand-written detector would have had to enumerate every script; delegating it to the model covers Japanese, Korean, and anything else without a list to maintain.
+
+It applies to two places only: **Talk it out** and the **sticky-note reaction**. Interface text, buttons and headings continue to follow the app's language setting.
+
+**This needs your own API key.** Without one the app runs in offline mode where replies come from a fixed local set, and those follow the app language. The settings panel says so in place rather than letting the option look broken.
+
+A one-time notice after onboarding explains the default, because a setting nobody knows about is the same as a setting that doesn't exist.
+
+Files: `core/network/ai_lang_pref.dart` (the enum, the prompt directive, and the persisted preference).
+
 ## Group baselines
 
 `core/ers/group_norms.dart` provides comparison norms by age band (under 13,
@@ -822,7 +842,8 @@ lii/
         │   │   ├── ai_api_client.dart
         │   │   ├── ai_chat_repository.dart     context memory + message summarisation
         │   │   ├── ai_error_formatter.dart
-        │   │   ├── ai_local_messages.dart      offline and high-risk local replies
+        │   │   ├── ai_lang_pref.dart          reply-language preference and prompt directive
+│   │   ├── ai_local_messages.dart      offline and high-risk local replies
         │   │   ├── app_config_controller.dart
         │   │   └── dio_provider.dart
         │   ├── storage/
