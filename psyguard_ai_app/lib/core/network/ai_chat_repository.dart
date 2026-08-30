@@ -11,6 +11,7 @@ import '../security/local_settings_service.dart';
 import '../storage/app_database.dart';
 import '../storage/database_provider.dart';
 import '../../l10n/app_language.dart';
+import 'ai_lang_pref.dart';
 import 'ai_api_client.dart';
 import 'app_config_controller.dart';
 import 'dio_provider.dart';
@@ -55,6 +56,7 @@ final aiChatRepositoryProvider = Provider<AiChatRepository>((ref) {
     db: ref.watch(appDatabaseProvider),
     config: ref.watch(appConfigProvider),
     language: ref.watch(appLanguageControllerProvider),
+    replyLang: ref.watch(aiReplyLangProvider),
   );
 });
 
@@ -64,15 +66,18 @@ class AiChatRepositoryImpl implements AiChatRepository {
     required AppDatabase db,
     required AppConfig config,
     AppLanguage language = AppLanguage.zhTw,
+    AiReplyLang replyLang = AiReplyLang.auto,
   }) : _client = client,
        _db = db,
        _config = config,
-       _language = language;
+       _language = language,
+       _replyLang = replyLang;
 
   final AiApiClient _client;
   final AppDatabase _db;
   final AppConfig _config;
   final AppLanguage _language;
+  final AiReplyLang _replyLang;
 
   static const _estimatedContextWindowTokens = 128000;
   static const _compressionTriggerTokens = 118000;
@@ -388,7 +393,7 @@ class AiChatRepositoryImpl implements AiChatRepository {
     required List<_PromptHistoryMessage> history,
   }) {
     return <Map<String, String>>[
-      {'role': 'system', 'content': _systemPrompt},
+      {'role': 'system', 'content': _systemPrompt + _replyLang.directive()},
       if (contextSummary != null && contextSummary.trim().isNotEmpty)
         {
           'role': 'system',
@@ -412,7 +417,7 @@ class AiChatRepositoryImpl implements AiChatRepository {
     for (final message in history.reversed) {
       retained.insert(0, message);
       final estimatedTokens = _estimateMessagesTokens([
-        {'role': 'system', 'content': _systemPrompt},
+        {'role': 'system', 'content': _systemPrompt + _replyLang.directive()},
         ...retained.map((item) => {'role': item.role, 'content': item.content}),
       ]);
       if (estimatedTokens > _targetPromptTokens && retained.length > 1) {

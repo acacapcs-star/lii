@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:async';
 import '../../../core/network/ai_chat_repository.dart';
 import '../../../core/network/app_config_controller.dart';
+import '../../../core/network/ai_lang_pref.dart';
 import 'package:flutter/material.dart';
 import '../../../core/widgets/lii_bottom_nav.dart';
 import 'encouragement_banner.dart';
@@ -2867,7 +2868,14 @@ class _LunaNoteReactionState extends ConsumerState<LunaNoteReaction> {
       _shown = '';
     });
 
-    final zh = AppStrings.of(ref.read(appLanguageControllerProvider)).isZhTw;
+    // 依便條實際寫的文字判斷語言，不是照 App 設定
+    var zh = false;
+    for (final r in text.runes) {
+      if ((r >= 0x4E00 && r <= 0x9FFF) || (r >= 0x3400 && r <= 0x4DBF)) {
+        zh = true;
+        break;
+      }
+    }
     final prompt = zh
         ? '這是使用者隨手寫的便條，請用兩到三句話輕鬆回應，可以吐槽但不要說教，'
             '不要給建議、不要問問題、不要安慰。便條內容：$text'
@@ -2876,9 +2884,10 @@ class _LunaNoteReactionState extends ConsumerState<LunaNoteReaction> {
             'Note: $text';
 
     try {
+      final lang = ref.read(aiReplyLangProvider);
       final reply = await ref.read(aiChatRepositoryProvider).sendMessage(
             sessionId: 'sticky_note_reaction',
-            userText: prompt,
+            userText: prompt + lang.directive(),
           );
       if (!mounted) return;
       _full = reply.content.trim();

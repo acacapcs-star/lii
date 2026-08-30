@@ -1,3 +1,4 @@
+import '../../../core/network/ai_lang_pref.dart';
 import 'package:flutter/material.dart';
 import '../../../core/widgets/lii_bottom_nav.dart';
 import 'package:flutter/foundation.dart';
@@ -159,6 +160,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             const SizedBox(height: 18),
             _sectionTitle(language == AppLanguage.zhTw ? '🚡 每日 Pacer' : '🚡 Daily Pacer'),
             const SizedBox(height: 8),
+            _card(child: const _AiReplyLangTile()),
             _card(child: const _DailyPacerSwitch()),
             const SizedBox(height: 20),
             _sectionTitle(copy.languageSectionTitle),
@@ -1472,6 +1474,76 @@ class _DailyPacerSwitchState extends State<_DailyPacerSwitch> {
         zh ? '每天第一次打開時，Luna 會拿一則你存過的話出來。' : 'Luna brings back one saved line each day.',
         style: const TextStyle(fontSize: 13, height: 1.6),
       ),
+    );
+  }
+}
+
+/// AI 回覆語言：三選一。
+/// 預設「跟著我打的語言」——模型依使用者這則訊息的語言回覆。
+class _AiReplyLangTile extends ConsumerWidget {
+  const _AiReplyLangTile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final zh = Localizations.localeOf(context).languageCode == 'zh';
+    final current = ref.watch(aiReplyLangProvider);
+    final cfg = ref.watch(appConfigProvider);
+    final hasKey = cfg.isConfigured;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          zh ? 'AI 回覆語言' : 'AI reply language',
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          zh
+              ? '影響「聊聊」和便條紙的回覆，不影響介面文字。'
+              : 'Affects replies in chat and sticky notes, not the interface.',
+          style: TextStyle(
+              fontSize: 13, height: 1.6, color: Colors.grey.shade600),
+        ),
+        const SizedBox(height: 10),
+        for (final opt in AiReplyLang.values)
+          RadioListTile<AiReplyLang>(
+            value: opt,
+            groupValue: current,
+            onChanged: (v) {
+              if (v != null) ref.read(aiReplyLangProvider.notifier).set(v);
+            },
+            contentPadding: EdgeInsets.zero,
+            dense: true,
+            title: Text(opt.label(zh),
+                style: const TextStyle(fontSize: 14.5)),
+            subtitle: Text(
+              opt.hint(zh),
+              style: TextStyle(
+                  fontSize: 12.5, height: 1.5, color: Colors.grey.shade600),
+            ),
+          ),
+        if (!hasKey) ...[
+          const SizedBox(height: 6),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFFBF0),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFF0E0B8)),
+            ),
+            child: Text(
+              zh
+                  ? '這個設定需要你自己填 API 金鑰才會生效。'
+                    '沒有金鑰時是離線模式，回覆是固定的幾句話。'
+                  : 'This needs your own API key to take effect. '
+                    'Without one the app runs offline with fixed replies.',
+              style: const TextStyle(
+                  fontSize: 12.5, height: 1.6, color: Color(0xFF8A6D1F)),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

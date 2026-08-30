@@ -3,6 +3,8 @@
 // 解決「新使用者不知道怎麼玩」。只跳一次，看過就記住。中英分開。
 // ══════════════════════════════════════════════════════════
 
+import '../../core/network/ai_lang_pref.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,6 +43,71 @@ Future<void> showOnboarding(BuildContext context) {
             AppStrings.of(ref.watch(appLanguageControllerProvider)).isZhTw;
         return _OnboardingSheet(zh: zh);
       },
+    ),
+  );
+}
+
+
+/// onboarding 之後告知 AI 回覆語言這件事，只跳一次。
+Future<void> showAiLangNotice(BuildContext context) async {
+  if (await AiLangNoticeSeen.get()) return;
+  if (!context.mounted) return;
+  await AiLangNoticeSeen.mark();
+
+  final zh = Localizations.localeOf(context).languageCode == 'zh';
+  await showDialog<void>(
+    context: context,
+    builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      title: Text(zh ? 'AI 回覆語言' : 'AI reply language',
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            zh
+                ? 'Luna 預設會跟著你打的語言回覆——你打中文就回中文，'
+                  '打日文就回日文，中英夾雜也會夾雜著回。\n\n'
+                  '你也可以在設定裡固定成一種語言。'
+                : 'Luna replies in whatever language you write in — Chinese gets '
+                  'Chinese, Japanese gets Japanese, and mixed stays mixed.\n\n'
+                  'You can also fix it to one language in Settings.',
+            style: const TextStyle(fontSize: 14, height: 1.7),
+          ),
+          const SizedBox(height: 14),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFFBF0),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFF0E0B8)),
+            ),
+            child: Text(
+              zh
+                  ? '這需要你自己填 API 金鑰才會生效。沒有金鑰時是離線模式，'
+                    '回覆是固定的幾句話。'
+                  : 'This needs your own API key. Without one the app runs '
+                    'offline with a fixed set of replies.',
+              style: const TextStyle(
+                  fontSize: 12.5, height: 1.6, color: Color(0xFF8A6D1F)),
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(zh ? '知道了' : 'Got it'),
+        ),
+        FilledButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+            context.push('/settings');
+          },
+          child: Text(zh ? '去設定' : 'Open settings'),
+        ),
+      ],
     ),
   );
 }
