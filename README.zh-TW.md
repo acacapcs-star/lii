@@ -34,7 +34,7 @@ git shortlog -sn --all
 git log --since=2026-07-10 --pretty=format:"%ad  %an  %s" --date=short
 ```
 
-**規模**:`lib/` 約 34,800 行 Dart(不含產生檔);另有 14 個測試檔約 934 行,涵蓋 risk engine、資料庫、設定服務、匯出服務、四個頁面 widget test 與一個 integration test。
+**規模**:`lib/` 約 36,400 行 Dart(不含產生檔);另有 14 個測試檔約 934 行,涵蓋 risk engine、資料庫、設定服務、匯出服務、四個頁面 widget test 與一個 integration test。
 
 ---
 
@@ -618,7 +618,7 @@ lii/
     │   └── widget_test.dart
     ├── integration_test/
     │   └── app_flow_test.dart
-    └── lib/                                    約 34,800 行
+    └── lib/                                    約 36,400 行
         ├── main.dart
         ├── app/
         │   ├── app.dart
@@ -709,7 +709,8 @@ lii/
         │       ├── floating_app_brand.dart     長按叫出氛圍選單
         │       ├── app_brand_icon.dart
         │       ├── brand_loading_indicator.dart
-        │       └── tooltip_bubble.dart
+        │       ├── tooltip_bubble.dart
+        │       └── lii_bottom_nav.dart          three tabs: home · records · tools
         └── features/                           ← 以頁面為單位
             ├── ers/
             │   ├── ers_engine.dart             三串流加權 · 缺漏重新正規化

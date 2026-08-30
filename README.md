@@ -46,7 +46,7 @@ git shortlog -sn --all
 git log --since=2026-07-10 --pretty=format:"%ad  %an  %s" --date=short
 ```
 
-**Scale**: roughly 34,800 lines of Dart under `lib/` (excluding generated
+**Scale**: roughly 36,400 lines of Dart under `lib/` (excluding generated
 files), plus 14 test files totalling about 934 lines — covering the risk
 engine, database, settings service, export service, four page widget tests and
 one integration test.
@@ -544,7 +544,7 @@ The bar lives in `lib/core/widgets/lii_bottom_nav.dart`. The side drawer is kept
 
 ## Complete feature map
 
-33 routes, grouped into six sections in the navigation drawer.
+32 routes, grouped into six sections in the navigation drawer.
 
 ### Daily
 
@@ -784,11 +784,11 @@ lii/
     │   └── widget_test.dart
     ├── integration_test/
     │   └── app_flow_test.dart
-    └── lib/                                    ~34,800 lines
+    └── lib/                                    119 files · ~36,400 lines
         ├── main.dart
         ├── app/
         │   ├── app.dart
-        │   ├── router.dart                     33 routes
+        │   ├── router.dart                     32 routes
         │   └── theme.dart
         ├── l10n/
         │   ├── app_language.dart
@@ -851,7 +851,7 @@ lii/
         │   │   └── mock_data_seeder.dart
         │   ├── settings/
         │   │   └── font_scale_provider.dart
-        │   └── widgets/                        25 widgets
+        │   └── widgets/                        26 widgets
         │       ├── lii_orb.dart                gradient + path · no filters
         │       ├── luna_orb.dart
         │       ├── luna_pacer_card.dart
@@ -876,7 +876,8 @@ lii/
         │       ├── floating_app_brand.dart     long-press opens the atmosphere menu
         │       ├── app_brand_icon.dart
         │       ├── brand_loading_indicator.dart
-        │       └── tooltip_bubble.dart
+        │       ├── tooltip_bubble.dart
+        │       └── lii_bottom_nav.dart          three tabs: home · records · tools
         └── features/                           ← page-level features
             ├── ers/
             │   ├── ers_engine.dart             three-stream weighting · missing-stream renormalisation
@@ -921,7 +922,7 @@ lii/
             ├── quiz/presentation/
             │   └── distortion_quiz_page.dart   12 questions
             ├── tools_library/presentation/
-            │   ├── tools_page.dart             4 tools
+            │   ├── tools_page.dart             4 tools · grounding and emotion pages inline
             │   └── tool_history_page.dart
             ├── hopebox/presentation/
             │   └── hope_box_page.dart          8 situations · 35 cards
