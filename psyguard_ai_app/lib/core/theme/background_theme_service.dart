@@ -9,7 +9,7 @@ enum BgMode { light, dark }
 enum BgColorChoice { blueLight, greenLight, navyDark, forestDark }
 
 /// 首頁背景圖。none 表示只用底色。
-enum BgImage { none, night, sea, dawn, forest }
+enum BgImage { none, night, sea, dawn }
 
 extension BgImageAsset on BgImage {
   String? get asset => switch (this) {
@@ -17,7 +17,6 @@ extension BgImageAsset on BgImage {
         BgImage.night => 'assets/images/bg/bg_night.png',
         BgImage.sea => 'assets/images/bg/bg_sea.png',
         BgImage.dawn => 'assets/images/bg/bg_dawn.png',
-        BgImage.forest => 'assets/images/bg/bg_forest.png',
       };
 
   String label(bool zh) => switch (this) {
@@ -25,7 +24,6 @@ extension BgImageAsset on BgImage {
         BgImage.night => zh ? '夜空' : 'Night',
         BgImage.sea => zh ? '海面' : 'Sea',
         BgImage.dawn => zh ? '日出' : 'Dawn',
-        BgImage.forest => zh ? '森林' : 'Forest',
       };
 }
 
