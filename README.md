@@ -544,7 +544,7 @@ The bar lives in `lib/core/widgets/lii_bottom_nav.dart`. The side drawer is kept
 
 ## Complete feature map
 
-32 routes, grouped into six sections in the navigation drawer.
+32 routes. The drawer lists 17 destinations as a flat list; the bottom bar carries the three most-used.
 
 ### Daily
 

@@ -396,7 +396,7 @@ SecretSwipeShell(
 
 ## 完整功能地圖
 
-33 條路由,側邊導覽分為六組。
+32 條路由。側欄是 17 個項目的平面清單，底部導覽列放最常用的三個。
 
 ### Daily · 每日
 
@@ -622,7 +622,7 @@ lii/
         ├── main.dart
         ├── app/
         │   ├── app.dart
-        │   ├── router.dart                     33 條路由
+        │   ├── router.dart                     32 條路由
         │   └── theme.dart
         ├── l10n/
         │   ├── app_language.dart
