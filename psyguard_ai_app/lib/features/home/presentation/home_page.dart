@@ -2927,7 +2927,6 @@ class _LunaNoteReactionState extends ConsumerState<LunaNoteReaction> {
   Widget build(BuildContext context) {
     final cfg = ref.watch(appConfigProvider);
     final hasKey = cfg.isConfigured;
-    if (!hasKey) return const SizedBox.shrink();
 
     // 紅燈時 Luna 安靜下來
     if (widget.isHighRisk) return const SizedBox.shrink();
@@ -2964,13 +2963,29 @@ class _LunaNoteReactionState extends ConsumerState<LunaNoteReaction> {
           right: 0,
           bottom: 0,
           child: GestureDetector(
-            onTap: _busy ? null : _ask,
+            onTap: _busy
+                ? null
+                : (hasKey
+                    ? _ask
+                    : () {
+                        final zh = AppStrings.of(
+                                ref.read(appLanguageControllerProvider))
+                            .isZhTw;
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          margin: const EdgeInsets.fromLTRB(16, 0, 16, 78),
+                          content: Text(zh
+                              ? '這個要先在設定裡填 API 金鑰，Luna 才會回你。'
+                              : 'Add your API key in Settings and Luna will reply.'),
+                        ));
+                      }),
             child: Container(
               width: 30,
               height: 30,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: widget.accent.withValues(alpha: _busy ? 0.10 : 0.18),
+                color: widget.accent
+                    .withValues(alpha: _busy || !hasKey ? 0.09 : 0.18),
                 shape: BoxShape.circle,
               ),
               child: Icon(
