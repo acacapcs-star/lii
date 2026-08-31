@@ -77,7 +77,7 @@ class ToolsPage extends ConsumerWidget {
     ToolItem(
       id: 'grounding_54321',
       name: '5-4-3-2-1 著地',
-      description: '說出看見 5 樣、摸到 4 樣、聽到 3 樣、聞到 2 樣、感受 1 樣。',
+      description: '用五種感官回到現在。',
       whenToUse: '腦袋停不下來、覺得自己飄走的時候',
       how: '用五種感官把注意力從念頭拉回身體所在的地方。'
           '重點不是數對，是每說一樣就真的去看、去摸一次。'
@@ -971,7 +971,7 @@ class _ToolSquare extends ConsumerWidget {
       case 'breathing_478':
         return 'In for 4, hold for 7, out for 8. Three rounds.';
       case 'grounding_54321':
-        return 'Name 5 you see, 4 you touch, 3 you hear, 2 you smell, 1 you feel.';
+        return 'Five senses to come back to now.';
       case 'emotion_dict':
         return 'Past "not okay" toward a more precise word.';
       default:

@@ -4,7 +4,7 @@
 
 *The worse it gets, the less lii says.*
 
-**[▶ Live demo](https://singular-croissant-c88834.netlify.app)** | [English](README.md) | [繁體中文](README.zh-TW.md)
+**[▶ Live demo](https://gorgeous-hamster-ccf26c.netlify.app)** | [English](README.md) | [繁體中文](README.zh-TW.md)
 
 > The web build runs in a browser with no install. AI conversation needs your own
 > OpenAI-compatible API key, entered in Settings; without one the app runs in
