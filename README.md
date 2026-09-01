@@ -673,6 +673,45 @@ bilingual and attributed), `core/settings/font_scale_provider.dart`,
 
 The pipeline, end to end:
 
+```mermaid
+flowchart TD
+    V["🎙 語音<br/>speech_to_text"]
+    S["🎚 三個滑桿<br/>穩定 · 輕鬆 · 韌性"]
+    R["🌙 睡眠與作息<br/>時長 · 延遲 · 一致性"]
+
+    VM["speech_metrics<br/>語速 .40 · 負向詞 .35 · 停頓 .25"]
+    SN["分段正規化<br/>兩端皆為風險"]
+    DB[("Drift + SQLite<br/>本機加密")]
+
+    ENG{{"ers_engine<br/>0.40·語言 + 0.35·情緒 + 0.25·作息<br/>三日滾動平均 · 缺串重新正規化"}}
+
+    G["GREEN 0–44<br/>不撤回"]
+    A["AMBER 45–69<br/>撤回追問"]
+    RD["RED 70–100<br/>撤回排名與比較"]
+
+    T1["趨勢圖"]
+    T2["一句已存的 Pacer"]
+    T3["安全流程 · 求助專線"]
+
+    V --> VM
+    S --> SN
+    R --> DB
+    VM --> ENG
+    SN --> ENG
+    DB --> ENG
+    ENG --> G
+    ENG --> A
+    ENG --> RD
+    G --> T1
+    A --> T2
+    RD --> T3
+
+    style ENG fill:#eef4f9,stroke:#4a7fa5,stroke-width:2px
+    style G fill:#e9f3e7,stroke:#41c86f
+    style A fill:#fffbf0,stroke:#c8a341
+    style RD fill:#fdf3f3,stroke:#c84147
+```
+
 ```
 Input        voice              three sliders         sleep & routine
                │                      │                     │
@@ -698,6 +737,26 @@ Output       trend charts        one saved Pacer      safety flow · lines
 Four sentences: three inputs; the voice stream yields three features, each stepped rather than mapped linearly because both extremes are risk; the three streams are weighted into one 0–100 score with a 3-day rolling mean, and a missing stream redistributes its weight rather than being zero-filled; the score sets the tier, and **the tier is the only control signal in the system** — it decides how much the interface withdraws.
 
 Running alongside:
+
+```mermaid
+flowchart LR
+    M["使用者訊息"] --> RE["risk_engine<br/>關鍵詞加權<br/>＋保護因子扣分"]
+    RE --> RES["可解釋的理由清單"]
+
+    D["每日結算"] --> CR["cumulative_risk<br/>12 階量尺<br/>紅 +1 · 三綠 −1"]
+    CR --> CRS["累積注意力"]
+
+    N["無紀錄"] --> SD["silence_detector<br/>三日警示 · 七日危急"]
+    SD --> SDS["沉默本身是訊號"]
+
+    W["書寫內容"] --> IC["incongruence<br/>四維度計分"]
+    IC --> ICS["事件嚴重但情緒平坦<br/>落差即訊號"]
+
+    style RE fill:#eef4f9,stroke:#4a7fa5
+    style CR fill:#eeeaf6,stroke:#6a41c8
+    style SD fill:#fffbf0,stroke:#c8a341
+    style IC fill:#fdf3f3,stroke:#c84147
+```
 
 ```
 user message  ─→ risk_engine         keyword match + protective factors → explainable reasons
@@ -766,6 +825,55 @@ These import no Flutter, so `flutter test` runs them without starting an emulato
 
 
 ### How the four kinds fit together
+
+```mermaid
+flowchart LR
+    subgraph PURE["純邏輯 · 47 檔 · 不 import Flutter"]
+        P1["ers_engine"]
+        P2["risk_engine"]
+        P3["breath_plan"]
+        P4["speech_metrics"]
+    end
+
+    subgraph SVC["服務層 · 有狀態與 IO"]
+        S1["AppDatabase<br/>Drift schema"]
+        S2["SecretDiaryLock<br/>AES-256-GCM"]
+        S3["AiChatRepository<br/>滑動視窗 + 摘要"]
+    end
+
+    subgraph RIV["Riverpod · 36 個 provider"]
+        R1["ersScoreProvider"]
+        R2["riskLevelProvider"]
+        R3["trendBundleProvider"]
+    end
+
+    subgraph UI["Widget · 負責畫"]
+        U1["狀態卡"]
+        U2["趨勢頁"]
+        U3["呼吸頁"]
+    end
+
+    P1 --> S1
+    P2 --> S1
+    P4 --> S1
+    S1 --> R1
+    S1 --> R3
+    P2 --> R2
+    R1 --> U1
+    R2 --> U1
+    R3 --> U2
+    P3 --> U3
+
+    TEST["測試只替換這一層 ↑<br/>演算法從不需要 mock"]
+    TEST -.-> SVC
+
+    style PURE fill:#e9f3e7,stroke:#33604a,stroke-width:2px
+    style SVC fill:#eef4f9,stroke:#4a7fa5
+    style RIV fill:#eeeaf6,stroke:#6a41c8
+    style UI fill:#fffbf0,stroke:#c8a341
+    style TEST fill:#fff,stroke:#8c3b39,stroke-dasharray: 4 4
+```
+
 
 Splitting the code is only half of it. The other half is how a value travels from a pure function to a pixel, and why that path is worth the indirection.
 
