@@ -51,70 +51,6 @@ git log --since=2026-07-10 --pretty=format:"%ad  %an  %s" --date=short
 
 ## 架構圖
 
-```mermaid
-flowchart TD
-    subgraph IN["輸入"]
-        V["語音<br/>speech_metrics"]
-        C["Check-in<br/>情緒 · 壓力 · 活力"]
-        S["睡眠 · 連續天數<br/>打卡一致性"]
-    end
-
-    V --> L["語言串流 40%<br/>語速 .40 · 負面詞 .35 · 停頓 .25"]
-    C --> P["生理串流 35%<br/>情緒 .40 · 負荷 .35 · 韌性 .25"]
-    S --> B["行為串流 25%<br/>睡眠 .50 · 連續 .25 · 一致性 .25"]
-
-    L --> E["ERS 引擎<br/>ers_engine.dart"]
-    P --> E
-    B --> E
-
-    E --> R["缺漏串流重新正規化<br/>語言缺席 → 權重除以 0.60<br/>回傳 -1.0 而非補 0"]
-    R --> BL["個人基線校正<br/>50 減平均情緒 乘 0.1<br/>平均壓力 減 50 乘 0.1"]
-    BL --> T{"分級"}
-
-    T -->|"0-44"| G["綠<br/>什麼都不打擾你"]
-    T -->|"45-69"| A["黃<br/>一則提醒 然後退開"]
-    T -->|"70-100"| RED["紅<br/>撤下排名<br/>安全流程自動開啟"]
-
-    subgraph SIG["並行訊號"]
-        CU["累積風險 12 階<br/>紅 +1 · 三天綠 -1"]
-        SI["沉默偵測<br/>3 天警示 · 7 天危急"]
-        IC["語意情緒不一致<br/>代名詞 · 僵化 · 嚴重度"]
-        RE["風險引擎<br/>關鍵詞 + 保護因子扣分"]
-    end
-
-    T --> CU
-    T --> SI
-    T --> IC
-    T --> RE
-
-    CU --> AI["三級介入<br/>ai_safety_models.dart"]
-    SI --> AI
-    IC --> AI
-    RE --> AI
-    G --> AI
-    A --> AI
-    RED --> AI
-
-    AI --> O1["綠 · 被動"]
-    AI --> O2["黃 · 一次關懷對話"]
-    AI --> O3["紅 單次<br/>提供資源 不通報"]
-    AI --> O4["紅 連續三天<br/>通報輔導室"]
-
-    O3 --> ST["只呈現使用者<br/>先前存下的內容<br/>My Pacers · 規則決定"]
-    O4 --> ST
-    ST --> HU["真人支援入口<br/>1925 / 1995 / 1980<br/>988 / 741741"]
-
-    subgraph PRIV["隱私三層 · 資料表層級分離"]
-        D1["Layer 1 日記<br/>DiaryEntries<br/>content · 永不上傳<br/>AES-256-GCM"]
-        D2["Layer 2 分析<br/>ERSRecords<br/>無 content 欄位"]
-        D3["Layer 3 通報<br/>AlertRecords<br/>僅事件型別"]
-    end
-
-    E -.-> D2
-    O4 -.-> D3
-    D1 -.->|"privacy_verification<br/>assert 無 content"| D2
-```
-
 
 ## ERS:情緒風險分數
 
@@ -509,15 +445,15 @@ onboarding 之後會跳一次說明，因為沒人知道的設定跟不存在的
 
 ```mermaid
 flowchart TD
-    V["🎙 語音<br/>speech_to_text"]
-    S["🎚 三個滑桿<br/>穩定 · 輕鬆 · 韌性"]
-    R["🌙 睡眠與作息<br/>時長 · 延遲 · 一致性"]
+    V["語音<br/>speech_to_text"]
+    S["三個滑桿<br/>穩定 · 輕鬆 · 韌性"]
+    R["睡眠與作息<br/>時長 · 延遲 · 一致性"]
 
     VM["speech_metrics<br/>語速 .40 · 負向詞 .35 · 停頓 .25"]
     SN["分段正規化<br/>兩端皆為風險"]
     DB[("Drift + SQLite<br/>本機加密")]
 
-    ENG{{"ers_engine<br/>0.40·語言 + 0.35·情緒 + 0.25·作息<br/>三日滾動平均 · 缺串重新正規化"}}
+    ENG["ers_engine<br/>0.40·語言 ＋ 0.35·情緒 ＋ 0.25·作息<br/>三日滾動平均 · 缺串重新正規化"]
 
     G["GREEN 0–44<br/>不撤回"]
     A["AMBER 45–69<br/>撤回追問"]
@@ -540,10 +476,16 @@ flowchart TD
     A --> T2
     RD --> T3
 
-    style ENG fill:#eef4f9,stroke:#4a7fa5,stroke-width:2px
-    style G fill:#e9f3e7,stroke:#41c86f
-    style A fill:#fffbf0,stroke:#c8a341
-    style RD fill:#fdf3f3,stroke:#c84147
+    style V fill:#F8EEED,stroke:#C85341,stroke-width:2px
+    style S fill:#F8F3ED,stroke:#C88E41,stroke-width:2px
+    style R fill:#F8F8ED,stroke:#C8C841,stroke-width:2px
+    style VM fill:#EEF8ED,stroke:#53C841,stroke-width:2px
+    style SN fill:#EEF8ED,stroke:#53C841,stroke-width:2px
+    style DB fill:#EEF8ED,stroke:#53C841,stroke-width:2px
+    style ENG fill:#EDF1F8,stroke:#4179C8,stroke-width:3px
+    style G fill:#EDF8F0,stroke:#41C86A,stroke-width:2px
+    style A fill:#F8F4ED,stroke:#C89B41,stroke-width:2px
+    style RD fill:#F8EEED,stroke:#C85341,stroke-width:2px
 ```
 
 ```
@@ -578,7 +520,7 @@ flowchart LR
     RE --> RES["可解釋的理由清單"]
 
     D["每日結算"] --> CR["cumulative_risk<br/>12 階量尺<br/>紅 +1 · 三綠 −1"]
-    CR --> CRS["累積注意力"]
+    CR --> CRS["累積的注意力"]
 
     N["無紀錄"] --> SD["silence_detector<br/>三日警示 · 七日危急"]
     SD --> SDS["沉默本身是訊號"]
@@ -586,10 +528,10 @@ flowchart LR
     W["書寫內容"] --> IC["incongruence<br/>四維度計分"]
     IC --> ICS["事件嚴重但情緒平坦<br/>落差即訊號"]
 
-    style RE fill:#eef4f9,stroke:#4a7fa5
-    style CR fill:#eeeaf6,stroke:#6a41c8
-    style SD fill:#fffbf0,stroke:#c8a341
-    style IC fill:#fdf3f3,stroke:#c84147
+    style RE fill:#EDF1F8,stroke:#4179C8,stroke-width:2px
+    style CR fill:#F1EDF8,stroke:#7C41C8,stroke-width:2px
+    style SD fill:#F8F4ED,stroke:#C89B41,stroke-width:2px
+    style IC fill:#F8EEED,stroke:#C85341,stroke-width:2px
 ```
 
 ```
@@ -659,7 +601,6 @@ Dart 專案常被當成一坨 widget。這個專案分成四類，判準是**能
 
 
 ### 四類怎麼組合起來
-
 ```mermaid
 flowchart LR
     subgraph PURE["純邏輯 · 47 檔 · 不 import Flutter"]
@@ -670,9 +611,9 @@ flowchart LR
     end
 
     subgraph SVC["服務層 · 有狀態與 IO"]
-        S1["AppDatabase<br/>Drift schema"]
-        S2["SecretDiaryLock<br/>AES-256-GCM"]
-        S3["AiChatRepository<br/>滑動視窗 + 摘要"]
+        S1["AppDatabase"]
+        S2["SecretDiaryLock"]
+        S3["AiChatRepository"]
     end
 
     subgraph RIV["Riverpod · 36 個 provider"]
@@ -698,15 +639,14 @@ flowchart LR
     R3 --> U2
     P3 --> U3
 
-    TEST["測試只替換這一層 ↑<br/>演算法從不需要 mock"]
-    TEST -.-> SVC
-
-    style PURE fill:#e9f3e7,stroke:#33604a,stroke-width:2px
-    style SVC fill:#eef4f9,stroke:#4a7fa5
-    style RIV fill:#eeeaf6,stroke:#6a41c8
-    style UI fill:#fffbf0,stroke:#c8a341
-    style TEST fill:#fff,stroke:#8c3b39,stroke-dasharray: 4 4
+    style PURE fill:#EDF8F0,stroke:#41C86A,stroke-width:3px
+    style SVC fill:#EDF6F8,stroke:#41B4C8,stroke-width:2px
+    style RIV fill:#F1EDF8,stroke:#7C41C8,stroke-width:2px
+    style UI fill:#F8F3ED,stroke:#C88E41,stroke-width:2px
 ```
+
+> 測試只替換服務層。演算法沒有依賴，所以從來不需要 mock。
+
 
 
 分層只做了一半，另一半是「一個值怎麼從純函式走到畫面上」，以及那條路徑為什麼值得多繞。

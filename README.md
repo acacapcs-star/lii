@@ -70,70 +70,6 @@ allowed to speak.
 
 ## Architecture
 
-```mermaid
-flowchart TD
-    subgraph IN["Input"]
-        V["Voice<br/>speech_metrics"]
-        C["Check-in<br/>stability · ease · resilience"]
-        S["Sleep · streak<br/>consistency"]
-    end
-
-    V --> L["Language stream 40%<br/>rate .40 · neg-words .35 · pauses .25"]
-    C --> P["Physical stream 35%<br/>stability .40 · ease .35 · resilience .25"]
-    S --> B["Behaviour stream 25%<br/>sleep .50 · streak .25 · consistency .25"]
-
-    L --> E["ERS engine<br/>ers_engine.dart"]
-    P --> E
-    B --> E
-
-    E --> R["Missing-stream renormalisation<br/>language absent → weights over 0.60<br/>returns -1.0 not zero-fill"]
-    R --> BL["Personal baseline correction<br/>50 minus mean mood times 0.1<br/>mean stress minus 50 times 0.1"]
-    BL --> T{"Tier"}
-
-    T -->|"0-44"| G["Green<br/>nothing interrupts you"]
-    T -->|"45-69"| A["Amber<br/>one note then it steps back"]
-    T -->|"70-100"| RED["Red<br/>ranking withdrawn<br/>safety flow opens itself"]
-
-    subgraph SIG["Parallel signals"]
-        CU["Cumulative risk 12 stages<br/>red +1 · three greens -1"]
-        SI["Silence detector<br/>3 days warn · 7 days critical"]
-        IC["Semantic-emotional incongruence<br/>pronouns · rigidity · severity"]
-        RE["Risk engine<br/>keywords + protective factors subtract"]
-    end
-
-    T --> CU
-    T --> SI
-    T --> IC
-    T --> RE
-
-    CU --> AI["Three-tier intervention<br/>ai_safety_models.dart"]
-    SI --> AI
-    IC --> AI
-    RE --> AI
-    G --> AI
-    A --> AI
-    RED --> AI
-
-    AI --> O1["Green · passive"]
-    AI --> O2["Amber · one check-in"]
-    AI --> O3["Red single<br/>resources offered, no notification"]
-    AI --> O4["Red three days<br/>counsellor notified"]
-
-    O3 --> ST["Presents only what the user<br/>stored earlier<br/>My Pacers · rule-selected"]
-    O4 --> ST
-    ST --> HU["Route to a person<br/>TW 1925 / 1995 / 1980<br/>US 988 / 741741"]
-
-    subgraph PRIV["Privacy · separated at table level"]
-        D1["Layer 1 Journal<br/>DiaryEntries<br/>content · never uploaded<br/>AES-256-GCM"]
-        D2["Layer 2 Analysis<br/>ERSRecords<br/>no content column"]
-        D3["Layer 3 Alert<br/>AlertRecords<br/>event type only"]
-    end
-
-    E -.-> D2
-    O4 -.-> D3
-    D1 -.->|"privacy_verification<br/>asserts no content"| D2
-```
-
 
 ## ERS — Emotional Risk Score
 
@@ -675,23 +611,23 @@ The pipeline, end to end:
 
 ```mermaid
 flowchart TD
-    V["🎙 語音<br/>speech_to_text"]
-    S["🎚 三個滑桿<br/>穩定 · 輕鬆 · 韌性"]
-    R["🌙 睡眠與作息<br/>時長 · 延遲 · 一致性"]
+    V["Voice<br/>speech_to_text"]
+    S["Three sliders<br/>steady · at ease · resilient"]
+    R["Sleep &amp; routine<br/>duration · latency · consistency"]
 
-    VM["speech_metrics<br/>語速 .40 · 負向詞 .35 · 停頓 .25"]
-    SN["分段正規化<br/>兩端皆為風險"]
-    DB[("Drift + SQLite<br/>本機加密")]
+    VM["speech_metrics<br/>rate .40 · neg-words .35 · pauses .25"]
+    SN["Stepped normalisation<br/>both ends are risk"]
+    DB[("Drift + SQLite<br/>encrypted on device")]
 
-    ENG{{"ers_engine<br/>0.40·語言 + 0.35·情緒 + 0.25·作息<br/>三日滾動平均 · 缺串重新正規化"}}
+    ENG["ers_engine<br/>0.40·language + 0.35·emotion + 0.25·routine<br/>3-day rolling mean · missing stream renormalised"]
 
-    G["GREEN 0–44<br/>不撤回"]
-    A["AMBER 45–69<br/>撤回追問"]
-    RD["RED 70–100<br/>撤回排名與比較"]
+    G["GREEN 0–44<br/>nothing withdrawn"]
+    A["AMBER 45–69<br/>prompting withdrawn"]
+    RD["RED 70–100<br/>ranking withdrawn"]
 
-    T1["趨勢圖"]
-    T2["一句已存的 Pacer"]
-    T3["安全流程 · 求助專線"]
+    T1["Trend charts"]
+    T2["One saved Pacer"]
+    T3["Safety flow · crisis lines"]
 
     V --> VM
     S --> SN
@@ -706,10 +642,16 @@ flowchart TD
     A --> T2
     RD --> T3
 
-    style ENG fill:#eef4f9,stroke:#4a7fa5,stroke-width:2px
-    style G fill:#e9f3e7,stroke:#41c86f
-    style A fill:#fffbf0,stroke:#c8a341
-    style RD fill:#fdf3f3,stroke:#c84147
+    style V fill:#F8EEED,stroke:#C85341,stroke-width:2px
+    style S fill:#F8F3ED,stroke:#C88E41,stroke-width:2px
+    style R fill:#F8F8ED,stroke:#C8C841,stroke-width:2px
+    style VM fill:#EEF8ED,stroke:#53C841,stroke-width:2px
+    style SN fill:#EEF8ED,stroke:#53C841,stroke-width:2px
+    style DB fill:#EEF8ED,stroke:#53C841,stroke-width:2px
+    style ENG fill:#EDF1F8,stroke:#4179C8,stroke-width:3px
+    style G fill:#EDF8F0,stroke:#41C86A,stroke-width:2px
+    style A fill:#F8F4ED,stroke:#C89B41,stroke-width:2px
+    style RD fill:#F8EEED,stroke:#C85341,stroke-width:2px
 ```
 
 ```
@@ -740,22 +682,22 @@ Running alongside:
 
 ```mermaid
 flowchart LR
-    M["使用者訊息"] --> RE["risk_engine<br/>關鍵詞加權<br/>＋保護因子扣分"]
-    RE --> RES["可解釋的理由清單"]
+    M["User message"] --> RE["risk_engine<br/>weighted keywords<br/>+ protective factors"]
+    RE --> RES["Explainable reasons"]
 
-    D["每日結算"] --> CR["cumulative_risk<br/>12 階量尺<br/>紅 +1 · 三綠 −1"]
-    CR --> CRS["累積注意力"]
+    D["Daily close"] --> CR["cumulative_risk<br/>12-stage scale<br/>red +1 · three greens −1"]
+    CR --> CRS["Accumulated attention"]
 
-    N["無紀錄"] --> SD["silence_detector<br/>三日警示 · 七日危急"]
-    SD --> SDS["沉默本身是訊號"]
+    N["No entries"] --> SD["silence_detector<br/>3 days warning · 7 critical"]
+    SD --> SDS["Silence is itself a signal"]
 
-    W["書寫內容"] --> IC["incongruence<br/>四維度計分"]
-    IC --> ICS["事件嚴重但情緒平坦<br/>落差即訊號"]
+    W["Written text"] --> IC["incongruence<br/>four-dimension scoring"]
+    IC --> ICS["Severe events, flat affect<br/>the gap is the signal"]
 
-    style RE fill:#eef4f9,stroke:#4a7fa5
-    style CR fill:#eeeaf6,stroke:#6a41c8
-    style SD fill:#fffbf0,stroke:#c8a341
-    style IC fill:#fdf3f3,stroke:#c84147
+    style RE fill:#EDF1F8,stroke:#4179C8,stroke-width:2px
+    style CR fill:#F1EDF8,stroke:#7C41C8,stroke-width:2px
+    style SD fill:#F8F4ED,stroke:#C89B41,stroke-width:2px
+    style IC fill:#F8EEED,stroke:#C85341,stroke-width:2px
 ```
 
 ```
@@ -825,32 +767,31 @@ These import no Flutter, so `flutter test` runs them without starting an emulato
 
 
 ### How the four kinds fit together
-
 ```mermaid
 flowchart LR
-    subgraph PURE["純邏輯 · 47 檔 · 不 import Flutter"]
+    subgraph PURE["Pure logic · 47 files · no Flutter import"]
         P1["ers_engine"]
         P2["risk_engine"]
         P3["breath_plan"]
         P4["speech_metrics"]
     end
 
-    subgraph SVC["服務層 · 有狀態與 IO"]
-        S1["AppDatabase<br/>Drift schema"]
-        S2["SecretDiaryLock<br/>AES-256-GCM"]
-        S3["AiChatRepository<br/>滑動視窗 + 摘要"]
+    subgraph SVC["Service layer · state and IO"]
+        S1["AppDatabase"]
+        S2["SecretDiaryLock"]
+        S3["AiChatRepository"]
     end
 
-    subgraph RIV["Riverpod · 36 個 provider"]
+    subgraph RIV["Riverpod · 36 providers"]
         R1["ersScoreProvider"]
         R2["riskLevelProvider"]
         R3["trendBundleProvider"]
     end
 
-    subgraph UI["Widget · 負責畫"]
-        U1["狀態卡"]
-        U2["趨勢頁"]
-        U3["呼吸頁"]
+    subgraph UI["Widget · draws"]
+        U1["Status card"]
+        U2["Trends page"]
+        U3["Breathing page"]
     end
 
     P1 --> S1
@@ -864,15 +805,14 @@ flowchart LR
     R3 --> U2
     P3 --> U3
 
-    TEST["測試只替換這一層 ↑<br/>演算法從不需要 mock"]
-    TEST -.-> SVC
-
-    style PURE fill:#e9f3e7,stroke:#33604a,stroke-width:2px
-    style SVC fill:#eef4f9,stroke:#4a7fa5
-    style RIV fill:#eeeaf6,stroke:#6a41c8
-    style UI fill:#fffbf0,stroke:#c8a341
-    style TEST fill:#fff,stroke:#8c3b39,stroke-dasharray: 4 4
+    style PURE fill:#EDF8F0,stroke:#41C86A,stroke-width:3px
+    style SVC fill:#EDF6F8,stroke:#41B4C8,stroke-width:2px
+    style RIV fill:#F1EDF8,stroke:#7C41C8,stroke-width:2px
+    style UI fill:#F8F3ED,stroke:#C88E41,stroke-width:2px
 ```
+
+> Tests replace only the service layer. The maths has no dependencies, so it never needs mocking.
+
 
 
 Splitting the code is only half of it. The other half is how a value travels from a pure function to a pixel, and why that path is worth the indirection.
