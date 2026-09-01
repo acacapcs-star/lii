@@ -598,6 +598,68 @@ Dart 專案常被當成一坨 widget。這個專案分成四類，判準是**能
 
 `core/storage/app_database.g.dart`，5,231 行，由 `build_runner` 依 Drift schema 產生。
 
+
+### 四類怎麼組合起來
+
+分層只做了一半，另一半是「一個值怎麼從純函式走到畫面上」，以及那條路徑為什麼值得多繞。
+
+```
+純邏輯              服務層                Riverpod           Widget
+（不 import Flutter）（狀態與 IO）        （36 個 provider）  （負責畫）
+
+ers_engine     ──→  ErsRepository    ──→  ersScoreProvider ──→ 狀態卡
+risk_engine    ──→  RiskEvaluation   ──→  riskLevelProvider──→ 分層行為
+breath_plan    ──→  —                ──→  —                ──→ 呼吸頁
+speech_metrics ──→  AppDatabase      ──→  trendBundle      ──→ 趨勢頁
+```
+
+**規則是單向的。** 純邏輯不知道上面有什麼。`ers_engine.dart` 不能 import provider、不能讀偏好設定、不能跳對話框。它收數字、回傳數字。那個限制正是它能在沒有模擬器的情況下被測試的原因——`lib/` 底下 120 個檔案裡有 47 個是這樣寫的。
+
+| 層 | 檔數 | import Flutter | 不用模擬器就能測 |
+|---|---|---|---|
+| 純邏輯 | 47 | 否 | **可以** |
+| 服務層 | 約 20 | 部分 | 可以，用假的替身 |
+| Widget | 約 50 | 是 | 只能跑 widget test |
+| 產生檔 | 1 | — | 不列入計算 |
+
+**Riverpod 是接縫。** provider 是下層被組合起來的地方，也是測試注入替身的地方：
+
+```dart
+// 純函式，沒有任何依賴
+double computeErs(ErsInput input) { ... }
+
+// provider 負責從資料庫餵資料給它
+final ersScoreProvider = FutureProvider((ref) async {
+  final rows = await ref.watch(appDatabaseProvider).recentCheckins(3);
+  return computeErs(ErsInput.fromRows(rows));
+});
+
+// 測試只替換資料庫，從來不動演算法
+ProviderScope(overrides: [
+  appDatabaseProvider.overrideWithValue(FakeDatabase()),
+])
+```
+
+演算法不需要被 mock，因為它沒有可以 mock 的依賴。只有邊界——資料庫、網路、時鐘——會被替換。
+
+### 這樣分的實際好處
+
+**一份演算法，三個出口。** `breath_plan.dart` 算出呼吸節律，完全不知道它會被畫在哪裡。同一份輸出供給獨立的呼吸頁、4-7-8 工具卡、以及高風險時的安全流程。如果它當初持有 `BuildContext`，這三個地方就得各自複製一份。
+
+**不會拋錯的錯誤才抓得到。** 呼吸節律算錯不會 crash，只會讓一個焦慮的人更焦慮；ERS 算錯也不會 crash，只是安靜地誤判一個人。這正是只有測試找得到的那種失敗，而測試要跑得夠快才會有人跑。把演算法跟 Flutter 隔開，就是在維持那個速度。
+
+**分層是全系統唯一的控制訊號。** GREEN / AMBER / RED 在純邏輯裡算一次，所有需要撤回東西的 widget 都讀同一個值。沒有第二個地方在決定「這個人現在有沒有風險」，所以介面的兩個部分不可能對這件事有不同的答案。
+
+**隱私是結構性的，不是流程性的。** 因為分析路徑是一張沒有內容欄位的表，Widget 層再怎麼不小心也不可能把日記漏進去。`features/privacy/privacy_verification.dart` 斷言這件事——那個政策是一個測試，不是一句承諾。
+
+### 刻意跨越邊界的地方
+
+有兩個地方打破了規則，兩個都在原地註記：
+
+`core/widgets/lii_orb.dart` 自己算漸層停止點，而不是從 provider 拿，因為球體每一幀都要重繪，每幀讀一次 provider 太浪費。代價是球的顏色不會自動跟著氛圍主題走。
+
+`features/home/presentation/home_page.dart` 有幾個 `setState` 的欄位其實該往上提——那是重構時沒清乾淨的殘留。這件事被記錄下來而不是藏起來。
+
 ### 其他語言
 
 | 語言 | 檔案 | 來源 | 是否自撰 |

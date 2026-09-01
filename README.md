@@ -764,6 +764,68 @@ These import no Flutter, so `flutter test` runs them without starting an emulato
 
 `core/storage/app_database.g.dart`, 5,231 lines, produced by `build_runner` from the Drift schema.
 
+
+### How the four kinds fit together
+
+Splitting the code is only half of it. The other half is how a value travels from a pure function to a pixel, and why that path is worth the indirection.
+
+```
+Pure logic          Service layer         Riverpod            Widget
+(no Flutter)        (state + IO)          (36 providers)      (draws)
+
+ers_engine     ──→  ErsRepository    ──→  ersScoreProvider ──→ StatusCard
+risk_engine    ──→  RiskEvaluation   ──→  riskLevelProvider──→ tier behaviour
+breath_plan    ──→  —                ──→  —                ──→ LiiBreathPage
+speech_metrics ──→  AppDatabase      ──→  trendBundle      ──→ TrendsPage
+```
+
+**The rule is one-directional.** Pure logic knows nothing about the layers above it. `ers_engine.dart` cannot import a provider, cannot read a preference, cannot show a dialog. It takes numbers and returns a number. That constraint is what makes it testable without an emulator — and 47 of the 120 files in `lib/` are written that way.
+
+| Layer | Files | Imports Flutter | Testable without emulator |
+|---|---|---|---|
+| Pure logic | 47 | No | **Yes** |
+| Service | ~20 | Some | Yes, with fakes |
+| Widget | ~50 | Yes | Widget tests only |
+| Generated | 1 | — | Not counted |
+
+**Riverpod is the seam.** Providers are where the lower layers get composed and where tests inject substitutes:
+
+```dart
+// A pure function, no dependencies
+double computeErs(ErsInput input) { ... }
+
+// A provider that supplies its input from the database
+final ersScoreProvider = FutureProvider((ref) async {
+  final rows = await ref.watch(appDatabaseProvider).recentCheckins(3);
+  return computeErs(ErsInput.fromRows(rows));
+});
+
+// A test replaces only the database, never the maths
+ProviderScope(overrides: [
+  appDatabaseProvider.overrideWithValue(FakeDatabase()),
+])
+```
+
+The maths is never mocked, because it has no dependencies to mock. Only the edges — database, network, clock — get replaced.
+
+### What this buys, concretely
+
+**One algorithm, three surfaces.** `breath_plan.dart` computes a breathing rhythm and knows nothing about where it will be drawn. That same output feeds the standalone breathing page, the 4-7-8 tool card, and the high-risk safety flow. If it had held a `BuildContext`, each of those would have needed its own copy.
+
+**Errors that don't raise get caught.** A wrong breathing rhythm doesn't crash — it just makes an anxious person more anxious. A miscalculated ERS doesn't crash — it silently misjudges someone. These are exactly the failures that only tests find, and tests only get run if they're fast. Keeping the maths free of Flutter is what keeps them fast.
+
+**The tier is the only control signal.** GREEN / AMBER / RED is computed once in pure logic and read by every widget that needs to withdraw something. There is no second place where "is this person at risk" gets decided, so there is no way for two parts of the interface to disagree about it.
+
+**Privacy is structural, not procedural.** Because the analysis path is a separate table with no content column, no amount of widget-layer carelessness can leak a journal entry into it. `features/privacy/privacy_verification.dart` asserts this — the policy is a test, not a promise.
+
+### Where the boundary is deliberately crossed
+
+Two places break the rule, and both are documented in place:
+
+`core/widgets/lii_orb.dart` computes its own gradient stops rather than taking them from a provider, because the orb renders every frame and a provider read per frame would be wasteful. The trade-off is that the orb's colours don't follow the atmosphere theme automatically.
+
+`features/home/presentation/home_page.dart` holds several `setState` fields that arguably belong higher up — leftovers from restructuring that haven't been cleaned. This is recorded rather than hidden.
+
 ### Other languages
 
 | Language | File | Origin | Written here |
