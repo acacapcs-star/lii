@@ -837,6 +837,96 @@ Two places break the rule, and both are documented in place:
 
 lii is a single-language project — Dart is over 99% of the handwritten code. Everything else comes from packages or the Flutter toolchain. **Listing them as part of the stack would overstate it.**
 
+## Which algorithm runs where, and which ones pair up
+
+The system uses a small set of methods, each chosen for a specific property. What matters more than any single choice is which ones are deliberately used together, and why one alone would not be enough.
+
+### The five methods
+
+| Method | Used in | Chosen because |
+|---|---|---|
+| **Stepped normalisation** | Speech rate, sleep duration, negative-word density | Both extremes are risk. A linear map would place "too fast" and "too slow" at opposite ends of one slope and erase the fact that the middle is what's safe |
+| **Weighted fusion** | ERS: 0.40 language + 0.35 emotion + 0.25 routine | Three streams of different reliability need different influence. Language is weighted highest because sliders can be filled in carelessly; speech is harder to fake |
+| **Rolling mean** | ERS, 3-day window | A single bad day is not a trend |
+| **Asymmetric hysteresis** | Cumulative risk, 12-stage scale | Rising and falling should not cost the same |
+| **Weighted keyword matching** | `risk_engine`, present-moment reading | Needs to return explainable reasons, not one opaque number |
+
+### Where stepped normalisation matters
+
+```dart
+double normalizeSpeechRate(double rate) {
+  if (rate < 150) return 90;   // markedly slow
+  if (rate < 250) return 40;   // somewhat slow
+  if (rate <= 350) return 10;  // normal
+  if (rate <= 400) return 30;  // somewhat fast
+  return 60;                   // pressured speech
+}
+```
+
+Speaking at 100 wpm and at 450 wpm are both signals, but they are different signals — one reads as slowing, the other as agitation. A linear normaliser cannot express that. Sleep duration works the same way: above nine hours scores the same as too little.
+
+This is applied per feature, before any weighting happens. Getting it wrong here corrupts everything downstream, which is why it lives in pure logic with tests.
+
+### Where the pairing matters
+
+**Rolling mean + asymmetric hysteresis.** These operate on different timescales and neither is sufficient alone.
+
+The 3-day rolling mean smooths the daily score, so one bad evening does not spike the tier. But smoothing alone forgets: three good days would erase three weeks of difficulty entirely.
+
+So the cumulative scale is separate and asymmetric:
+
+```dart
+if (ersLevel == 'red') {
+  redCount++;              // one red day: +1
+  greenStreak = 0;
+} else if (ersLevel == 'green') {
+  greenStreak++;
+  if (greenStreak >= 3) {  // three consecutive greens: −1
+    redCount--;
+    greenStreak = 0;
+  }
+}
+```
+
+Rising costs one day, falling costs three. **The system is deliberately reluctant to let go of attention.** A student who has been struggling for two weeks and has one good afternoon is not recovered, and the interface should not behave as if they were.
+
+Both also update at most once per day, so re-opening the app cannot inflate the count.
+
+**ERS + risk_engine.** Two layers that answer different questions and are never merged.
+
+| | ERS | risk_engine |
+|---|---|---|
+| Question | How has this person been trending? | What is in front of me right now? |
+| Input | Three streams over three days | This message |
+| Output | 0–100 and a tier | A list of reasons |
+| Timescale | Days | Seconds |
+
+They are kept separate because merging them would make the result unexplainable. A counsellor reading "ERS 68" learns nothing about why; `risk_engine` returns the actual matched phrases and the protective factors that offset them.
+
+**Protective factors are negative weights, not a separate pass.** Someone who has used a coping tool three times in the past week scores 10 points lower; a message containing help-seeking language scores 10 lower; stabilising sleep scores 5 lower:
+
+```dart
+score -= 10;   // three or more tools completed in the past 7 days
+score -= 10;   // help-seeking intent in the message
+score -= 5;    // sleep difficulty trending down
+```
+
+This is a design claim, not a technical convenience: **someone reaching for a tool is in a different position from someone who is not, at the same self-reported mood.**
+
+**Silence detection + incongruence detection.** Two detectors for the two ways the primary signal fails.
+
+`silence_detector` covers the case where there is no input at all — three days raises a warning, seven is critical. Not writing is itself information.
+
+`incongruence_detector` covers the case where there is input but it does not match. It scores four dimensions — pronoun density, cognitive-rigidity markers, event-severity keywords, emotional intensity — and reports the **gap** between the last two. Describing something serious in flat language is a specific pattern, and neither ERS nor keyword matching would catch it.
+
+### What is deliberately not used
+
+**No machine learning on user data.** The weights are set by two school counsellors from experience, not learned. With 35 self-selected participants and no control group, a fitted model would overfit and be impossible to explain to the person it was fitted on.
+
+**No classifier for risk.** `risk_engine` returns a list of matched reasons rather than a probability, because a counsellor needs to know what triggered the reading in order to disagree with it.
+
+**No embedding similarity.** Meaning-level matching would be more sensitive than keyword lists, but it requires sending journal content to a server. The privacy design forbids that, so the less capable local method is the correct one here.
+
 ## Project structure
 
 ```
