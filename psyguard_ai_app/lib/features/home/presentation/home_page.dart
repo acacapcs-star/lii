@@ -795,12 +795,17 @@ class _HomeContentState extends State<_HomeContent> {
         // ── More Functions ───────────────────────────
         Row(
           children: [
-            Text(copy.moreFeatures,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: _bgIsDark(context)
-                      ? const Color(0xFFD8DEE6)
-                      : null,
-                )),
+            // 包 Flexible：標題變長時（英文或使用者放大字體）
+            // Spacer 會先被壓到 0，之後就沒有緩衝了。
+            // 沒有這一層的話，季節元件會被擠出畫面右側。
+            Flexible(
+              child: Text(copy.moreFeatures,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: _bgIsDark(context)
+                        ? const Color(0xFFD8DEE6)
+                        : null,
+                  )),
+            ),
             const Spacer(),
             // 🥤 你選的那杯飲料（還沒選就不顯示）
             const ChosenDrinkBadge(),
