@@ -2425,8 +2425,10 @@ class _TodayNotesCardState extends State<TodayNotesCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 左：標題
-              Flexible(
-                flex: 4,
+              // flex 4 對這張卡太寬——右欄扣掉圓點、間隔、日期共 40px 之後
+              // 只剩十幾 px，一個中文字就被逼換行，事項變成一字一行。
+              SizedBox(
+                width: 84,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
