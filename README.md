@@ -500,7 +500,7 @@ The bar lives in `lib/core/widgets/lii_bottom_nav.dart`. The side drawer is kept
 
 ## Complete feature map
 
-32 routes. The drawer lists 17 destinations as a flat list; the bottom bar carries the three most-used.
+33 routes. The drawer lists 17 destinations as a flat list; the bottom bar carries the three most-used.
 
 ### Daily
 
@@ -975,6 +975,61 @@ This is a design claim, not a technical convenience: **someone reaching for a to
 
 **No embedding similarity.** Meaning-level matching would be more sensitive than keyword lists, but it requires sending journal content to a server. The privacy design forbids that, so the less capable local method is the correct one here.
 
+## Gleam — why the colour comes from the dictionary
+
+Finishing a practice leaves a small glass ball in a jar. The jar is at the top of the page; the balls below it group by day and stack by colour.
+
+### The colour is not chosen by the user, and not derived from ERS
+
+The first design asked the user to pick a colour after each practice. That failed in an obvious way once written down: **the user does not know what to pick.** Nothing about "I just finished a grounding exercise" suggests teal over amber, so they tap whichever is nearest and the choice carries no information.
+
+The second option was to derive it from the ERS tier — red days get red balls. That was rejected for a different reason: **it marks the memory.** Someone looking back at a jar of red balls is not reviewing their month, they are being shown a record of how badly it went.
+
+The colour comes from the emotion dictionary instead. That dictionary already had six categories, and `GlassTone` already had six colours, and they map one to one:
+
+| Category | GlassTone |
+|---|---|
+| Angry | `dawn` (rose) |
+| Sad | `ice` (pale blue) |
+| Afraid | `amethyst` |
+| Tired | `amber` |
+| Pressured | `sea` (teal) |
+| Okay | `moss` |
+
+Three things fall out of that:
+
+**The dictionary stops being read-only.** Before this, a user could open it, find a more precise word, and close it — nothing was kept. Now naming a feeling leaves something behind.
+
+**There is no extra step.** Picking the word picks the colour. The user never sees a colour picker.
+
+**The colour carries meaning.** A week that produced a row of amber balls is a week of being tired, and that row says so more directly than any chart of the same data.
+
+### What the ball stores, and what it recomputes
+
+A ball keeps its emotion group as a field rather than deriving it from the colour. The mapping above may change; a ball recorded as "tired" should not silently become something else because the colour table was edited later.
+
+The word is stored as written. The group label is not:
+
+```dart
+// From the dictionary — the user picked this exact word
+MemoryBallStore.addFromEmotion(group: g, word: '失落');
+
+// Added manually — store nothing, render group.label(zh) at display time
+MemoryBallStore.addFromEmotion(group: g, word: '');
+```
+
+The reason is that a stored label is frozen in the language it was written in. A manually added ball labelled `難過` still reads `難過` after the user switches to English, because that string was baked into the data. Storing nothing and rendering the label on demand keeps it in step with the setting.
+
+**A word picked from the dictionary is the opposite case.** That is the word the user actually chose, in the language they were thinking in at the time. Translating it later would lose that.
+
+### Attaching a card
+
+After picking a word, the app asks whether to write something. Choosing to write opens Card Studio — the existing quote-card editor, with its fonts, backgrounds and optional photo — and the resulting card is linked to the ball on return.
+
+The ball is created **after** the card, not before. Creating it first would leave an unlinked ball behind whenever someone abandons the editor halfway.
+
+The link stores only the card's id, never a copy of its text. A card can be edited later, and a ball showing a stale copy of a sentence the user has since rewritten would be worse than showing nothing. When a card is deleted, the expanded ball says so rather than pretending the link still resolves.
+
 ## Project structure
 
 ```
@@ -1004,11 +1059,11 @@ lii/
     │   └── widget_test.dart
     ├── integration_test/
     │   └── app_flow_test.dart
-    └── lib/                                    119 files · ~36,400 lines
+    └── lib/                                    123 files · ~38,800 lines
         ├── main.dart
         ├── app/
         │   ├── app.dart
-        │   ├── router.dart                     32 routes
+        │   ├── router.dart                     33 routes
         │   └── theme.dart
         ├── l10n/
         │   ├── app_language.dart
@@ -1075,6 +1130,8 @@ lii/
         │   └── widgets/                        26 widgets
         │       ├── lii_orb.dart                gradient + path · no filters
         │       ├── luna_orb.dart
+        │       ├── memory_ball.dart                    記憶球的資料層
+        │       ├── mood_bar.dart                         Gleam 微光頁面
         │       ├── luna_pacer_card.dart
         │       ├── floating_pacer.dart         grouped by author
         │       ├── lii_breath_entry.dart       reuses risk_engine thresholds
