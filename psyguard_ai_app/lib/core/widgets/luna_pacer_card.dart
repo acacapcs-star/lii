@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:typed_data';
+import 'dart:io';
 
 import 'luna_orb.dart';
 
@@ -28,24 +28,12 @@ class LunaPacerCard extends StatefulWidget {
   /// 顯示三顆換色按鈕（展示用；正式版可以關掉）
   final bool showToneSwitch;
 
-  /// 一開始就拉到哪（0 = 整片夜空）
-  final double? initialT;
-
-  /// 一開始就帶的照片
-  final Uint8List? initialPhoto;
-
-  /// 拉動或換照片時回報，讓外面決定要不要存
-  final void Function(double t, Uint8List? photo)? onChanged;
-
   const LunaPacerCard({
     super.key,
     this.quote = '光穿過你的時候，你會發現你一直都是透明的。',
     this.author = '— Luna',
     this.tone = GlassTone.ice,
     this.showToneSwitch = true,
-    this.initialT,
-    this.initialPhoto,
-    this.onChanged,
   });
 
   @override
@@ -59,17 +47,14 @@ class _LunaPacerCardState extends State<LunaPacerCard>
 
   double _time = 0;
   double _w = _kR; // 一開始整片夜空，一個字都還沒出現
+  double _w0 = 0;
   bool _hinted = false;
 
-  Uint8List? _photo;
+  File? _photo;
 
   @override
   void initState() {
     super.initState();
-    final t0 = widget.initialT ?? 0;
-    _w = _kR - 2 * _kR * t0;
-    _hinted = t0 > 0.01;
-    _photo = widget.initialPhoto;
     _ticker = createTicker((d) {
       setState(() => _time = d.inMicroseconds / 1e6);
     })..start();
@@ -90,11 +75,8 @@ class _LunaPacerCardState extends State<LunaPacerCard>
       maxWidth: 1400,
       imageQuality: 88,
     );
-    if (x == null) return;
-    final bytes = await x.readAsBytes();
-    if (!mounted) return;
-    setState(() => _photo = bytes);
-    widget.onChanged?.call(_t, bytes);
+    if (x == null || !mounted) return;
+    setState(() => _photo = File(x.path));
   }
 
   @override
@@ -109,7 +91,7 @@ class _LunaPacerCardState extends State<LunaPacerCard>
           padding: const EdgeInsets.fromLTRB(22, 24, 22, 20),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(28),
             boxShadow: const [
               BoxShadow(
                 color: Color(0x1A1B2440),
@@ -126,6 +108,7 @@ class _LunaPacerCardState extends State<LunaPacerCard>
               Center(
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
+                  onHorizontalDragStart: (_) => _w0 = _w,
                   onHorizontalDragUpdate: (d) {
                     setState(() {
                       _hinted = true;
@@ -133,7 +116,6 @@ class _LunaPacerCardState extends State<LunaPacerCard>
                           .clamp(-_kR, _kR)
                           .toDouble();
                     });
-                    widget.onChanged?.call(_t, _photo);
                   },
                   child: SizedBox(
                     width: _kOrb,
@@ -170,7 +152,7 @@ class _LunaPacerCardState extends State<LunaPacerCard>
                   child: Container(
                     decoration: BoxDecoration(
                       color: const Color(0xFFEDEAE3),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(18),
                       border: _photo == null
                           ? Border.all(color: const Color(0xFFD6D1C6), width: 1.5)
                           : null,
@@ -180,8 +162,8 @@ class _LunaPacerCardState extends State<LunaPacerCard>
                     child: _photo == null
                         ? const Text('點一下放照片',
                             style: TextStyle(
-                                fontSize: 13, color: Color(0xFFA7A296)))
-                        : Image.memory(_photo!, fit: BoxFit.cover),
+                                fontSize: 12.5, color: Color(0xFFA7A296)))
+                        : Image.file(_photo!, fit: BoxFit.cover),
                   ),
                 ),
               ),

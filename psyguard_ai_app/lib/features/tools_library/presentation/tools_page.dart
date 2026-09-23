@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../core/widgets/memory_ball.dart';
+import '../../card_studio/presentation/card_studio_page.dart';
 import 'package:flutter/material.dart';
 import '../../../core/widgets/mood_fall_overlay.dart';
 import '../../../core/pacer/breath_plan.dart';
@@ -1687,6 +1689,58 @@ class _EmotionDictPageState extends ConsumerState<EmotionDictPage> {
     ),
   ];
 
+  /// 選完詞之後，問要不要寫一張 memo。
+  ///
+  /// 回傳值三種意思：
+  ///   null   使用者關掉了，不要留球
+  ///   false  只留球，不寫
+  ///   true   要寫一張，跳去 Card Studio
+  ///
+  /// 三種要分開，不然「按返回」會變成「留一顆空的球」。
+  Future<bool?> _askMemo(String word, String when, bool zh) {
+    return showModalBottomSheet<bool>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(22, 0, 22, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(word,
+                  style: const TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 3),
+              Text(when,
+                  style: TextStyle(
+                      fontSize: 13,
+                      color: Theme.of(ctx).colorScheme.onSurfaceVariant)),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: () => Navigator.pop(ctx, true),
+                  icon: const Icon(Icons.edit_outlined, size: 18),
+                  label: Text(
+                      zh ? '寫一張，可以放照片' : 'Write one, photo optional'),
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () => Navigator.pop(ctx, false),
+                  child: Text(zh ? '只留一顆光就好' : 'Just leave a gleam'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _save(String word) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -1822,6 +1876,31 @@ class _EmotionDictPageState extends ConsumerState<EmotionDictPage> {
                         onTap: () async {
                           final word = zh ? w.zh : w.en;
                           await _save(word);
+                          // 選完詞之後問要不要寫一張 memo。
+                          final wantsCard =
+                              await _askMemo(word, zh ? w.zhWhen : w.enWhen, zh);
+                          if (wantsCard == null) return;   // 關掉了，不留球
+
+                          // 要寫的話先去 Card Studio，回來才建球——
+                          // 那樣球一建立就帶著卡片的 id，
+                          // 不會出現「先有球，卡片寫到一半放棄」的空連結
+                          String? cardId;
+                          if (wantsCard) {
+                            if (!mounted) return;
+                            cardId = await Navigator.of(context).push<String>(
+                              MaterialPageRoute(
+                                  builder: (_) => const CardStudioPage()),
+                            );
+                          }
+
+                          // 顏色由大類決定——六個大類對六色 GlassTone。
+                          await MemoryBallStore.addFromEmotion(
+                            group: EmotionGroupX.fromZhName(g.zh),
+                            word: word,
+                            pacerId: (cardId != null && cardId.isNotEmpty)
+                                ? cardId
+                                : null,
+                          );
                           if (mounted) setState(() => _picked = word);
                         },
                         child: Container(

@@ -1,4 +1,5 @@
 
+import '../core/widgets/mood_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -147,6 +148,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'ai_history',
         pageBuilder: (context, state) =>
             _buildPageWithSlide(context, state, const AiReportHistoryPage()),
+      ),
+      GoRoute(
+        path: '/mood-jar',
+        name: 'moodJar',
+        pageBuilder: (context, state) =>
+            _buildPageWithSlide(context, state, const MoodBarPage()),
+      ),
+      GoRoute(
+        path: '/gleam',
+        name: 'gleam',
+        pageBuilder: (context, state) =>
+            _buildPageWithSlide(context, state, const MoodBarPage()),
       ),
       GoRoute(
         path: '/tools',

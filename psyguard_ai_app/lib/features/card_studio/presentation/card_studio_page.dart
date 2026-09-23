@@ -123,8 +123,11 @@ class _CardStudioPageState extends ConsumerState<CardStudioPage> {
     final quote = _quoteCtrl.text.trim();
     if (quote.isEmpty) return;
     final author = _authorCtrl.text.trim();
+    // id 先抓出來——存完要回傳給呼叫端，
+    // 讓「從微光頁面來寫一張」的流程能自動連上這張卡
+    final newId = DateTime.now().microsecondsSinceEpoch.toString();
     await MyCardsStore.add(MyCard(
-      id: DateTime.now().microsecondsSinceEpoch.toString(),
+      id: newId,
       text: quote,
       author: author.isEmpty ? (_zh ? '我' : 'me') : author,
       fontIndex: _fontIndex,
@@ -142,7 +145,8 @@ class _CardStudioPageState extends ConsumerState<CardStudioPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(_zh ? '已存到我的專屬格言 🎴' : 'Saved to My Quotes 🎴')),
     );
-    Navigator.of(context).maybePop();
+    // 帶著 id 回去。原本的呼叫端不看回傳值，所以不受影響。
+    Navigator.of(context).maybePop(newId);
   }
 
   @override

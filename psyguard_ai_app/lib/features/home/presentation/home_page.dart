@@ -2637,8 +2637,10 @@ class _ThisMonthCardState extends State<ThisMonthCard> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Flexible(
-                flex: 4,
+              // flex 4 讓左欄佔了八成，右欄扣掉圓點與日期後
+              // 只剩十幾 px，事項被逼成一字一行。
+              SizedBox(
+                width: 78,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -2730,16 +2732,11 @@ class _ThisMonthCardState extends State<ThisMonthCard> {
                                             shape: BoxShape.circle),
                                       ),
                                       const SizedBox(width: 7),
-                                      SizedBox(
-                                        width: 26,
-                                        child: Text('${it['day']}日',
-                                            style: TextStyle(
-                                                fontSize: 11,
-                                                color: onCardSoft)),
-                                      ),
+                                      // 日期和內容合成一個 Text——分成兩欄的話
+                                      // 日期先佔掉 26px，剩下的寬度不夠一個中文字。
                                       Expanded(
                                         child: Text(
-                                          it['text'].toString(),
+                                          '${it['day']}日 · ${it['text']}',
                                           style: TextStyle(
                                               fontSize: 12,
                                               height: 1.3,

@@ -54,11 +54,21 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
     super.dispose();
   }
 
+  /// 按「日」索引的事項。月曆格子用這個。
+  ///
+  /// 原本的 _monthData 是按週彙整的，而且只留紅黃——
+  /// 月曆格子要知道「這一天有沒有東西」，那是不同的查詢。
+  /// 所以另外存一份，不去改動原本那套已經在運作的邏輯。
+  ///
+  /// key 是 '月/日'，value 是那天的所有事項。
+  Map<String, List<Map<String, dynamic>>> _byDay = {};
+
   Future<void> _loadAllMonths() async {
     final prefs = await SharedPreferences.getInstance();
     final year = _year;
 
     final Map<int, List<_WeekSummary>> result = {};
+    final Map<String, List<Map<String, dynamic>>> byDay = {};
 
     for (int month = 1; month <= 12; month++) {
       final daysInMonth = DateTime(year, month + 1, 0).day;
@@ -86,6 +96,12 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
               } else if (priority <= 9) {
                 current.yellowItems.add(entry);
               }
+              // 月曆格子要的是全部，不只紅黃
+              byDay.putIfAbsent('$month/$day', () => []).add({
+                ...entry,
+                'priority': priority,
+                'checked': item['checked'] == true,
+              });
             }
           } catch (_) {
             // 忽略解析失敗的資料，不讓單一天的壞資料擋住整個月曆
@@ -104,6 +120,7 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
     if (mounted) {
       setState(() {
         _monthData = result;
+        _byDay = byDay;
         _loading = false;
       });
     }
