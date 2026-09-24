@@ -281,7 +281,13 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
   }
 
   static const _monthNamesZh = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
-  static const _monthNamesEn = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  // 用縮寫不用全名。
+  // 'September' 九個字母在窄格子裡會換行，
+  // 而中文的「九月」兩個字剛好——所以只有英文版會爆。
+  static const _monthNamesEn = [
+    'Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.',
+    'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.',
+  ];
 
   @override
   Widget build(BuildContext context) {
