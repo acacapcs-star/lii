@@ -6,6 +6,8 @@ import '../../../core/network/ai_chat_repository.dart';
 import '../../../core/network/app_config_controller.dart';
 import '../../../core/network/ai_lang_pref.dart';
 import 'package:flutter/material.dart';
+
+import '../../../core/widgets/comet_sky.dart';
 import '../../../core/widgets/lii_bottom_nav.dart';
 import 'encouragement_banner.dart';
 import '../../ers/silence_detector.dart';
@@ -311,24 +313,27 @@ class HomePage extends ConsumerWidget {
       surfaceTintColor: Colors.white,
       child: Column(
         children: [
-          Container(
+          // 彗星夜空取代原本的白底。
+          // 有 Pacer 卡的話會有幾顆帶星芒的亮星可以點。
+          SizedBox(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              border: Border(bottom: BorderSide(color: Color(0xFFF0F0F0))),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Image.asset(
-                  'assets/images/lii_ball.png',
-                  width: 52,
-                  height: 52,
-                  fit: BoxFit.contain,
+            height: 168,
+            child: CometSky(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Image.asset(
+                      'assets/images/lii_ball.png',
+                      width: 52,
+                      height: 52,
+                      fit: BoxFit.contain,
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
           Expanded(

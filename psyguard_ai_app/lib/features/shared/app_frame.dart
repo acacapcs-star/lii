@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/comet_sky.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -27,13 +29,13 @@ class AppFrame extends ConsumerWidget {
       drawer: Drawer(
         child: ListView(
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
-                ),
-              ),
-              child: Align(
+            // 彗星夜空取代原本的青綠漸層
+            DrawerHeader(
+              padding: EdgeInsets.zero,
+              margin: EdgeInsets.zero,
+              decoration: const BoxDecoration(),
+              child: const CometSky(
+                child: Align(
                 alignment: Alignment.bottomLeft,
                 child: Text(
                   'Luna',
@@ -44,6 +46,7 @@ class AppFrame extends ConsumerWidget {
                   ),
                 ),
               ),
+            ),
             ),
             ..._menuItems(context, copy),
           ],

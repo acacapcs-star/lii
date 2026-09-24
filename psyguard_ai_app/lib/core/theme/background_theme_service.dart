@@ -6,7 +6,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum BgMode { light, dark }
 
 // 淺色模式下可選的兩種顏色；深色模式下可選的兩種顏色
-enum BgColorChoice { blueLight, greenLight, navyDark, forestDark }
+// 前四個是淺色模式可選，後三個是深色模式
+enum BgColorChoice {
+  blueLight, greenLight, pinkLight, rainbowLight,
+  navyDark, forestDark, pureBlack,
+}
 
 /// 首頁背景圖。none 表示只用底色。
 enum BgImage { none, night, sea, dawn }
@@ -85,6 +89,15 @@ class BackgroundThemeController extends StateNotifier<BackgroundThemeState> {
     switch (colorStr) {
       case 'greenLight':
         colorChoice = BgColorChoice.greenLight;
+        break;
+      case 'pinkLight':
+        colorChoice = BgColorChoice.pinkLight;
+        break;
+      case 'rainbowLight':
+        colorChoice = BgColorChoice.rainbowLight;
+        break;
+      case 'pureBlack':
+        colorChoice = BgColorChoice.pureBlack;
         break;
       case 'navyDark':
         colorChoice = BgColorChoice.navyDark;
