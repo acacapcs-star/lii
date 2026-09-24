@@ -346,6 +346,7 @@ class _JarBody extends StatelessWidget {
     required this.zh,
     required this.ballSize,
     required this.openId,
+    required this.stacked,
     required this.onTapBall,
     required this.onPickPacer,
     required this.scrollController,
@@ -356,6 +357,14 @@ class _JarBody extends StatelessWidget {
   final bool zh;
   final double ballSize;
   final int? openId;
+
+  /// 同色聚集。false 的話照日期排。
+  ///
+  /// 兩種排法回答不同的問題：
+  ///   日期  這陣子我留下了什麼
+  ///   同色  哪一種情緒最多
+  final bool stacked;
+
   final void Function(int id) onTapBall;
   final void Function(MemoryBall b) onPickPacer;
   final ScrollController scrollController;
@@ -459,6 +468,87 @@ class _JarBody extends StatelessWidget {
 
   /// 把球排成一列一列，日期標在那一天的第一顆旁邊。
   List<Widget> _rows(BuildContext context, ThemeData theme) {
+    return stacked ? _byTone(context, theme) : _byDate(context, theme);
+  }
+
+  /// 同色聚集：一種情緒一組，數量多的排前面。
+  ///
+  /// 罐子裡一整區粉紅，那個畫面本身就是資訊 --
+  /// 比任何一張同樣資料做成的圖表都直接。
+  List<Widget> _byTone(BuildContext context, ThemeData theme) {
+    final groups = <GlassTone, List<MemoryBall>>{};
+    for (final b in balls) {
+      groups.putIfAbsent(b.tone, () => []).add(b);
+    }
+    // 數量多的排前面 -- 最常出現的情緒先看到
+    final tones = groups.keys.toList()
+      ..sort((a, b) => groups[b]!.length.compareTo(groups[a]!.length));
+
+    final out = <Widget>[];
+    for (final t in tones) {
+      final group = groups[t]!;
+      final label = group.first.group?.label(zh);
+
+      out.add(Padding(
+        padding: const EdgeInsets.only(top: 6, bottom: 7),
+        child: Text(
+          label == null
+              ? '${group.length}'
+              : (zh ? '$label　${group.length}' : '$label  ${group.length}'),
+          style: GoogleFonts.nunitoSans(
+            fontSize: 11,
+            color: theme.colorScheme.onSurfaceVariant
+                .withValues(alpha: 0.55),
+          ),
+        ),
+      ));
+
+      final pending = <MemoryBall>[];
+      void flush() {
+        if (pending.isEmpty) return;
+        out.add(Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              for (final b in pending)
+                MemoryBallDot(
+                  tone: b.tone,
+                  size: ballSize,
+                  onTap: () => onTapBall(b.id),
+                ),
+            ],
+          ),
+        ));
+        pending.clear();
+      }
+
+      for (final b in group) {
+        if (b.id == openId) {
+          flush();
+          out.add(Padding(
+            padding: const EdgeInsets.only(bottom: 14),
+            child: MemoryBallDot(
+              tone: b.tone,
+              size: ballSize,
+              expanded: true,
+              expandFull: true,
+              expandedChild: _inner(b, theme),
+              onTap: () => onTapBall(b.id),
+            ),
+          ));
+        } else {
+          pending.add(b);
+        }
+      }
+      flush();
+    }
+    return out;
+  }
+
+  /// 照日期排，新的在上。
+  List<Widget> _byDate(BuildContext context, ThemeData theme) {
     final out = <Widget>[];
     final now = DateTime.now();
     DateTime? lastDay;
@@ -894,6 +984,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
                         zh: zh,
                         ballSize: _ballSize,
                         openId: _openId,
+                        stacked: _stacked,
                         onTapBall: (id) =>
                             setState(() => _openId = _openId == id ? null : id),
                         onPickPacer: (b) => _pickPacer(b, zh),
