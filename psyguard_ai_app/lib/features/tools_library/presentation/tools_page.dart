@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/widgets/memory_ball.dart';
+import '../../../core/widgets/mood_bar.dart';
 import '../../card_studio/presentation/card_studio_page.dart';
 import 'package:flutter/material.dart';
 import '../../../core/widgets/mood_fall_overlay.dart';
@@ -128,18 +129,79 @@ class ToolsPage extends ConsumerWidget {
       body: ListView.separated(
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-        itemCount: 1,
+        // 第 0 段是工具卡，第 1 段是 Gleam 的入口
+        itemCount: 2,
         separatorBuilder: (_, __) => const SizedBox(height: 16),
-        itemBuilder: (context, index) => GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
-          mainAxisSpacing: 14,
-          crossAxisSpacing: 14,
-          childAspectRatio: 1.05,
-          children: [
-            for (final t in toolboxItems) _ToolSquare(tool: t),
-          ],
+        itemBuilder: (context, index) {
+          if (index == 1) return _gleamEntry(context, copy.isZhTw);
+          return GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 2,
+            mainAxisSpacing: 14,
+            crossAxisSpacing: 14,
+            childAspectRatio: 1.05,
+            children: [
+              for (final t in toolboxItems) _ToolSquare(tool: t),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+
+  /// 工具卡底下的 Gleam 入口。
+  ///
+  /// 放在這裡而不是首頁：使用者在情緒詞彙庫選完詞，往下滑就看得到
+  /// 剛剛留下的那顆球——動線是連著的。
+  ///
+  /// 首頁已經有四區十四張卡，再加一排球會變成當初被指出的「太亂」。
+  Widget _gleamEntry(BuildContext context, bool zh) {
+    // theme 自己取——ToolsPage 是 ConsumerWidget，
+    // 它沒有 theme 這個欄位，那只存在於 build 的區域變數裡
+    final theme = Theme.of(context);
+    return Material(
+      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
+      borderRadius: BorderRadius.circular(20),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () => context.push('/gleam'),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      zh ? '微光' : 'Gleam',
+                      style: const TextStyle(
+                          fontSize: 15.5, fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      zh
+                          ? '練習留下的都在這裡'
+                          : 'Everything your practice left behind',
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // 預覽先拿掉——它在這個 ListView 裡會出問題
+              Icon(
+                Icons.chevron_right_rounded,
+                size: 20,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
         ),
       ),
     );

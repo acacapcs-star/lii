@@ -38,6 +38,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:ui' show ImageFilter;
+
+import 'package:google_fonts/google_fonts.dart';
+
+import '../theme/mood_theme_service.dart';
+import '../theme/background_theme_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../l10n/app_strings.dart';
@@ -195,23 +201,31 @@ class _MemoryBallDotState extends State<MemoryBallDot>
       height: full ? null : s,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(r),
+        // 半透明的玻璃珠：背景透得過去，球才像玻璃不像塑膠。
+        //
+        // 三個停止點的透明度不一樣——
+        // 中心的高光接近不透明（那是光打在表面上），
+        // 中段最透（玻璃最薄的地方），
+        // 邊緣又濃起來（光從側面穿過比較厚的玻璃）。
+        //
+        // 那個「中間比兩端透」是玻璃球跟實心球最大的差別。
         gradient: RadialGradient(
-          // 光源在左上，所以中心偏左上
-          center: const Alignment(-0.35, -0.42),
+          center: const Alignment(0.35, -0.42),
           radius: 0.95,
           colors: [
-            Color.lerp(highlight, Colors.white, 0.45)!,
-            main,
-            deep,
+            Color.lerp(highlight, Colors.white, 0.55)!
+                .withValues(alpha: 0.92),
+            main.withValues(alpha: 0.58),
+            deep.withValues(alpha: 0.86),
           ],
-          stops: const [0.0, 0.52, 1.0],
+          stops: const [0.0, 0.48, 1.0],
         ),
         boxShadow: [
           // 球本身的陰影
           BoxShadow(
-            color: deep.withValues(alpha: 0.30),
-            blurRadius: s * 0.22,
-            offset: Offset(0, s * 0.12),
+            color: deep.withValues(alpha: 0.22),
+            blurRadius: s * 0.26,
+            offset: Offset(-s * 0.04, s * 0.10),
           ),
           // 選中時多一圈同色的光暈
           if (widget.selected)
@@ -230,16 +244,21 @@ class _MemoryBallDotState extends State<MemoryBallDot>
       child: Stack(
         children: [
           // 展開後的內容
+          // 展開時內容直接當 Stack 的子層，不用 Positioned.fill。
+          //
+          // Positioned.fill 的意思是「填滿父層」，但這裡父層的高度
+          // 正要由子層決定（expandFull 設了 height: null）。
+          // 兩邊互相等，結果卡片縮到最小，內容永遠沒有空間。
           if (widget.expanded && widget.expandedChild != null)
-            Positioned.fill(
-              child: Padding(
-                padding: const EdgeInsets.all(14),
-                child: widget.expandedChild!,
-              ),
+            Padding(
+              padding: const EdgeInsets.all(14),
+              child: widget.expandedChild!,
             ),
-          // 左上的柔和高光——果凍的關鍵
-          Positioned(
-            left: s * 0.20,
+          // 左上的柔和高光——果凍的關鍵。
+          // 展開時不畫，不然會蓋在文字上
+          if (!widget.expanded)
+            Positioned(
+            right: s * 0.20,
             top: s * 0.15,
             child: Container(
               width: s * 0.26,
@@ -248,7 +267,7 @@ class _MemoryBallDotState extends State<MemoryBallDot>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    Colors.white.withValues(alpha: 0.85),
+                    Colors.white.withValues(alpha: 0.95),
                     Colors.white.withValues(alpha: 0.0),
                   ],
                 ),
@@ -258,7 +277,7 @@ class _MemoryBallDotState extends State<MemoryBallDot>
           // 右下的反射光——讓球看起來是半透明的，不是實心的
           if (!full)
             Positioned(
-              right: s * 0.16,
+              left: s * 0.16,
               bottom: s * 0.18,
               child: Container(
                 width: s * 0.18,
@@ -305,6 +324,320 @@ class _MemoryBallDotState extends State<MemoryBallDot>
   }
 }
 
+
+// ══════════════════════════════════════════════════════
+//  罐子本體
+// ══════════════════════════════════════════════════════
+
+/// 整頁的玻璃罐，球堆在裡面，可以往下捲看更早的。
+///
+/// ── 球怎麼排 ───────────────────────────────────────────
+///
+/// 不是清單，也不是格線——球從底部往上堆，每一顆的位置
+/// 由它的 id 算出一個固定的偏移，所以看起來是倒進去的，
+/// 但捲動時不會亂跳。
+///
+/// 日期不做成區塊標題，只在那一天的第一顆球旁邊標一行很淡的字。
+/// 標題會把罐子切成一段一段，那就又變回清單了。
+class _JarBody extends StatelessWidget {
+  const _JarBody({
+    required this.balls,
+    required this.pacers,
+    required this.zh,
+    required this.ballSize,
+    required this.openId,
+    required this.onTapBall,
+    required this.onPickPacer,
+    required this.scrollController,
+  });
+
+  final List<MemoryBall> balls;
+  final List<MyCard> pacers;
+  final bool zh;
+  final double ballSize;
+  final int? openId;
+  final void Function(int id) onTapBall;
+  final void Function(MemoryBall b) onPickPacer;
+  final ScrollController scrollController;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(18, 10, 18, 18),
+      child: Stack(
+        children: [
+          // ── 罐身 ──
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(18),
+                    topRight: Radius.circular(18),
+                    bottomLeft: Radius.circular(34),
+                    bottomRight: Radius.circular(34),
+                  ),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.white.withValues(alpha: 0.05),
+                      Colors.white.withValues(alpha: 0.015),
+                      const Color(0xFF9FB4C7).withValues(alpha: 0.07),
+                    ],
+                  ),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.22),
+                    width: 1.2,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // ── 球 ──
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(18),
+                topRight: Radius.circular(18),
+                bottomLeft: Radius.circular(34),
+                bottomRight: Radius.circular(34),
+              ),
+              child: balls.isEmpty
+                  ? Center(
+                      child: Text(
+                        zh ? '還沒有光' : 'Empty for now',
+                        style: GoogleFonts.nunitoSans(
+                          fontSize: 13,
+                          color: theme.colorScheme.onSurfaceVariant
+                              .withValues(alpha: 0.6),
+                        ),
+                      ),
+                    )
+                  : ListView(
+                      controller: scrollController,
+                      padding: const EdgeInsets.fromLTRB(14, 20, 14, 26),
+                      physics: const AlwaysScrollableScrollPhysics(
+                          parent: BouncingScrollPhysics()),
+                      children: _rows(context, theme),
+                    ),
+            ),
+          ),
+
+          // ── 玻璃的反光 ──
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(18),
+                    topRight: Radius.circular(18),
+                    bottomLeft: Radius.circular(34),
+                    bottomRight: Radius.circular(34),
+                  ),
+                  gradient: LinearGradient(
+                    begin: const Alignment(0.9, -1),
+                    end: const Alignment(-0.3, 0.2),
+                    colors: [
+                      Colors.white.withValues(alpha: 0.16),
+                      Colors.white.withValues(alpha: 0.03),
+                      Colors.transparent,
+                    ],
+                    stops: const [0.0, 0.28, 0.55],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 把球排成一列一列，日期標在那一天的第一顆旁邊。
+  List<Widget> _rows(BuildContext context, ThemeData theme) {
+    final out = <Widget>[];
+    final now = DateTime.now();
+    DateTime? lastDay;
+
+    // 展開的那一顆獨佔一列
+    final open = openId == null
+        ? null
+        : balls.where((b) => b.id == openId).firstOrNull;
+
+    final pending = <MemoryBall>[];
+
+    void flush() {
+      if (pending.isEmpty) return;
+      out.add(Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: [
+            for (final b in pending)
+              MemoryBallDot(
+                tone: b.tone,
+                size: ballSize,
+                onTap: () => onTapBall(b.id),
+              ),
+          ],
+        ),
+      ));
+      pending.clear();
+    }
+
+    for (final b in balls) {
+      final day =
+          DateTime(b.createdAt.year, b.createdAt.month, b.createdAt.day);
+
+      // 換日期時先把前一批排出去，再標一行很淡的日期
+      if (lastDay == null || day != lastDay) {
+        flush();
+        final isToday = day.year == now.year &&
+            day.month == now.month &&
+            day.day == now.day;
+        out.add(Padding(
+          padding: EdgeInsets.only(top: lastDay == null ? 0 : 6, bottom: 7),
+          child: Text(
+            isToday
+                ? (zh ? '今天' : 'Today')
+                : (zh
+                    ? '${day.month} / ${day.day}'
+                    : '${day.month}/${day.day}'),
+            style: GoogleFonts.nunitoSans(
+              fontSize: 11,
+              color: theme.colorScheme.onSurfaceVariant
+                  .withValues(alpha: 0.55),
+            ),
+          ),
+        ));
+        lastDay = day;
+      }
+
+      if (open != null && b.id == open.id) {
+        flush();
+        out.add(Padding(
+          padding: const EdgeInsets.only(bottom: 14),
+          child: MemoryBallDot(
+            tone: b.tone,
+            size: ballSize,
+            expanded: true,
+            expandFull: true,
+            expandedChild: _inner(b, theme),
+            onTap: () => onTapBall(b.id),
+          ),
+        ));
+      } else {
+        pending.add(b);
+      }
+    }
+    flush();
+    return out;
+  }
+
+  Widget _inner(MemoryBall b, ThemeData theme) {
+    final card = b.pacerId == null
+        ? null
+        : pacers.where((c) => c.id == b.pacerId).firstOrNull;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          b.note.isEmpty
+              ? b.source.label(zh)
+              : (b.group?.label(zh) ?? b.source.label(zh)),
+          style: GoogleFonts.nunitoSans(
+            fontSize: 11.5,
+            color: Colors.white70,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.4,
+          ),
+        ),
+        SizedBox(height: 5),
+        Text(
+          b.note.isEmpty
+              ? (b.group?.label(zh) ?? b.source.label(zh))
+              : b.note,
+          style: GoogleFonts.varelaRound(
+            fontSize: 19,
+            height: 1.3,
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        if (card?.photoB64 != null) ...[
+          SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.memory(
+              base64Decode(card!.photoB64!),
+              width: double.infinity,
+              height: 150,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+            ),
+          ),
+        ],
+        if (card != null && card.text.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(11),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(11),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+            ),
+            child: Text(
+              card.text,
+              style: GoogleFonts.nunitoSans(
+                  fontSize: 13.5, height: 1.65, color: Colors.white),
+            ),
+          ),
+        ],
+        SizedBox(height: 11),
+        Row(
+          children: [
+            Text(
+              '${b.createdAt.hour.toString().padLeft(2, '0')}:'
+              '${b.createdAt.minute.toString().padLeft(2, '0')}',
+              style: GoogleFonts.nunitoSans(fontSize: 11, color: Colors.white60),
+            ),
+            const Spacer(),
+            GestureDetector(
+              onTap: () => onPickPacer(b),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    card == null ? Icons.add_rounded : Icons.swap_horiz_rounded,
+                    size: 15,
+                    color: Colors.white70,
+                  ),
+                  SizedBox(width: 3),
+                  Text(
+                    card == null
+                        ? (zh ? '配一張卡' : 'Attach')
+                        : (zh ? '換一張' : 'Change'),
+                    style:
+                        GoogleFonts.nunitoSans(fontSize: 11.5, color: Colors.white70),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
 // ══════════════════════════════════════════════════════
 //  心情 bar 頁面
 // ══════════════════════════════════════════════════════
@@ -341,6 +674,9 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
   /// 沒有 controller 的話使用者縮太小之後找不回來。
   late final TransformationController _zoom;
 
+  /// 罐子裡的捲動控制
+  late final ScrollController _listCtrl;
+
   /// 目前的縮放倍率。用來顯示在按鈕上，也用來判斷要不要顯示重置。
   double _scale = 1.0;
 
@@ -364,6 +700,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
     super.initState();
     _loadSizePref();
     _zoom = TransformationController();
+    _listCtrl = ScrollController();
     // 縮放時更新倍率的顯示。
     // 用 addListener 而不是 onInteractionUpdate，
     // 因為程式呼叫 _resetZoom() 時也要更新。
@@ -375,6 +712,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
   void dispose() {
     _zoom.removeListener(_onZoomChanged);
     _zoom.dispose();
+    _listCtrl.dispose();
     super.dispose();
   }
 
@@ -443,8 +781,23 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
     final grouped = MemoryBallStore.groupByDay(_filtered);
     final days = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
 
+    // 氛圍背景跟首頁同一套——罐子浮在夜空前面，
+    // 玻璃的半透明才看得出效果。貼在純色上的話玻璃感出不來。
+    final mood = ref.watch(moodThemeProvider);
+    final bg = ref.watch(backgroundThemeProvider);
+
     return Scaffold(
+      backgroundColor: mood.backgroundColor,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+            child: Container(color: Colors.white.withValues(alpha: 0.18)),
+          ),
+        ),
         title: Text(zh ? '微光' : 'Gleam'),
         actions: [
           if (_all.isNotEmpty)
@@ -482,7 +835,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
               child: Center(
                 child: Text(
                   zh ? '${_all.length} 顆' : '${_all.length}',
-                  style: TextStyle(
+                  style: GoogleFonts.nunitoSans(
                     fontSize: 13,
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -499,7 +852,17 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
               child: const Icon(Icons.zoom_out_map_rounded),
             )
           : null,
-      body: !_loaded
+      body: Stack(
+        children: [
+          // 背景圖。asset 可能是 null（使用者選了純色氛圍）
+          if (bg.image.asset != null)
+            Positioned.fill(
+              child: Image.asset(bg.image.asset!, fit: BoxFit.cover),
+            ),
+          // Positioned.fill 給它一個明確的尺寸。
+          // 沒有這層的話 Stack 不給高度，裡面的 Expanded 就算不出來。
+          Positioned.fill(
+            child: SafeArea(child: !_loaded
           ? const SizedBox.shrink()
           : _all.isEmpty
               ? _empty(zh, theme)
@@ -507,44 +870,41 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
                   children: [
                     _filterRow(zh, theme),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 2, 16, 0),
+                      padding: const EdgeInsets.fromLTRB(20, 2, 20, 0),
                       child: Text(
-                        zh ? '點一下打開　·　雙指縮放' : 'Tap to open · pinch to zoom',
-                        style: TextStyle(
+                        zh
+                            ? '往下是更早的　·　點一顆打開'
+                            : 'Scroll down for older · tap to open',
+                        style: GoogleFonts.nunitoSans(
                           fontSize: 11.5,
                           color: theme.colorScheme.onSurfaceVariant
                               .withValues(alpha: 0.7),
                         ),
                       ),
                     ),
+                    // 罐子佔滿剩下的空間。
+                    //
+                    // 為什麼不是「頂部一個小罐子加底下的清單」：
+                    // 那樣罐子只是一張裝飾圖，真正在用的還是清單。
+                    // 罐子要是介面本身，球才是被收藏的東西而不是清單項目。
                     Expanded(
-                      child: InteractiveViewer(
-                        transformationController: _zoom,
-                        // 0.6 以下字就看不清楚了，3.0 以上一次只看得到一兩顆
-                        minScale: 0.6,
-                        maxScale: 3.0,
-                        // 允許往外拖一點再彈回，跟捲動的手感一致
-                        boundaryMargin: const EdgeInsets.all(60),
-                        // 縮放時仍然可以上下捲——
-                        // 關掉的話放大之後就看不到下面的日期了
-                        panEnabled: true,
-                        child: ListView.builder(
-                          padding: const EdgeInsets.fromLTRB(16, 4, 16, 28),
-                          // 縮放時 ListView 自己的捲動要關掉，
-                          // 不然兩個捲動會打架
-                          physics: _scale > 1.02
-                              ? const NeverScrollableScrollPhysics()
-                              : const AlwaysScrollableScrollPhysics(
-                                  parent: BouncingScrollPhysics()),
-                          shrinkWrap: _scale > 1.02,
-                          itemCount: days.length,
-                          itemBuilder: (context, i) =>
-                              _daySection(days[i], grouped[days[i]]!, zh, theme),
-                        ),
+                      child: _JarBody(
+                        balls: _filtered,
+                        pacers: _pacers,
+                        zh: zh,
+                        ballSize: _ballSize,
+                        openId: _openId,
+                        onTapBall: (id) =>
+                            setState(() => _openId = _openId == id ? null : id),
+                        onPickPacer: (b) => _pickPacer(b, zh),
+                        scrollController: _listCtrl,
                       ),
                     ),
                   ],
-                ),
+                )),
+          ),
+        ],
+      ),
     );
   }
 
@@ -577,17 +937,17 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
                   zh ? '現在是哪一種？' : 'Which one is it now?',
                   style: theme.textTheme.titleMedium,
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   zh
                       ? '選一個就好。想說得更精準的話，到情緒詞彙庫。'
                       : 'Just pick one. For a more precise word, open the dictionary.',
-                  style: TextStyle(
+                  style: GoogleFonts.nunitoSans(
                     fontSize: 12.5,
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
-                const SizedBox(height: 18),
+                SizedBox(height: 18),
                 Wrap(
                   spacing: 14,
                   runSpacing: 14,
@@ -604,7 +964,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
                             const SizedBox(height: 6),
                             Text(
                               g.label(zh),
-                              style: const TextStyle(fontSize: 12),
+                              style: GoogleFonts.nunitoSans(fontSize: 12),
                             ),
                           ],
                         ),
@@ -649,7 +1009,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const MemoryBallDot(tone: GlassTone.ice, size: 64),
-            const SizedBox(height: 18),
+            SizedBox(height: 18),
             Text(
               zh ? '還沒有光' : 'No gleam yet',
               style: theme.textTheme.titleMedium,
@@ -660,7 +1020,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
                   ? '在情緒詞彙庫裡找到一個詞，\n或做完一次練習，就會留下一顆球。'
                   : 'Name a feeling in the dictionary,\nor finish a practice, to leave a ball here.',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: GoogleFonts.nunitoSans(
                 fontSize: 13,
                 height: 1.6,
                 color: theme.colorScheme.onSurfaceVariant,
@@ -752,7 +1112,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
             ),
             child: Text(
               label,
-              style: TextStyle(
+              style: GoogleFonts.nunitoSans(
                 fontSize: 12.5,
                 color: selected
                     ? theme.colorScheme.primary
@@ -794,10 +1154,10 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 zh ? '${balls.length} 顆' : '${balls.length}',
-                style: TextStyle(
+                style: GoogleFonts.nunitoSans(
                   fontSize: 12,
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -937,7 +1297,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
                   ),
                   child: Text(
                     '$n',
-                    style: const TextStyle(
+                    style: GoogleFonts.nunitoSans(
                       fontSize: 10.5,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -978,7 +1338,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Text(
                   zh ? '$groupLabel · ${group.length} 次' : '$groupLabel · ${group.length}',
-                  style: TextStyle(
+                  style: GoogleFonts.nunitoSans(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w600,
                     color: main,
@@ -1035,20 +1395,20 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
           b.note.isEmpty
               ? b.source.label(zh)
               : (b.group?.label(zh) ?? b.source.label(zh)),
-          style: const TextStyle(
+          style: GoogleFonts.nunitoSans(
             fontSize: 11.5,
             color: Colors.white70,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.4,
           ),
         ),
-        const SizedBox(height: 5),
+        SizedBox(height: 5),
         Text(
           // note 是空的 = 手動留的球，用組名現算，語言才跟得上
           b.note.isEmpty
               ? (b.group?.label(zh) ?? b.source.label(zh))
               : b.note,
-          style: const TextStyle(
+          style: GoogleFonts.varelaRound(
             fontSize: 19,
             height: 1.3,
             color: Colors.white,
@@ -1058,7 +1418,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
 
         // 照片
         if (card?.photoB64 != null) ...[
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Image.memory(
@@ -1088,17 +1448,17 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
               children: [
                 Text(
                   card.text,
-                  style: const TextStyle(
+                  style: GoogleFonts.nunitoSans(
                     fontSize: 13.5,
                     height: 1.65,
                     color: Colors.white,
                   ),
                 ),
                 if (card.author.isNotEmpty) ...[
-                  const SizedBox(height: 5),
+                  SizedBox(height: 5),
                   Text(
                     '\u2014 ${card.author}',
-                    style: const TextStyle(
+                    style: GoogleFonts.nunitoSans(
                       fontSize: 11.5,
                       color: Colors.white60,
                     ),
@@ -1109,22 +1469,22 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
           ),
         ],
 
-        const SizedBox(height: 11),
+        SizedBox(height: 11),
         Row(
           children: [
             Text(
               '${b.createdAt.month}/${b.createdAt.day}'
               '  ${b.createdAt.hour.toString().padLeft(2, '0')}:'
               '${b.createdAt.minute.toString().padLeft(2, '0')}',
-              style: const TextStyle(fontSize: 11, color: Colors.white60),
+              style: GoogleFonts.nunitoSans(fontSize: 11, color: Colors.white60),
             ),
             if (b.ersScore != null) ...[
-              const SizedBox(width: 10),
+              SizedBox(width: 10),
               Text(
                 zh
                     ? '\u00b7  \u72c0\u614b ${b.ersScore!.toStringAsFixed(0)}'
                     : '\u00b7  ${b.ersScore!.toStringAsFixed(0)}',
-                style: const TextStyle(fontSize: 11, color: Colors.white60),
+                style: GoogleFonts.nunitoSans(fontSize: 11, color: Colors.white60),
               ),
             ],
             const Spacer(),
@@ -1139,12 +1499,12 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
                     size: 15,
                     color: Colors.white70,
                   ),
-                  const SizedBox(width: 3),
+                  SizedBox(width: 3),
                   Text(
                     card == null
                         ? (zh ? '\u914d\u4e00\u5f35\u5361' : 'Attach')
                         : (zh ? '\u63db\u4e00\u5f35' : 'Change'),
-                    style: const TextStyle(
+                    style: GoogleFonts.nunitoSans(
                         fontSize: 11.5, color: Colors.white70),
                   ),
                 ],
@@ -1179,7 +1539,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
                 Text(
                   // 情緒球顯示組名，其他顯示來源
                   b.group?.label(zh) ?? b.source.label(zh),
-                  style: TextStyle(
+                  style: GoogleFonts.nunitoSans(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: main,
@@ -1189,7 +1549,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
                 Text(
                   '${b.createdAt.hour.toString().padLeft(2, '0')}:'
                   '${b.createdAt.minute.toString().padLeft(2, '0')}',
-                  style: TextStyle(
+                  style: GoogleFonts.nunitoSans(
                     fontSize: 12,
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -1197,21 +1557,21 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
               ],
             ),
             if (b.note.isNotEmpty) ...[
-              const SizedBox(height: 9),
+              SizedBox(height: 9),
               Text(
                 b.note,
-                style: const TextStyle(fontSize: 13.5, height: 1.6),
+                style: GoogleFonts.nunitoSans(fontSize: 13.5, height: 1.6),
               ),
             ],
             // ERS 只在真的有分數時顯示。
             // 沒有分數不是錯誤，只是那天沒做 check-in。
             if (b.ersScore != null) ...[
-              const SizedBox(height: 9),
+              SizedBox(height: 9),
               Text(
                 zh
                     ? '那天的狀態分數 ${b.ersScore!.toStringAsFixed(0)}'
                     : 'Score that day: ${b.ersScore!.toStringAsFixed(0)}',
-                style: TextStyle(
+                style: GoogleFonts.nunitoSans(
                   fontSize: 12,
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -1245,11 +1605,11 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
         children: [
           Icon(Icons.link_off_rounded,
               size: 15, color: theme.colorScheme.onSurfaceVariant),
-          const SizedBox(width: 6),
+          SizedBox(width: 6),
           Expanded(
             child: Text(
               zh ? '那張卡已經不在了' : 'That card is gone',
-              style: TextStyle(
+              style: GoogleFonts.nunitoSans(
                 fontSize: 12,
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -1258,7 +1618,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
           TextButton(
             onPressed: () => _pickPacer(b, zh),
             child: Text(zh ? '換一張' : 'Pick another',
-                style: const TextStyle(fontSize: 12)),
+                style: GoogleFonts.nunitoSans(fontSize: 12)),
           ),
         ],
       );
@@ -1290,17 +1650,17 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
                     errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                   ),
                 ),
-                const SizedBox(height: 9),
+                SizedBox(height: 9),
               ],
               Text(
                 card.text,
-                style: const TextStyle(fontSize: 13.5, height: 1.65),
+                style: GoogleFonts.nunitoSans(fontSize: 13.5, height: 1.65),
               ),
               if (card.author.isNotEmpty) ...[
-                const SizedBox(height: 5),
+                SizedBox(height: 5),
                 Text(
                   '— ${card.author}',
-                  style: TextStyle(
+                  style: GoogleFonts.nunitoSans(
                     fontSize: 11.5,
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -1320,7 +1680,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
         icon: const Icon(Icons.add_rounded, size: 16),
         label: Text(
           zh ? '配一句話或一張照片' : 'Attach a line or a photo',
-          style: const TextStyle(fontSize: 12.5),
+          style: GoogleFonts.nunitoSans(fontSize: 12.5),
         ),
         style: TextButton.styleFrom(
           foregroundColor: main,
@@ -1369,14 +1729,14 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
                           // 跟 null（取消）要分開，不然按取消會變成解除
                           onPressed: () => Navigator.pop(context, ''),
                           child: Text(zh ? '取消連結' : 'Unlink',
-                              style: const TextStyle(fontSize: 12.5)),
+                              style: GoogleFonts.nunitoSans(fontSize: 12.5)),
                         ),
                       TextButton.icon(
                         // 回傳 'NEW' 這個標記，外面再帶去 Card Studio
                         onPressed: () => Navigator.pop(context, 'NEW'),
                         icon: const Icon(Icons.edit_outlined, size: 16),
                         label: Text(zh ? '新寫一張' : 'Write one',
-                            style: const TextStyle(fontSize: 12.5)),
+                            style: GoogleFonts.nunitoSans(fontSize: 12.5)),
                       ),
                     ],
                   ),
@@ -1410,7 +1770,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
                                       c.text,
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
+                                      style: GoogleFonts.nunitoSans(
                                           fontSize: 13.5, height: 1.55),
                                     ),
                                   ),
@@ -1528,12 +1888,12 @@ class _MoodBarEntryState extends ConsumerState<MoodBarEntry> {
                 IgnorePointer(
                   child: MemoryBallDot(tone: b.tone, size: 26),
                 ),
-                const SizedBox(width: 6),
+                SizedBox(width: 6),
               ],
               const Spacer(),
               Text(
                 zh ? '微光' : 'Gleam',
-                style: TextStyle(
+                style: GoogleFonts.nunitoSans(
                   fontSize: 12.5,
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
