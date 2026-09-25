@@ -150,6 +150,8 @@ class MemoryBall {
     this.ersScore,
     this.group,
     this.pacerId,
+    this.memo = '',
+    this.reply = '',
   });
 
   /// 毫秒時間戳當 id——本機唯一就夠，不需要 uuid
@@ -181,6 +183,37 @@ class MemoryBall {
   /// 那是刻意的，展開時會顯示「那張卡已經不在了」而不是假裝有。
   final String? pacerId;
 
+  /// 選完情緒之後，使用者像寫便條一樣寫下的話。可能是空的。
+  ///
+  /// 跟 [note] 分開存：note 是那個詞（委屈、失落），
+  /// memo 是發生了什麼。兩個混在一起的話，詞就沒辦法拿來分類了。
+  final String memo;
+
+  /// Luna 對這張便條的回聲。沒寫 memo 的球就沒有。
+  final String reply;
+
+  /// 複製一顆球並改掉部分欄位。
+  ///
+  /// 原本 [MemoryBallStore.linkPacer] 是把每個欄位手抄一次，
+  /// 新增欄位時只要漏抄一個，那個欄位就會在換卡片時被默默洗掉。
+  MemoryBall copyWith({
+    String? pacerId,
+    bool clearPacer = false,
+    String? reply,
+  }) =>
+      MemoryBall(
+        id: id,
+        createdAt: createdAt,
+        source: source,
+        tone: tone,
+        note: note,
+        ersScore: ersScore,
+        group: group,
+        pacerId: clearPacer ? null : (pacerId ?? this.pacerId),
+        memo: memo,
+        reply: reply ?? this.reply,
+      );
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'created_at': createdAt.toIso8601String(),
@@ -190,6 +223,8 @@ class MemoryBall {
         'ers_score': ersScore,
         'group': group?.key,
         'pacer_id': pacerId,
+        'memo': memo,
+        'reply': reply,
       };
 
   factory MemoryBall.fromJson(Map<String, dynamic> j) {
@@ -208,6 +243,9 @@ class MemoryBall {
           ? null
           : EmotionGroupX.fromKey(j['group'].toString()),
       pacerId: j['pacer_id']?.toString(),
+      // 舊資料沒有這兩個欄位，讀出來就是空的
+      memo: j['memo']?.toString() ?? '',
+      reply: j['reply']?.toString() ?? '',
     );
   }
 
@@ -273,6 +311,7 @@ class MemoryBallStore {
     double? ersScore,
     EmotionGroup? group,
     String? pacerId,
+    String memo = '',
   }) async {
     final ball = MemoryBall(
       id: DateTime.now().millisecondsSinceEpoch,
@@ -283,6 +322,7 @@ class MemoryBallStore {
       ersScore: ersScore,
       group: group,
       pacerId: pacerId,
+      memo: memo.trim(),
     );
     final all = await load();
     all.insert(0, ball);
@@ -298,6 +338,7 @@ class MemoryBallStore {
     required EmotionGroup group,
     required String word,
     String? pacerId,
+    String memo = '',
   }) {
     return add(
       source: BallSource.emotionDict,
@@ -305,6 +346,7 @@ class MemoryBallStore {
       note: word,
       group: group,
       pacerId: pacerId,
+      memo: memo,
     );
   }
 
@@ -316,17 +358,18 @@ class MemoryBallStore {
     final all = await load();
     final i = all.indexWhere((b) => b.id == ballId);
     if (i < 0) return;
-    final old = all[i];
-    all[i] = MemoryBall(
-      id: old.id,
-      createdAt: old.createdAt,
-      source: old.source,
-      tone: old.tone,
-      note: old.note,
-      ersScore: old.ersScore,
-      group: old.group,
-      pacerId: pacerId,
-    );
+    all[i] = pacerId == null
+        ? all[i].copyWith(clearPacer: true)
+        : all[i].copyWith(pacerId: pacerId);
+    await _saveAll(all);
+  }
+
+  /// 存下 Luna 對這顆球的回聲。換一句的時候會覆蓋。
+  static Future<void> setReply(int ballId, String reply) async {
+    final all = await load();
+    final i = all.indexWhere((b) => b.id == ballId);
+    if (i < 0) return;
+    all[i] = all[i].copyWith(reply: reply);
     await _saveAll(all);
   }
 
@@ -335,6 +378,9 @@ class MemoryBallStore {
     all.removeWhere((b) => b.id == id);
     await _saveAll(all);
   }
+
+  /// 把一整批球放回去。給「清空」的復原用。
+  static Future<void> restoreAll(List<MemoryBall> balls) => _saveAll(balls);
 
   static Future<void> clear() async {
     final p = await SharedPreferences.getInstance();

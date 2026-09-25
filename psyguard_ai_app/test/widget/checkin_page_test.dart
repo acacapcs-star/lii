@@ -6,7 +6,7 @@ import 'package:psyguard_ai_app/core/storage/database_provider.dart';
 import 'package:psyguard_ai_app/features/checkin/presentation/checkin_page.dart';
 
 void main() {
-  testWidgets('check-in validation blocks note over 200 chars', (tester) async {
+  testWidgets('check-in note section opens the diary', (tester) async {
     final db = AppDatabase.memory();
 
     await tester.pumpWidget(
@@ -27,17 +27,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final textField = find.byType(TextField);
-    expect(textField, findsOneWidget);
-    await tester.enterText(textField, 'a' * 201);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Complete Check-in').first);
-    await tester.pump();
-
-    expect(
-      find.text('Please keep the note under 200 characters.'),
-      findsOneWidget,
-    );
+    // 今日筆記已經改成一個入口，點了到筆記頁寫，不再是頁面上的輸入框
+    expect(find.text('Today\'s Note'), findsOneWidget);
+    expect(find.text('Open Today Diary'), findsOneWidget);
     await db.close();
   });
 }

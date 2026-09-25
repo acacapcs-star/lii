@@ -40,6 +40,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:ui' show ImageFilter;
 
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../theme/mood_theme_service.dart';
@@ -51,8 +52,14 @@ import '../security/local_settings_service.dart';
 
 import 'luna_orb.dart' show GlassTone, GlassToneX;
 import 'memory_ball.dart';
+import 'gleam_reply.dart';
+import '../risk_engine/risk_engine.dart';
+import '../network/ai_local_messages.dart'
+    show aiHighRiskSafetyReply, aiHighRiskSafetyReplyEn;
 import '../../features/card_studio/presentation/my_cards_store.dart';
 import '../../features/card_studio/presentation/card_studio_page.dart';
+import '../../features/tools_library/presentation/tools_page.dart'
+    show emotionWordsOf, recordEmotionWord;
 
 // ══════════════════════════════════════════════════════
 //  單顆球
@@ -210,7 +217,11 @@ class _MemoryBallDotState extends State<MemoryBallDot>
         //
         // 那個「中間比兩端透」是玻璃球跟實心球最大的差別。
         gradient: RadialGradient(
-          center: const Alignment(0.35, -0.42),
+          // 球：高光在右上偏中，像光打在球面上。
+          // 展開成便條時：光點固定在右上角，不會壓在中間的文字上。
+          center: widget.expanded
+              ? const Alignment(0.92, -0.92)
+              : const Alignment(0.35, -0.42),
           radius: 0.95,
           colors: [
             Color.lerp(highlight, Colors.white, 0.55)!
@@ -218,7 +229,11 @@ class _MemoryBallDotState extends State<MemoryBallDot>
             main.withValues(alpha: 0.58),
             deep.withValues(alpha: 0.86),
           ],
-          stops: const [0.0, 0.48, 1.0],
+          // 便條比球大很多，同樣的比例光會暈成一大片，
+          // 所以展開時把白光收小，只留右上角一點。
+          stops: widget.expanded
+              ? const [0.0, 0.16, 1.0]
+              : const [0.0, 0.48, 1.0],
         ),
         boxShadow: [
           // 球本身的陰影
@@ -350,6 +365,8 @@ class _JarBody extends StatelessWidget {
     required this.onTapBall,
     required this.onPickPacer,
     required this.scrollController,
+    this.justAddedId,
+    this.onReplyAgain,
   });
 
   final List<MemoryBall> balls;
@@ -368,6 +385,23 @@ class _JarBody extends StatelessWidget {
   final void Function(int id) onTapBall;
   final void Function(MemoryBall b) onPickPacer;
   final ScrollController scrollController;
+
+  /// 剛留下的那一顆。只有它會跑「落進罐子」的動畫。
+  final int? justAddedId;
+
+  /// 請 Luna 再說一句
+  final void Function(MemoryBall b)? onReplyAgain;
+
+  /// 罐子裡的一顆球。剛留下的那顆外面包一層落下的漣漪。
+  Widget _dot(MemoryBall b) {
+    final dot = MemoryBallDot(
+      tone: b.tone,
+      size: ballSize,
+      onTap: () => onTapBall(b.id),
+    );
+    if (b.id != justAddedId) return dot;
+    return DropEcho(key: ValueKey('echo-${b.id}'), tone: b.tone, child: dot);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -513,11 +547,7 @@ class _JarBody extends StatelessWidget {
             runSpacing: 10,
             children: [
               for (final b in pending)
-                MemoryBallDot(
-                  tone: b.tone,
-                  size: ballSize,
-                  onTap: () => onTapBall(b.id),
-                ),
+                _dot(b),
             ],
           ),
         ));
@@ -569,11 +599,7 @@ class _JarBody extends StatelessWidget {
           runSpacing: 10,
           children: [
             for (final b in pending)
-              MemoryBallDot(
-                tone: b.tone,
-                size: ballSize,
-                onTap: () => onTapBall(b.id),
-              ),
+              _dot(b),
           ],
         ),
       ));
@@ -661,6 +687,55 @@ class _JarBody extends StatelessWidget {
             fontWeight: FontWeight.w700,
           ),
         ),
+        if (b.memo.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Text(
+            b.memo,
+            style: GoogleFonts.nunitoSans(
+                fontSize: 13.5, height: 1.6, color: Colors.white),
+          ),
+        ],
+        if (b.reply.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(12, 10, 6, 6),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Luna',
+                    style: GoogleFonts.nunitoSans(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFFFFD166))),
+                const SizedBox(height: 3),
+                Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: Text(b.reply,
+                      style: GoogleFonts.nunitoSans(
+                          fontSize: 13.5, height: 1.6, color: Colors.white)),
+                ),
+                if (onReplyAgain != null)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () => onReplyAgain!(b),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.white70,
+                        minimumSize: const Size(44, 36),
+                      ),
+                      child: Text(zh ? '換一句' : 'Another',
+                          style: GoogleFonts.nunitoSans(fontSize: 12)),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
         if (card?.photoB64 != null) ...[
           SizedBox(height: 12),
           ClipRRect(
@@ -902,11 +977,12 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
               ][_sizeStep]),
               onPressed: _cycleSize,
             ),
-          IconButton(
-            tooltip: zh ? '自己留一顆' : 'Add one',
-            icon: const Icon(Icons.add_rounded),
-            onPressed: () => _addManually(zh),
-          ),
+          if (_all.isNotEmpty)
+            IconButton(
+              tooltip: zh ? '清空罐子' : 'Empty the jar',
+              icon: const Icon(Icons.delete_sweep_outlined),
+              onPressed: () => _clearJar(zh),
+            ),
           if (_all.isNotEmpty)
             IconButton(
               tooltip: zh ? (_stacked ? '攤開來看' : '同色疊起來') : 'Toggle stacking',
@@ -955,9 +1031,15 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
             child: SafeArea(child: !_loaded
           ? const SizedBox.shrink()
           : _all.isEmpty
-              ? _empty(zh, theme)
+              ? Column(
+                  children: [
+                    _quickPick(zh, theme),
+                    Expanded(child: _empty(zh, theme)),
+                  ],
+                )
               : Column(
                   children: [
+                    _quickPick(zh, theme),
                     _filterRow(zh, theme),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 2, 20, 0),
@@ -985,6 +1067,8 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
                         ballSize: _ballSize,
                         openId: _openId,
                         stacked: _stacked,
+                        justAddedId: _justAddedId,
+                        onReplyAgain: (b) => _showReply(b, zh, again: true),
                         onTapBall: (id) =>
                             setState(() => _openId = _openId == id ? null : id),
                         onPickPacer: (b) => _pickPacer(b, zh),
@@ -1010,57 +1094,152 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
   /// 不想做完整的五頁著地練習。強迫走完流程才能留下紀錄的話，
   /// 那些「只是想記一下」的時刻就消失了。
   ///
-  /// 這是選配的——主要的來源還是練習，這裡只是補一條路。
-  Future<void> _addManually(bool zh) async {
-    final picked = await showModalBottomSheet<EmotionGroup?>(
+  /// ── 為什麼直接放在頁面上，不藏在「＋」後面 ─────────────
+  ///
+  /// 原本要先按右上角的「＋」、跳出表單、再點一顆球。
+  /// 「只是想記一下」的時刻撐不過三個步驟，
+  /// 現在六顆球就在罐子上方，點一下就留下。
+  Widget _quickPick(bool zh, ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 6, 16, 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 8),
+            child: Text(
+              zh ? '現在是哪一種？' : 'Which one is it now?',
+              style: GoogleFonts.nunitoSans(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              for (final g in EmotionGroup.values)
+                Semantics(
+                  button: true,
+                  label: zh ? '留下一顆「${g.label(zh)}」' : 'Leave a ${g.label(zh)} ball',
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => _leave(g, zh),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // 點下去時球會抖一下，那就是「收到了」
+                        MemoryBallDot(
+                          tone: g.tone,
+                          size: 38,
+                          onTap: () => _leave(g, zh),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          g.label(zh),
+                          style: GoogleFonts.nunitoSans(fontSize: 11.5),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 防止連點：球還在存的時候，再點不會多留一顆
+  bool _leaving = false;
+
+  /// 點一個顏色之後，選這個顏色裡的哪一種情緒。
+  ///
+  /// 顏色只是大類，「生氣」底下還有惱怒、委屈、被冒犯、不甘心。
+  /// 叫得出更精準的名字，那顆球才真的是「那天的那個感覺」。
+  /// 但說不上來的時候也可以只留大類，所以最下面留一個「就是這個顏色」。
+  Future<void> _leave(EmotionGroup g, bool zh) async {
+    if (_leaving) return;
+    final words = emotionWordsOf(g);
+    final main = g.tone.stops[1];
+
+    final picked = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
       builder: (context) {
         final theme = Theme.of(context);
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  zh ? '現在是哪一種？' : 'Which one is it now?',
-                  style: theme.textTheme.titleMedium,
-                ),
-                SizedBox(height: 4),
-                Text(
-                  zh
-                      ? '選一個就好。想說得更精準的話，到情緒詞彙庫。'
-                      : 'Just pick one. For a more precise word, open the dictionary.',
-                  style: GoogleFonts.nunitoSans(
-                    fontSize: 12.5,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                SizedBox(height: 18),
-                Wrap(
-                  spacing: 14,
-                  runSpacing: 14,
+                Row(
                   children: [
-                    for (final g in EmotionGroup.values)
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context, g),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IgnorePointer(
-                              child: MemoryBallDot(tone: g.tone, size: 52),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              g.label(zh),
-                              style: GoogleFonts.nunitoSans(fontSize: 12),
-                            ),
-                          ],
+                    IgnorePointer(child: MemoryBallDot(tone: g.tone, size: 26)),
+                    const SizedBox(width: 10),
+                    Text(
+                      zh ? '是哪一種${g.label(zh)}？' : 'What kind of ${g.label(zh).toLowerCase()}?',
+                      style: theme.textTheme.titleMedium,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                for (final w in words)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Material(
+                      color: main.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(13),
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        onTap: () => Navigator.pop(context, zh ? w.zh : w.en),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(14, 11, 14, 11),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      zh ? w.zh : w.en,
+                                      style: GoogleFonts.nunitoSans(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      zh ? w.zhWhen : w.enWhen,
+                                      style: GoogleFonts.nunitoSans(
+                                        fontSize: 12.5,
+                                        color: theme.colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(Icons.chevron_right_rounded,
+                                  size: 18, color: main),
+                            ],
+                          ),
                         ),
                       ),
-                  ],
+                    ),
+                  ),
+                // 說不上來的時候，只留大類也可以
+                TextButton(
+                  onPressed: () => Navigator.pop(context, ''),
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size.fromHeight(44),
+                    foregroundColor: main,
+                  ),
+                  child: Text(zh
+                      ? '說不上來，就是${g.label(zh)}'
+                      : 'Hard to say — just ${g.label(zh).toLowerCase()}'),
                 ),
               ],
             ),
@@ -1069,27 +1248,143 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
       },
     );
 
+    // null：把表單拉掉，什麼都不留
     if (picked == null || !mounted) return;
-    await MemoryBallStore.addFromEmotion(
-      group: picked,
-      // 刻意存空字串，不存組名的翻譯。
-      //
-      // 存「難過」的話，使用者之後切成英文，那顆球還是顯示「難過」——
-      // 因為那是當下語言的字串，被寫死進資料了。
-      //
-      // 存空的，顯示時用 group.label(zh) 現算，語言就跟得上。
-      // 從字典來的球才有 word，那是使用者真的挑的那個詞，
-      // 語言固定反而是對的——他當時就是用那個語言在想這件事。
-      word: '',
+
+    // 像寫便條一樣寫下想寫的話。可以不寫，直接留下
+    final label = picked.isEmpty ? g.label(zh) : picked;
+    final memo = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => _MemoSheet(tone: g.tone, title: label, zh: zh),
     );
-    await _load();
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(zh ? '留下一點光了' : 'A little more gleam'),
-        duration: const Duration(seconds: 2),
+    if (memo == null || !mounted) return;
+    if (picked.isNotEmpty) await recordEmotionWord(picked);
+
+    _leaving = true;
+    try {
+      final ball = await MemoryBallStore.addFromEmotion(
+        group: g,
+        memo: memo,
+        // 刻意存空字串，不存組名的翻譯。
+        //
+        // 存「難過」的話，使用者之後切成英文，那顆球還是顯示「難過」——
+        // 因為那是當下語言的字串，被寫死進資料了。
+        //
+        // 存空的，顯示時用 group.label(zh) 現算，語言就跟得上。
+        // 選了詞的話存那個詞，那是使用者真的挑的，
+        // 語言固定反而是對的——他當時就是用那個語言在想這件事。
+        word: picked,
+      );
+      await _load();
+      if (!mounted) return;
+      // 讓新的那顆「啵」地落進罐子
+      setState(() => _justAddedId = ball.id);
+      if (_listCtrl.hasClients) {
+        _listCtrl.animateTo(0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut);
+      }
+
+      if (ball.memo.isEmpty) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(zh ? '留下一點光了' : 'A little more gleam'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        return;
+      }
+      // 等球落下之後，Luna 再回話
+      await Future.delayed(const Duration(milliseconds: 650));
+      if (mounted) await _showReply(ball, zh);
+    } finally {
+      _leaving = false;
+    }
+  }
+
+  /// 剛留下的那一顆，用來播落下的動畫
+  int? _justAddedId;
+
+  /// Luna 的回聲。
+  ///
+  /// 便條裡出現高風險字眼時不送 AI：
+  /// 回的是 App 裡既有的安全訊息，並提供進入安全流程的入口。
+  /// 球和他寫的話照樣留下——那是他真的說出口的東西。
+  Future<void> _showReply(MemoryBall ball, bool zh, {bool again = false}) async {
+    final risky = RiskEngine.mentionsHighRisk(ball.memo);
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => _ReplySheet(
+        ball: ball,
+        zh: zh,
+        risky: risky,
+        startFresh: again,
+        service: ref.read(gleamReplyServiceProvider),
       ),
     );
+    if (!mounted) return;
+    await _load();
+    if (risky && mounted) context.go('/safety');
+  }
+
+  /// 清空整個罐子。
+  ///
+  /// 先問一次，因為球是使用者自己留下的東西；
+  /// 清空之後幾秒內還能復原，按錯了不會真的不見。
+  Future<void> _clearJar(bool zh) async {
+    final count = _all.length;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(zh ? '清空罐子？' : 'Empty the jar?'),
+        content: Text(zh
+            ? '罐子裡的 $count 顆球都會拿掉。'
+            : 'All $count balls will be removed.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(zh ? '取消' : 'Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              foregroundColor: Theme.of(context).colorScheme.onError,
+            ),
+            child: Text(zh ? '清空' : 'Empty'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+
+    final backup = List<MemoryBall>.from(_all);
+    await MemoryBallStore.clear();
+    if (!mounted) return;
+    setState(() => _openId = null);
+    await _load();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(zh ? '罐子清空了' : 'The jar is empty'),
+          duration: const Duration(seconds: 6),
+          action: SnackBarAction(
+            label: zh ? '復原' : 'Undo',
+            onPressed: () async {
+              await MemoryBallStore.restoreAll(backup);
+              if (mounted) await _load();
+            },
+          ),
+        ),
+      );
   }
 
   Widget _empty(bool zh, ThemeData theme) {
@@ -1917,6 +2212,332 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
         'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
       ][m - 1];
+}
+
+// ══════════════════════════════════════════════════════
+//  落進罐子的漣漪
+// ══════════════════════════════════════════════════════
+
+/// 一顆球「啵」地落進罐子，泛起一圈光的漣漪。
+///
+/// 球從上方稍微掉下來、彈一下停住，同時在它周圍擴散兩圈淡淡的光環。
+/// 只有剛留下的那一顆會跑，播完就停——跟 [MemoryBallDot] 的效能原則一樣。
+/// 只用圓形描邊，不用模糊濾鏡；系統開「減少動態效果」時直接略過。
+class DropEcho extends StatefulWidget {
+  const DropEcho({super.key, required this.tone, required this.child});
+  final GlassTone tone;
+  final Widget child;
+
+  @override
+  State<DropEcho> createState() => _DropEchoState();
+}
+
+class _DropEchoState extends State<DropEcho>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  );
+  bool _started = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
+    if (MediaQuery.of(context).disableAnimations) {
+      _ctrl.value = 1;
+    } else {
+      _ctrl.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = widget.tone.stops[1];
+    return AnimatedBuilder(
+      animation: _ctrl,
+      child: widget.child,
+      builder: (context, child) {
+        final t = _ctrl.value;
+        // 前 45%：落下並彈一下
+        final drop = Curves.easeOutBack.transform((t / 0.45).clamp(0.0, 1.0));
+        final dy = (1 - drop) * -28;
+        return CustomPaint(
+          painter: _EchoRingPainter(t: t, color: color),
+          child: Transform.translate(offset: Offset(0, dy), child: child),
+        );
+      },
+    );
+  }
+}
+
+class _EchoRingPainter extends CustomPainter {
+  _EchoRingPainter({required this.t, required this.color});
+  final double t;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (t <= 0.3 || t >= 1) return;
+    final c = size.center(Offset.zero);
+    final r = size.shortestSide / 2;
+    // 兩圈，第二圈晚一點出發——像回聲
+    for (final delay in const [0.3, 0.45]) {
+      final u = ((t - delay) / (1 - delay)).clamp(0.0, 1.0);
+      if (u <= 0) continue;
+      final fade = 1 - u;
+      canvas.drawCircle(
+        c,
+        r * (1.0 + 0.9 * Curves.easeOut.transform(u)),
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2.2 * fade + 0.3
+          ..color = color.withValues(alpha: 0.7 * fade),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_EchoRingPainter old) => old.t != t || old.color != color;
+}
+
+// ══════════════════════════════════════════════════════
+//  像寫便條一樣
+// ══════════════════════════════════════════════════════
+
+/// 選完情緒之後的便條。寫不寫都可以。
+///
+/// 自己持有輸入框的 controller：表單收起的動畫還在跑時輸入框還在畫面上，
+/// 在外面 await 完就 dispose 的話會用到已經釋放的 controller。
+class _MemoSheet extends StatefulWidget {
+  const _MemoSheet({required this.tone, required this.title, required this.zh});
+  final GlassTone tone;
+  final String title;
+  final bool zh;
+
+  @override
+  State<_MemoSheet> createState() => _MemoSheetState();
+}
+
+class _MemoSheetState extends State<_MemoSheet> {
+  final _ctrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final zh = widget.zh;
+    final main = widget.tone.stops[1];
+    return Padding(
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  IgnorePointer(
+                      child: MemoryBallDot(tone: widget.tone, size: 26)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(widget.title,
+                        style: theme.textTheme.titleMedium),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _ctrl,
+                autofocus: true,
+                minLines: 3,
+                maxLines: 6,
+                maxLength: 300,
+                decoration: InputDecoration(
+                  hintText: zh ? '想寫什麼都可以，發生了什麼、現在的感覺……' : 'Anything you want to write down…',
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context, ''),
+                      style: TextButton.styleFrom(
+                          minimumSize: const Size.fromHeight(48)),
+                      child: Text(zh ? '不寫，直接留下' : 'Just leave it'),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () => Navigator.pop(context, _ctrl.text.trim()),
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size.fromHeight(48),
+                        backgroundColor: main,
+                      ),
+                      child: Text(zh ? '寫好了' : 'Done'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  Luna 的回聲
+// ══════════════════════════════════════════════════════
+
+class _ReplySheet extends StatefulWidget {
+  const _ReplySheet({
+    required this.ball,
+    required this.zh,
+    required this.risky,
+    required this.startFresh,
+    required this.service,
+  });
+  final MemoryBall ball;
+  final bool zh;
+
+  /// 便條裡有高風險字眼：不送 AI，改成安全訊息
+  final bool risky;
+
+  /// true：已經有回聲了，使用者按了「換一句」
+  final bool startFresh;
+  final GleamReplyService service;
+
+  @override
+  State<_ReplySheet> createState() => _ReplySheetState();
+}
+
+class _ReplySheetState extends State<_ReplySheet> {
+  String _text = '';
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.risky) {
+      _text = widget.zh ? aiHighRiskSafetyReply : aiHighRiskSafetyReplyEn;
+      _loading = false;
+    } else {
+      _fetch(previous: widget.ball.reply, first: true);
+    }
+  }
+
+  Future<void> _fetch({String previous = '', bool first = false}) async {
+    // 第一次是從 initState 叫的，那時候還不能 setState；_loading 本來就是 true
+    if (!first) setState(() => _loading = true);
+    final g = widget.ball.group ?? EmotionGroup.okay;
+    final out = await widget.service.reply(
+      group: g,
+      word: widget.ball.note,
+      memo: widget.ball.memo,
+      zh: widget.zh,
+      previous: previous,
+    );
+    await MemoryBallStore.setReply(widget.ball.id, out);
+    if (!mounted) return;
+    setState(() {
+      _text = out;
+      _loading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final zh = widget.zh;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 14,
+                  height: 14,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(0xFFFFD166),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text('Luna',
+                    style: theme.textTheme.titleSmall
+                        ?.copyWith(fontWeight: FontWeight.w700)),
+              ],
+            ),
+            const SizedBox(height: 12),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              child: _loading
+                  ? Padding(
+                      key: const ValueKey('loading'),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      child: Text(zh ? 'Luna 在讀你寫的……' : 'Luna is reading…',
+                          style: GoogleFonts.nunitoSans(
+                              fontSize: 14,
+                              color: theme.colorScheme.onSurfaceVariant)),
+                    )
+                  : Text(_text,
+                      key: ValueKey(_text),
+                      style: GoogleFonts.nunitoSans(fontSize: 15.5, height: 1.65)),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                if (!widget.risky)
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _loading ? null : () => _fetch(previous: _text),
+                      style: OutlinedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(48)),
+                      child: Text(zh ? '換一句' : 'Another'),
+                    ),
+                  ),
+                if (!widget.risky) const SizedBox(width: 10),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: FilledButton.styleFrom(
+                        minimumSize: const Size.fromHeight(48)),
+                    child: Text(widget.risky
+                        ? (zh ? '找人聊聊' : 'Reach someone')
+                        : (zh ? '收好了' : 'Keep it')),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 // ══════════════════════════════════════════════════════

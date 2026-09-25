@@ -1803,18 +1803,7 @@ class _EmotionDictPageState extends ConsumerState<EmotionDictPage> {
     );
   }
 
-  Future<void> _save(String word) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString('emotion_log');
-      final list = raw == null ? <dynamic>[] : jsonDecode(raw) as List<dynamic>;
-      list.insert(0, {
-        'at': DateTime.now().toIso8601String(),
-        'word': word,
-      });
-      await prefs.setString('emotion_log', jsonEncode(list.take(60).toList()));
-    } catch (_) {}
-  }
+  Future<void> _save(String word) => recordEmotionWord(word);
 
   @override
   Widget build(BuildContext context) {
@@ -2002,6 +1991,37 @@ class _EmotionDictPageState extends ConsumerState<EmotionDictPage> {
       ),
     );
   }
+}
+
+/// 某一組情緒底下的詞，給微光頁用。
+///
+/// 詞只定義在字典這一份，微光頁不另外抄一份——
+/// 字典改了詞，微光頁跟著改，兩邊不會對不上。
+List<({String zh, String en, String zhWhen, String enWhen})> emotionWordsOf(
+    EmotionGroup group) {
+  for (final g in _EmotionDictPageState._groups) {
+    if (EmotionGroupX.fromZhName(g.zh) == group) {
+      return [
+        for (final w in g.words)
+          (zh: w.zh, en: w.en, zhWhen: w.zhWhen, enWhen: w.enWhen),
+      ];
+    }
+  }
+  return const [];
+}
+
+/// 記下使用者選了哪個詞。字典和微光頁共用，同一份紀錄。
+Future<void> recordEmotionWord(String word) async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('emotion_log');
+    final list = raw == null ? <dynamic>[] : jsonDecode(raw) as List<dynamic>;
+    list.insert(0, {
+      'at': DateTime.now().toIso8601String(),
+      'word': word,
+    });
+    await prefs.setString('emotion_log', jsonEncode(list.take(60).toList()));
+  } catch (_) {}
 }
 
 class _EmotionGroup {

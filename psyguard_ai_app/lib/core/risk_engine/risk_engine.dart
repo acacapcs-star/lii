@@ -76,6 +76,15 @@ class RiskEngine {
     'reach out for help',
   ];
 
+  /// 一段使用者自己寫的短文字裡，有沒有高風險的字眼。
+  ///
+  /// 給不走完整評估流程的地方用，例如微光的便條。
+  /// 和 [evaluateDay] 用同一份關鍵詞清單，兩邊不會判得不一樣。
+  static bool mentionsHighRisk(String text) {
+    final lower = text.toLowerCase();
+    return _highRiskKeywords.any(lower.contains);
+  }
+
   RiskSnapshotResult evaluateCheckin({
     required int moodScore,
     required int stressScore,
