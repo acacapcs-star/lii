@@ -47,6 +47,17 @@ class BackgroundThemeState {
         return const Color(0xFFE3F2FD);
       case BgColorChoice.greenLight:
         return const Color(0xFFE8F5E9);
+      case BgColorChoice.pinkLight:
+        // 浪漫粉：很淡的玫瑰色，卡片放上去還看得清楚
+        return const Color(0xFFFDF2F6);
+      case BgColorChoice.rainbowLight:
+        // 彩虹：底色取最淡的那一端。
+        // 全彩當背景會蓋過所有內容，所以只留一點暈染。
+        return const Color(0xFFFBF4FA);
+      case BgColorChoice.pureBlack:
+        // 純黑簡約：不是全黑，留一點點灰。
+        // 全黑在 OLED 上跟關機沒兩樣，卡片的邊界會完全消失。
+        return const Color(0xFF070707);
       case BgColorChoice.navyDark:
         return const Color(0xFF16283C); // 帶藍的深色，像 logo 球球，不那麼黑
       case BgColorChoice.forestDark:
