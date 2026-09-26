@@ -20,6 +20,7 @@ import 'package:flutter/services.dart';
 import '../crystals/crystal_collection_page.dart';
 import '../audio/tide_sound.dart';
 import '../crystals/crystal_store.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../pacer/bookmark_quick_add.dart';
 import '../pacer/breath_plan.dart';
 import 'luna_orb.dart';
@@ -68,6 +69,9 @@ extension LiiBreathModeX on LiiBreathMode {
     }
   }
 }
+
+/// 使用者在呼吸頁選的水晶顏色。首頁的浮球也讀這個，兩邊才會是同一顆。
+const kOrbTonePrefKey = 'lii_orb_tone';
 
 Future<void> showLiiBreath(
   BuildContext context, {
@@ -133,6 +137,14 @@ class _LiiBreathPageState extends State<LiiBreathPage>
     super.initState();
     _status = widget.mode.idleText;
     _ticker = createTicker(_tick)..start();
+    // 上次選的水晶顏色。只套用已經解鎖的——萬一資料對不上，就留在 ice
+    CrystalStore.ensureLoaded().then((_) async {
+      final p = await SharedPreferences.getInstance();
+      final i = p.getInt(kOrbTonePrefKey);
+      if (!mounted || i == null || i < 0 || i >= GlassTone.values.length) return;
+      final t = GlassTone.values[i];
+      if (CrystalStore.isUnlocked(t)) setState(() => _tone = t);
+    });
   }
 
   @override
@@ -384,13 +396,20 @@ class _LiiBreathPageState extends State<LiiBreathPage>
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content:
-                                    Text('${t.labelEn}: ${r.requirementEn}'),
+                                    Text(Localizations.localeOf(context)
+                                                .languageCode ==
+                                            'zh'
+                                        ? '${t.label}：${r.requirement}'
+                                        : '${t.labelEn}: ${r.requirementEn}'),
                                 duration: const Duration(seconds: 2),
                               ),
                             );
                             return;
                           }
                           setState(() => _tone = t);
+                          // 記下來：下次進來還是這顆，首頁浮球也換成它
+                          SharedPreferences.getInstance()
+                              .then((p) => p.setInt(kOrbTonePrefKey, t.index));
                         },
                         child: Container(
                           width: 26,

@@ -987,7 +987,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
               onPressed: () => _clearJar(zh),
             ),
           IconButton(
-            tooltip: zh ? '保存多久' : 'How long to keep',
+            tooltip: zh ? '這些光要留多久' : 'How long to keep',
             icon: const Icon(Icons.hourglass_bottom_rounded),
             onPressed: () => _chooseKeep(zh),
           ),
@@ -1048,6 +1048,8 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
               : Column(
                   children: [
                     _quickPick(zh, theme),
+                    if (_all.length >= MemoryBallStore.nearFull)
+                      _nearFullHint(zh, theme),
                     _filterRow(zh, theme),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 2, 20, 0),
@@ -1421,7 +1423,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: Text(zh ? '罐子要保存多久？' : 'How long should the jar keep balls?',
+                child: Text(zh ? '這些光要留多久？' : 'How long should the jar keep balls?',
                     style: Theme.of(context).textTheme.titleMedium),
               ),
               for (final k in JarKeep.values)
@@ -1452,7 +1454,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
         builder: (context) => AlertDialog(
           title: Text(zh ? '換成「${picked.label(zh)}」？' : 'Switch to "${picked.label(zh)}"?'),
           content: Text(zh
-              ? '有 $losing 顆球超過這個時間，會被拿掉，拿掉之後就找不回來了。'
+              ? '有 $losing 顆球比這更早，會被收走，收走之後就找不回來了。'
               : '$losing balls are older than this and will be removed for good.'),
           actions: [
             TextButton(
@@ -1475,9 +1477,37 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(
-        content: Text(zh ? '罐子會${picked.label(zh)}' : 'The jar will ${picked.label(zh).toLowerCase()}'),
+        content: Text(zh ? '之後會${picked.label(zh)}' : 'The jar will ${picked.label(zh).toLowerCase()}'),
         duration: const Duration(seconds: 2),
       ));
+  }
+
+  /// 罐子快滿時的提醒。
+  ///
+  /// 超過上限時最舊的球會被收走。與其讓它默默消失，
+  /// 不如先說一聲，讓使用者有機會回頭看、或自己決定保存多久。
+  Widget _nearFullHint(bool zh, ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 2, 20, 6),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline_rounded,
+              size: 15, color: theme.colorScheme.onSurfaceVariant),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              zh
+                  ? '罐子快滿了（${_all.length}/${MemoryBallStore.maxBalls}），滿了之後最舊的會被收走。'
+                  : 'The jar is almost full (${_all.length}/${MemoryBallStore.maxBalls}). The oldest will be removed after that.',
+              style: GoogleFonts.nunitoSans(
+                fontSize: 12,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _empty(bool zh, ThemeData theme) {

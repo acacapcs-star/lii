@@ -5,7 +5,8 @@
 //
 // 對應規則沿用你 risk_engine 裡本來就有的門檻，不另外發明：
 //   ERS >= 70 → safety flow（序曲壓成 5 秒 + 求助入口）
-//   ERS >= 40 → check-in（序曲縮到 60%）
+//   ERS >= 45 → check-in（序曲縮到 60%）
+//   門檻和 ers_engine 一致：0–44 綠、45–69 黃、70 以上紅。
 //   其餘      → daily（完整序曲）
 // ═══════════════════════════════════════════════════════════
 
@@ -19,6 +20,7 @@ import '../pacer/breath_plan.dart';
 import 'lii_breath_page.dart';
 import 'package:go_router/go_router.dart';
 import 'lii_orb.dart';
+import 'luna_orb.dart' show GlassTone;
 import '../crystals/crystal_collection_page.dart';
 
 /// 入口按鈕的位置。撞到你其他浮動元件的話改這裡就好。
@@ -41,7 +43,7 @@ const double kJoyBottom = 110;
 /// ERS 分數 → 用哪種模式出現。門檻跟 risk_engine 一致。
 LiiBreathMode liiModeFromErs(int ers) {
   if (ers >= 70) return LiiBreathMode.safety;
-  if (ers >= 40) return LiiBreathMode.checkIn;
+  if (ers >= 45) return LiiBreathMode.checkIn;
   return LiiBreathMode.daily;
 }
 
@@ -49,14 +51,15 @@ LiiBreathMode liiModeFromErs(int ers) {
 ///
 /// 低落和焦慮要分開，因為處理方式是相反的：
 /// 焦慮用長吐氣壓交感神經；低落用長吐氣只會更往下沉，要等長節奏提振。
-// BREATH_ERS 用 ERS 分數決定節奏，門檻跟首頁表情顏色完全一樣
-// （LumiTheme.riskColor：<=40 綠 / 41-70 黃 / >70 紅）。
+// BREATH_ERS 用 ERS 分數決定節奏，門檻和 ers_engine、首頁狀態文字同一組：
+// 0–44 綠 / 45–69 黃 / 70 以上紅。以前這裡是 40 / 70，
+// 導致 70 分時序曲用安全模式、節奏卻是黃燈的，同一個分數兩種說法。
 //   綠 calm     4-2-4-2 -> 4-4-4-4   維持
 //   黃 low      3-0-3-0 -> 4-0-4-0   短促，先讓身體動起來
 //   紅 anxious  4-2-4-0 -> 4-7-8-0   吐氣拉長，把喚起度壓下來
 BreathMood liiMoodFromErs(int ers) {
-  if (ers <= 40) return BreathMood.calm;
-  if (ers <= 70) return BreathMood.low;
+  if (ers < 45) return BreathMood.calm;
+  if (ers < 70) return BreathMood.low;
   return BreathMood.anxious;
 }
 
@@ -120,11 +123,15 @@ class _LiiBreathButtonState extends State<LiiBreathButton>
     _ticker = createTicker(_tick)..start();
     SharedPreferences.getInstance().then((p) {
       final v = p.getDouble('lii_orb_size');
+      final ti = p.getInt(kOrbTonePrefKey);
       final x = p.getDouble('lii_orb_x');
       final y = p.getDouble('lii_orb_y');
       if (!mounted) return;
       setState(() {
         if (v != null) _size = v.clamp(kLiiOrbMin, kLiiOrbMax);
+        if (ti != null && ti >= 0 && ti < GlassTone.values.length) {
+          _tone = GlassTone.values[ti];
+        }
         if (x != null && y != null) _pos = Offset(x, y);
       });
     });
@@ -365,7 +372,18 @@ class _LiiBreathButtonState extends State<LiiBreathButton>
       mood: mood,
       mode: mode,
       onAskForHelp: widget.onAskForHelp,
-    );
+    ).then((_) => _reloadTone());
+  }
+
+  /// 首頁浮球的顏色 = 呼吸頁最後選的那顆水晶。
+  /// 解鎖的成就要在首頁看得到，不然練習換來的顏色只存在呼吸頁裡。
+  GlassTone _tone = GlassTone.ice;
+
+  Future<void> _reloadTone() async {
+    final p = await SharedPreferences.getInstance();
+    final i = p.getInt(kOrbTonePrefKey);
+    if (!mounted || i == null || i < 0 || i >= GlassTone.values.length) return;
+    setState(() => _tone = GlassTone.values[i]);
   }
 
   // CARD_PREVIEW 長按 → Pacer Lift（你原本就有的那個）
@@ -498,6 +516,7 @@ class _LiiBreathButtonState extends State<LiiBreathButton>
             },
             child: IgnorePointer(
               child: LiiOrb(
+                tone: _tone,
                 breath: _b,
                 split: _split,
                 amplitude: 1,

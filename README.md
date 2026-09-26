@@ -531,7 +531,7 @@ The bar lives in `lib/core/widgets/lii_bottom_nav.dart`. The side drawer is kept
 | Exhibition mode | Settings has a switch that unlocks all six crystals so judges can view them. Off by default — crystals are earned by breathing, never bought or drawn |
 | Weekly Persona | One of six animals (otter, capybara, turtle, squirrel, bear, butterfly) computed from that week's actual mood / stress / energy records. **No quiz to fill in** |
 
-The home screen also carries a draggable Luna Pacer orb (night sky on one side, coloured glass on the other, turned by swiping) and the crystal collection: six crystals — ice from the start, sea at 3 breathing sessions, amethyst at 7, amber at 14, moss at a 3-day streak, dawn at 7, with a hint showing how far the next one is. Double-tapping the orb opens a Joy-Con style controller pinned to the bottom centre: the stick moves the orb (further push, faster movement), holding + or − resizes continuously, and ◎ returns it to the default spot. Size ranges from 44 to 180, and both size and position are remembered.
+The home screen also carries a draggable Luna Pacer orb (night sky on one side, coloured glass on the other, turned by swiping) and the crystal collection: six crystals — ice from the start, sea at 3 breathing sessions, amethyst at 7, amber at 14, moss at a 3-day streak, dawn at 7, with a hint showing how far the next one is. The breathing mode the orb opens follows ERS, using the same bands as the ERS engine and the home status text (0–44 green, 45–69 amber, 70 and above red). Double-tapping the orb opens a Joy-Con style controller pinned to the bottom centre: the stick moves the orb (further push, faster movement), holding + or − resizes continuously, and ◎ returns it to the default spot. Size ranges from 44 to 180, and both size and position are remembered.
 
 ### Reports
 
@@ -1046,7 +1046,7 @@ Six emotion balls sit above the jar; there is no "+" step. The flow:
 After a note, Luna replies with one or two sentences (`gleam_reply.dart`), stored in the ball's `reply` field so it is still there when the ball is opened, with an "Another" option.
 
 - **With an AI key**: each call picks a random angle (acknowledge the feeling, notice what the user did, normalise the feeling, one small next step, respond to a detail) and tells the model its previous reply so it does not open the same way. Replies are kept to one or two sentences: no advice lists, no diagnosis, at most one question.
-- **Without a key, or if the call fails**: a local line, three per emotion group, chosen at random and never the same as the previous one.
+- **Without a key, or if the call fails**: a local line, eight per emotion group, chosen at random and never the same as the previous one.
 - **If the note contains high-risk wording**: nothing is sent to the AI. The app's existing safety message (`aiHighRiskSafetyReply`) is shown, then `/safety` opens. The check is `RiskEngine.mentionsHighRisk()`, sharing its keyword list with `evaluateDay`.
 
 ### Privacy: does the note leave the device
@@ -1065,14 +1065,14 @@ With the switch off, a note containing high-risk wording still gets the local sa
 
 - **Empty the jar**: available from the top bar, confirmed once, with a 6-second undo.
 - **How long to keep**: the user chooses "Keep everything" (default), "Keep one semester" (126 days) or "Keep one month". Nothing is deleted automatically by default, because the balls are the user's own and the app should not decide what to forget. Switching to a shorter period first says how many balls will be removed and waits for confirmation.
-- A separate cap of 500 balls still removes the oldest when exceeded; a warning before the cap is planned.
+- The jar holds up to 500 balls. From 450 the page warns that it is nearly full; only past the cap is the oldest removed, never silently.
 
 ### The same six glass colours, three rules
 
 | Where | How the colour is decided | Why |
 |---|---|---|
 | Pacer Lift | Chosen freely by the user | It is a line they kept; its look is theirs |
-| Luna Pacer breathing page | Only unlocked crystals can be chosen | The colour is earned by practice, not picked in settings |
+| Luna Pacer breathing page | Only unlocked crystals; the choice is remembered and the home orb takes the same colour | The colour is earned by practice, and what is earned should be visible |
 | Gleam | Set by the emotion group, not chosen | The colour carries meaning: a row of amber is a week of tiredness |
 
 ## Project structure

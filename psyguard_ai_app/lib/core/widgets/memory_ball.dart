@@ -276,15 +276,15 @@ extension JarKeepX on JarKeep {
       };
 
   String label(bool zh) => switch (this) {
-        JarKeep.forever => zh ? '一直保存' : 'Keep everything',
-        JarKeep.semester => zh ? '保存一學期' : 'Keep one semester',
-        JarKeep.month => zh ? '保存一個月' : 'Keep one month',
+        JarKeep.forever => zh ? '一直留著' : 'Keep everything',
+        JarKeep.semester => zh ? '留一學期' : 'Keep one semester',
+        JarKeep.month => zh ? '留一個月' : 'Keep one month',
       };
 
   String hint(bool zh) => switch (this) {
-        JarKeep.forever => zh ? '直到你自己清空為止' : 'Until you empty the jar yourself',
-        JarKeep.semester => zh ? '約 18 週，看得出開學到期末的變化' : 'About 18 weeks, a whole term',
-        JarKeep.month => zh ? '只留最近的，罐子比較輕' : 'Only the recent ones',
+        JarKeep.forever => zh ? '直到你自己清空' : 'Until you empty the jar yourself',
+        JarKeep.semester => zh ? '大約 18 週，從開學看到期末' : 'About 18 weeks, a whole term',
+        JarKeep.month => zh ? '只留最近的，罐子輕一點' : 'Only the recent ones',
       };
 }
 
@@ -300,6 +300,10 @@ class MemoryBallStore {
   /// 幾千顆球的 JSON 會讓 App 啟動變慢。
   /// 搬到 Drift 之後這個限制就可以拿掉。
   static const _maxBalls = 500;
+
+  /// 罐子的總上限，和開始提醒「快滿了」的數量
+  static const int maxBalls = _maxBalls;
+  static const int nearFull = 450;
 
   static const _keepKey = 'gleam_keep';
 

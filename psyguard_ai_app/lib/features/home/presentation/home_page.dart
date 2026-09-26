@@ -587,9 +587,10 @@ class _HomeContentState extends State<_HomeContent> {
     final riskColor = LumiTheme.riskColor(_riskScore);
     // ERS_LABEL 文字也跟著 ERS，跟上面的顏色用同一組門檻。
     // 以前讀的是累積紅燈次數，所以 ERS 68（黃）還是寫 Doing okay。
-    final riskLabel = _riskScore <= 40
+    // 門檻和 ers_engine 一致：0–44 綠、45–69 黃、70 以上紅
+    final riskLabel = _riskScore < 45
         ? copy.statusGood
-        : (_riskScore <= 70 ? copy.statusCare : copy.statusSupport);
+        : (_riskScore < 70 ? copy.statusCare : copy.statusSupport);
 
     final exploreCards = [
       _cardData(
