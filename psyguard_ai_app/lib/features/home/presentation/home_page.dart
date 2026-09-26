@@ -1572,10 +1572,13 @@ class _SunMoonToggle extends ConsumerWidget {
             ? [
                 (BgColorChoice.navyDark, '深藍', const Color(0xFF0D1B2A)),
                 (BgColorChoice.forestDark, '夜紫', const Color(0xFF2C2442)),
+                (BgColorChoice.pureBlack, '純黑', const Color(0xFF070707)),
               ]
             : [
                 (BgColorChoice.blueLight, '淺藍', const Color(0xFFE3F2FD)),
                 (BgColorChoice.greenLight, '淺綠', const Color(0xFFE8F5E9)),
+                (BgColorChoice.pinkLight, '淺粉', const Color(0xFFFDF2F6)),
+                (BgColorChoice.rainbowLight, '彩虹', const Color(0xFFFBF4FA)),
               ];
         return SafeArea(
           child: Padding(
@@ -1601,7 +1604,18 @@ class _SunMoonToggle extends ConsumerWidget {
                             width: 56,
                             height: 56,
                             decoration: BoxDecoration(
-                              color: opt.$3,
+                              // 彩虹的底色很淡，單色圓點看不出是彩虹，用一圈漸層示意
+                              color: opt.$1 == BgColorChoice.rainbowLight ? null : opt.$3,
+                              gradient: opt.$1 == BgColorChoice.rainbowLight
+                                  ? const SweepGradient(colors: [
+                                      Color(0xFFFFD6E0),
+                                      Color(0xFFFFF1C9),
+                                      Color(0xFFD9F5E3),
+                                      Color(0xFFD6ECFF),
+                                      Color(0xFFE9DDFF),
+                                      Color(0xFFFFD6E0),
+                                    ])
+                                  : null,
                               shape: BoxShape.circle,
                               border: Border.all(color: Colors.grey.shade300, width: 1.5),
                             ),

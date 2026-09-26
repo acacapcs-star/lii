@@ -47,9 +47,10 @@ git log --since=2026-07-10 --pretty=format:"%ad  %an  %s" --date=short
 ```
 
 **Scale**: roughly 36,400 lines of Dart under `lib/` (excluding generated
-files), plus 14 test files totalling about 934 lines — covering the risk
-engine, database, settings service, export service, four page widget tests and
-one integration test.
+files), plus 18 test files totalling about 1,170 lines — covering the risk
+engine, the ERS engine, database, settings service, export service, Gleam's data
+and retention rules, Luna's offline replies, the orb's risk bands, four page
+widget tests and one integration test.
 
 ---
 
@@ -1085,7 +1086,7 @@ lii/
 ├── AGENTS.md
 └── psyguard_ai_app/
     ├── pubspec.yaml
-    ├── test/                                   14 test files · 934 lines
+    ├── test/                                   18 test files · about 1,170 lines
     │   ├── config/
     │   │   ├── android_manifest_test.dart
     │   │   └── web_assets_test.dart
@@ -1208,8 +1209,7 @@ lii/
             │   ├── cumulative_risk_engine.dart 12 stages · asymmetric hysteresis
             │   ├── silence_detector.dart       3 days / 7 days
             │   ├── incongruence_detector.dart  semantic-emotional incongruence
-            │   ├── ers_percentile_widget.dart  withdrawn at the red tier
-            │   └── ers_test.dart
+            │   └── ers_percentile_widget.dart  withdrawn at the red tier
             ├── ai_safety/
             │   └── ai_safety_models.dart       three tiers · notification needs three days
             ├── privacy/

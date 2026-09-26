@@ -34,7 +34,7 @@ git shortlog -sn --all
 git log --since=2026-07-10 --pretty=format:"%ad  %an  %s" --date=short
 ```
 
-**規模**:`lib/` 約 36,400 行 Dart(不含產生檔);另有 14 個測試檔約 934 行,涵蓋 risk engine、資料庫、設定服務、匯出服務、四個頁面 widget test 與一個 integration test。
+**規模**:`lib/` 約 36,400 行 Dart(不含產生檔);另有 18 個測試檔約 1,170 行,涵蓋 risk engine、ERS 引擎、資料庫、設定服務、匯出服務、微光的資料與保存規則、Luna 的離線回應、浮球的風險門檻、四個頁面 widget test 與一個 integration test。
 
 ---
 
@@ -919,7 +919,7 @@ lii/
 ├── AGENTS.md
 └── psyguard_ai_app/
     ├── pubspec.yaml
-    ├── test/                                   14 個測試檔 · 934 行
+    ├── test/                                   18 個測試檔 · 約 1,170 行
     │   ├── config/
     │   │   ├── android_manifest_test.dart
     │   │   └── web_assets_test.dart
@@ -1041,8 +1041,7 @@ lii/
             │   ├── cumulative_risk_engine.dart 12 階 · 非對稱遲滯
             │   ├── silence_detector.dart       3 天 / 7 天
             │   ├── incongruence_detector.dart  語意情緒不一致
-            │   ├── ers_percentile_widget.dart  紅燈時撤下
-            │   └── ers_test.dart
+            │   └── ers_percentile_widget.dart  紅燈時撤下
             ├── ai_safety/
             │   └── ai_safety_models.dart       三級介入 · 通報需連續三天
             ├── privacy/

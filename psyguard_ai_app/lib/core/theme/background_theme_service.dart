@@ -135,11 +135,23 @@ class BackgroundThemeController extends StateNotifier<BackgroundThemeState> {
 
   Future<void> toggleMode() async {
     final newMode = state.mode == BgMode.light ? BgMode.dark : BgMode.light;
-    final isGreen = state.colorChoice == BgColorChoice.greenLight ||
-        state.colorChoice == BgColorChoice.forestDark;
+    // 日夜切換時換到「同一家族」的顏色，切過去再切回來不會跳色：
+    //   淺藍 ↔ 深藍、淺粉 ↔ 夜紫、彩虹 ↔ 純黑
+    // 淺綠沒有對應的深色（深墨綠已經換成夜紫），切到深色時用深藍。
+    const toDark = {
+      BgColorChoice.blueLight: BgColorChoice.navyDark,
+      BgColorChoice.greenLight: BgColorChoice.navyDark,
+      BgColorChoice.pinkLight: BgColorChoice.forestDark,
+      BgColorChoice.rainbowLight: BgColorChoice.pureBlack,
+    };
+    const toLight = {
+      BgColorChoice.navyDark: BgColorChoice.blueLight,
+      BgColorChoice.forestDark: BgColorChoice.pinkLight,
+      BgColorChoice.pureBlack: BgColorChoice.rainbowLight,
+    };
     final newColor = newMode == BgMode.dark
-        ? (isGreen ? BgColorChoice.forestDark : BgColorChoice.navyDark)
-        : (isGreen ? BgColorChoice.greenLight : BgColorChoice.blueLight);
+        ? (toDark[state.colorChoice] ?? BgColorChoice.navyDark)
+        : (toLight[state.colorChoice] ?? BgColorChoice.blueLight);
     state = state.copyWith(mode: newMode, colorChoice: newColor);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_modeKey, newMode == BgMode.dark ? 'dark' : 'light');
