@@ -8,7 +8,6 @@ import '../../../core/security/secret_swipe_shell.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_language.dart';
 import '../../../core/security/local_settings_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 enum NoteItemType { text, bullet, checkbox }
 

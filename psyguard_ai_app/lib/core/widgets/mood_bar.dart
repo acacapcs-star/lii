@@ -947,7 +947,6 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
     final zh = AppStrings.of(ref.watch(appLanguageControllerProvider)).isZhTw;
     final theme = Theme.of(context);
     final grouped = MemoryBallStore.groupByDay(_filtered);
-    final days = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
 
     // 氛圍背景跟首頁同一套——罐子浮在夜空前面，
     // 玻璃的半透明才看得出效果。貼在純色上的話玻璃感出不來。

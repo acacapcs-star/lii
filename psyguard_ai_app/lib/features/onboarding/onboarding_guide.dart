@@ -51,8 +51,8 @@ Future<void> showOnboarding(BuildContext context) {
 /// onboarding 之後告知 AI 回覆語言這件事，只跳一次。
 Future<void> showAiLangNotice(BuildContext context) async {
   if (await AiLangNoticeSeen.get()) return;
-  if (!context.mounted) return;
   await AiLangNoticeSeen.mark();
+  if (!context.mounted) return;
 
   final zh = Localizations.localeOf(context).languageCode == 'zh';
   await showDialog<void>(

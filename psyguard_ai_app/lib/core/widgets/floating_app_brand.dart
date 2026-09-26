@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'app_brand_icon.dart';
 import 'mood_fall_overlay.dart';
 import 'snow_cap.dart';
 import '../theme/mood_theme_service.dart';

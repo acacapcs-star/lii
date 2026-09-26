@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../core/security/local_settings_service.dart';
 import '../features/chat/presentation/chat_page.dart';
 import '../features/checkin/presentation/checkin_history_page.dart';
 import '../features/checkin/presentation/checkin_page.dart';

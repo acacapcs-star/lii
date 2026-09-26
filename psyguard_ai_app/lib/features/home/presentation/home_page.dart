@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 
 import '../../../core/widgets/comet_sky.dart';
 import '../../../core/widgets/lii_bottom_nav.dart';
-import 'encouragement_banner.dart';
 import '../../ers/silence_detector.dart';
 import '../../ers/cumulative_risk_engine.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -24,10 +23,8 @@ import '../../../core/risk_engine/risk_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/storage/database_provider.dart';
 import '../../../core/storage/app_database.dart';
-import '../../../core/widgets/app_brand_icon.dart';
 import '../../../core/widgets/floating_app_brand.dart';
 import '../../../core/widgets/mood_fall_overlay.dart';
-import '../../../core/widgets/floating_pacer.dart';
 import '../../../core/widgets/snow_cap.dart';
 import '../../../core/widgets/paw_tap.dart';
 import '../../../core/widgets/fish_pond.dart';

@@ -18,7 +18,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../pacer/breath_plan.dart';
 import 'lii_breath_page.dart';
-import 'package:go_router/go_router.dart';
 import 'lii_orb.dart';
 import 'luna_orb.dart' show GlassTone;
 import '../crystals/crystal_collection_page.dart';
@@ -468,6 +467,8 @@ class _LiiBreathButtonState extends State<LiiBreathButton>
             },
             // 點兩下：跳出大小拉桿
             onDoubleTap: _openSizeSlider,
+            // 長按：水晶收藏（README 寫的行為，之前手勢沒接上）
+            onLongPress: _openCard,
             onPanStart: (d) {
               _mode = '';
               _start = d.localPosition;
