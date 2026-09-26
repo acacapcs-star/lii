@@ -1573,7 +1573,7 @@ class _SunMoonToggle extends ConsumerWidget {
         final options = isDark
             ? [
                 (BgColorChoice.navyDark, '深藍', const Color(0xFF0D1B2A)),
-                (BgColorChoice.forestDark, '深墨綠', const Color(0xFF0D2818)),
+                (BgColorChoice.forestDark, '夜紫', const Color(0xFF2C2442)),
               ]
             : [
                 (BgColorChoice.blueLight, '淺藍', const Color(0xFFE3F2FD)),

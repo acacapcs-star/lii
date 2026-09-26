@@ -96,7 +96,7 @@ class AppStrings {
       : 'Voice is unavailable. Please check permission settings.';
   String get ttsResume => isZhTw ? '繼續播放' : 'Resume';
   String get ttsPause => isZhTw ? '暫停' : 'Pause';
-  String get ttsStop => isZhTw ? '終止' : 'Stop';
+  String get ttsStop => isZhTw ? '停止' : 'Stop';
   String get ttsRead => isZhTw ? '朗讀' : 'Read aloud';
   String get highRiskDetected =>
       isZhTw ? '偵測到高風險訊號' : 'High-risk signal detected';
@@ -160,7 +160,7 @@ class AppStrings {
   String get breathing478Desc => isZhTw
       ? '吸氣 4 秒、閉氣 7 秒、吐氣 8 秒，做 3 回合。'
       : 'Inhale for 4 seconds, hold for 7, exhale for 8. Repeat 3 rounds.';
-  String get grounding54321 => isZhTw ? '5-4-3-2-1 著地' : '5-4-3-2-1 Grounding';
+  String get grounding54321 => isZhTw ? '5-4-3-2-1 五感回神' : '5-4-3-2-1 Grounding';
   String get grounding54321Desc => isZhTw
       ? '說出你看見 5 樣、摸到 4 樣、聽到 3 樣、聞到 2 樣、感受 1 樣。'
       : 'Name 5 things you see, 4 you touch, 3 you hear, 2 you smell, and 1 you feel.';
@@ -210,7 +210,7 @@ class AppStrings {
   String get noTrendDataBody => isZhTw
       ? '先完成一次「筆記紀錄」或「睡眠紀錄」，就能開始看到你的 7/14/30 天變化。'
       : 'Complete one check-in or sleep log to start seeing your 7/14/30-day changes.';
-  String get doCheckin => isZhTw ? '去做覺察' : 'Do Check-in';
+  String get doCheckin => isZhTw ? '去記錄心情' : 'Do Check-in';
   String get recordSleep => isZhTw ? '記錄睡眠' : 'Record Sleep';
   String get moodPercentage => isZhTw ? '心情百分比' : 'Mood Percentage';
   String get sleepHoursLabel => isZhTw ? '睡眠時長' : 'Sleep Hours';
@@ -246,7 +246,7 @@ class AppStrings {
       ? '將近 $days 天的心情、睡眠、風險趨勢摘要匯出為 JSON，可分享給專業人員。'
       : 'Export the last $days days of mood, sleep, and risk trends as JSON for sharing with professionals.';
   String get exporting => isZhTw ? '匯出中...' : 'Exporting...';
-  String get generateAndSave => isZhTw ? '產生 & 儲存' : 'Generate & Save';
+  String get generateAndSave => isZhTw ? '產生並儲存' : 'Generate & Save';
   String get reportDisclaimer => isZhTw
       ? '報告僅供參考，非醫療診斷。'
       : 'This report is for reference only, not medical diagnosis.';

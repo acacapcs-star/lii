@@ -79,7 +79,7 @@ class ToolsPage extends ConsumerWidget {
     ),
     ToolItem(
       id: 'grounding_54321',
-      name: '5-4-3-2-1 著地',
+      name: '5-4-3-2-1 五感回神',
       description: '用五種感官回到現在。',
       whenToUse: '腦袋停不下來、覺得自己飄走的時候',
       how: '用五種感官把注意力從念頭拉回身體所在的地方。'
@@ -184,8 +184,9 @@ class ToolsPage extends ConsumerWidget {
                     const SizedBox(height: 3),
                     Text(
                       zh
-                          ? '練習留下的都在這裡'
-                          : 'Everything your practice left behind',
+                          // 練習不會留下球，只有叫出名字的感覺會
+                          ? '你叫出名字的感覺，都留在這裡'
+                          : 'Every feeling you named stays here',
                       style: TextStyle(
                         fontSize: 12.5,
                         color: theme.colorScheme.onSurfaceVariant,
@@ -1569,7 +1570,7 @@ class _GroundingLogPageState extends ConsumerState<GroundingLogPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          zh ? '著地紀錄' : 'Grounding log',
+          zh ? '回神紀錄' : 'Grounding log',
           style: TextStyle(
               fontSize: 17, fontWeight: FontWeight.w600, color: onCard),
         ),

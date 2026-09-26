@@ -9,6 +9,8 @@
 //   其餘      → daily（完整序曲）
 // ═══════════════════════════════════════════════════════════
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,6 +25,18 @@ import '../crystals/crystal_collection_page.dart';
 const double kLiiEntryRight = 18;
 const double kLiiEntryBottom = 350;
 const double kLiiEntrySize = 110;
+
+/// 球可以調的大小範圍。
+///
+/// 上限從 240 收到 180：之前存到過大的尺寸，整顆球會蓋住首頁，
+/// 只好把讀取存檔整個關掉。現在讀回來時一律夾在這個範圍裡，
+/// 存檔就可以重新打開了。
+const double kLiiOrbMin = 44;
+const double kLiiOrbMax = 180;
+
+/// Joy-Con 控制器固定在畫面下方中間，離底部多遠。
+/// 撞到底部導覽列的話，把這個數字調大。
+const double kJoyBottom = 110;
 
 /// ERS 分數 → 用哪種模式出現。門檻跟 risk_engine 一致。
 LiiBreathMode liiModeFromErs(int ers) {
@@ -110,7 +124,7 @@ class _LiiBreathButtonState extends State<LiiBreathButton>
       final y = p.getDouble('lii_orb_y');
       if (!mounted) return;
       setState(() {
-        // if (v != null) _size = v; // 暫時不讀存檔，避免讀回過大的尺寸
+        if (v != null) _size = v.clamp(kLiiOrbMin, kLiiOrbMax);
         if (x != null && y != null) _pos = Offset(x, y);
       });
     });
@@ -119,7 +133,203 @@ class _LiiBreathButtonState extends State<LiiBreathButton>
   @override
   void dispose() {
     _ticker.dispose();
+    _hideSlider?.cancel();
+    _stickTimer?.cancel();
+    _zoomTimer?.cancel();
     super.dispose();
+  }
+
+  // ── 大小拉桿 ─────────────────────────────────────────
+  //
+  // 四個角可以拉，但把手是透明的，第一次用的人不會知道。
+  // 點兩下球就跳出一條拉桿，看得到、也調得準；
+  // 停手 3 秒自己收起來，不會一直留在首頁上。
+  bool _sliderOpen = false;
+  Timer? _hideSlider;
+
+  void _openSizeSlider() {
+    setState(() => _sliderOpen = true);
+    _keepSliderOpen();
+  }
+
+  void _keepSliderOpen() {
+    _hideSlider?.cancel();
+    _hideSlider = Timer(const Duration(seconds: 3), () {
+      if (mounted) setState(() => _sliderOpen = false);
+    });
+  }
+
+  // ── Joy-Con 控制器 ───────────────────────────────────
+  //
+  // 左邊是搖桿：往哪推球就往哪走，推越多走越快，放開就停。
+  // 右邊兩顆鍵：按住「＋」一直放大、按住「－」一直縮小。
+  // 小的 ◎ 是回到原本右下角的位置。
+  Timer? _stickTimer;
+  Timer? _zoomTimer;
+  Offset _stick = Offset.zero; // 每個方向 -1 ~ 1
+  double _curLeft = 0, _curTop = 0;
+
+  static const double _stickR = 32;
+
+  void _stickStart() {
+    _hideSlider?.cancel();
+    _stickTimer?.cancel();
+    _stickTimer = Timer.periodic(const Duration(milliseconds: 16), (_) {
+      if (_stick == Offset.zero || !mounted) return;
+      setState(() => _pos = Offset(_curLeft, _curTop) + _stick * 6);
+    });
+  }
+
+  void _stickMove(Offset local) {
+    var v = (local - const Offset(_stickR, _stickR)) / _stickR;
+    if (v.distance > 1) v = v / v.distance;
+    setState(() => _stick = v);
+  }
+
+  void _stickEnd() {
+    _stickTimer?.cancel();
+    setState(() => _stick = Offset.zero);
+    _savePos();
+    _keepSliderOpen();
+  }
+
+  void _zoomOnce(double d) =>
+      setState(() => _size = (_size + d).clamp(kLiiOrbMin, kLiiOrbMax));
+
+  void _zoomStart(double d) {
+    _hideSlider?.cancel();
+    _zoomOnce(d);
+    _zoomTimer?.cancel();
+    _zoomTimer = Timer.periodic(
+        const Duration(milliseconds: 60), (_) => _zoomOnce(d));
+  }
+
+  void _zoomEnd() {
+    _zoomTimer?.cancel();
+    _saveSize();
+    _keepSliderOpen();
+  }
+
+  /// 回到原本的預設位置（右下角）
+  Future<void> _resetPos() async {
+    setState(() => _pos = null);
+    final p = await SharedPreferences.getInstance();
+    await p.remove('lii_orb_x');
+    await p.remove('lii_orb_y');
+    _keepSliderOpen();
+  }
+
+  /// Joy-Con 上的圓鍵。按住會一直觸發（放大縮小用）。
+  Widget _joyButton(IconData icon, String tip,
+      {required VoidCallback onDown, VoidCallback? onUp, double size = 32}) {
+    return Tooltip(
+      message: tip,
+      child: GestureDetector(
+        onTapDown: (_) => onDown(),
+        onTapUp: (_) => onUp?.call(),
+        onTapCancel: () => onUp?.call(),
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.white.withValues(alpha: 0.14),
+            border: Border.all(color: Colors.white24),
+          ),
+          child: Icon(icon, size: size * 0.5, color: Colors.white),
+        ),
+      ),
+    );
+  }
+
+  Widget _sizeSlider({required double orbLeft, required double orbTop,
+      required double w, required double h}) {
+    const panelW = 168.0, panelH = 84.0;
+    // 固定在畫面下方中間，不跟著球跑——球移動時控制器不會跟著晃
+    final left = ((w - panelW) / 2).clamp(8.0, w);
+    final top = (h - panelH - kJoyBottom).clamp(8.0, h);
+    const knob = 28.0;
+    return Positioned(
+      left: left,
+      top: top,
+      width: panelW,
+      height: panelH,
+      child: Container(
+        // Joy-Con 的膠囊外型
+        decoration: BoxDecoration(
+          color: const Color(0xFF1B2233).withValues(alpha: 0.88),
+          borderRadius: BorderRadius.circular(panelH / 2),
+          border: Border.all(color: Colors.white12),
+          boxShadow: const [
+            BoxShadow(color: Colors.black38, blurRadius: 14, offset: Offset(0, 6)),
+          ],
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Row(
+          children: [
+            // 搖桿
+            GestureDetector(
+              onPanStart: (d) {
+                _stickStart();
+                _stickMove(d.localPosition);
+              },
+              onPanUpdate: (d) => _stickMove(d.localPosition),
+              onPanEnd: (_) => _stickEnd(),
+              onPanCancel: _stickEnd,
+              child: SizedBox(
+                width: _stickR * 2,
+                height: _stickR * 2,
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black.withValues(alpha: 0.35),
+                        border: Border.all(color: Colors.white24),
+                      ),
+                    ),
+                    Positioned(
+                      left: _stickR - knob / 2 + _stick.dx * (_stickR - knob / 2),
+                      top: _stickR - knob / 2 + _stick.dy * (_stickR - knob / 2),
+                      width: knob,
+                      height: knob,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            center: Alignment(-0.3, -0.35),
+                            colors: [Color(0xFFFFE9A8), Color(0xFFFFB84A)],
+                          ),
+                          boxShadow: [
+                            BoxShadow(color: Color(0x66FFD166), blurRadius: 10),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const Spacer(),
+            // 放大縮小
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _joyButton(Icons.add_rounded, '放大',
+                    onDown: () => _zoomStart(4), onUp: _zoomEnd),
+                const SizedBox(height: 4),
+                _joyButton(Icons.remove_rounded, '縮小',
+                    onDown: () => _zoomStart(-4), onUp: _zoomEnd),
+              ],
+            ),
+            const SizedBox(width: 8),
+            // 回到原位
+            _joyButton(Icons.center_focus_strong_outlined, '回到原位',
+                onDown: _resetPos, size: 24),
+          ],
+        ),
+      ),
+    );
   }
 
   void _tick(Duration now) {
@@ -195,7 +405,7 @@ class _LiiBreathButtonState extends State<LiiBreathButton>
           final dx = left ? -d.delta.dx : d.delta.dx;
           final dy = top ? -d.delta.dy : d.delta.dy;
           setState(() {
-            _size = (_size + (dx + dy)).clamp(40.0, 240.0);
+            _size = (_size + (dx + dy)).clamp(kLiiOrbMin, kLiiOrbMax);
           });
         },
         onPanEnd: (_) => _saveSize(),
@@ -224,6 +434,8 @@ class _LiiBreathButtonState extends State<LiiBreathButton>
           Offset(w - kLiiEntryRight - _size, h - kLiiEntryBottom - _size);
       final left = pos.dx.clamp(0.0, (w - _size).clamp(0.0, w));
       final top = pos.dy.clamp(0.0, (h - _size).clamp(0.0, h));
+      _curLeft = left;
+      _curTop = top;
 
       return Stack(children: [
         Positioned(
@@ -236,6 +448,8 @@ class _LiiBreathButtonState extends State<LiiBreathButton>
             onTapUp: (_) {
               if (_mode.isEmpty) _open();
             },
+            // 點兩下：跳出大小拉桿
+            onDoubleTap: _openSizeSlider,
             onPanStart: (d) {
               _mode = '';
               _start = d.localPosition;
@@ -265,7 +479,7 @@ class _LiiBreathButtonState extends State<LiiBreathButton>
                   case 'resize':
                     final gx = _flipLeft ? -d.delta.dx : d.delta.dx;
                     final gy = _flipTop ? -d.delta.dy : d.delta.dy;
-                    _size = (_size + gx + gy).clamp(44.0, 240.0);
+                    _size = (_size + gx + gy).clamp(kLiiOrbMin, kLiiOrbMax);
                     break;
                   case 'split':
                     _split.dragBy(d.delta.dx, _size);
@@ -292,6 +506,8 @@ class _LiiBreathButtonState extends State<LiiBreathButton>
             ),
           ),
         ),
+        if (_sliderOpen)
+          _sizeSlider(orbLeft: left, orbTop: top, w: w, h: h),
       ]);
     });
   }

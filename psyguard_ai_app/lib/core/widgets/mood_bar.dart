@@ -53,6 +53,7 @@ import '../security/local_settings_service.dart';
 import 'luna_orb.dart' show GlassTone, GlassToneX;
 import 'memory_ball.dart';
 import 'gleam_reply.dart';
+import '../network/app_config_controller.dart' show appConfigProvider;
 import '../risk_engine/risk_engine.dart';
 import '../network/ai_local_messages.dart'
     show aiHighRiskSafetyReply, aiHighRiskSafetyReplyEn;
@@ -916,6 +917,8 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
   }
 
   Future<void> _load() async {
+    // 先依使用者選的保存時間整理一次，再讀出來
+    await MemoryBallStore.applyKeepRule();
     // 兩個查詢並行——它們互不依賴
     final results = await Future.wait([
       MemoryBallStore.load(),
@@ -983,6 +986,11 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
               icon: const Icon(Icons.delete_sweep_outlined),
               onPressed: () => _clearJar(zh),
             ),
+          IconButton(
+            tooltip: zh ? '保存多久' : 'How long to keep',
+            icon: const Icon(Icons.hourglass_bottom_rounded),
+            onPressed: () => _chooseKeep(zh),
+          ),
           if (_all.isNotEmpty)
             IconButton(
               tooltip: zh ? (_stacked ? '攤開來看' : '同色疊起來') : 'Toggle stacking',
@@ -1253,13 +1261,17 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
 
     // 像寫便條一樣寫下想寫的話。可以不寫，直接留下
     final label = picked.isEmpty ? g.label(zh) : picked;
-    final memo = await showModalBottomSheet<String>(
+    // 有設定 AI 金鑰時，便條才會送出去；沒有的話 Luna 用本機的句子
+    final aiOn = ref.read(appConfigProvider).isConfigured;
+    final res = await showModalBottomSheet<(String, bool)>(
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
-      builder: (_) => _MemoSheet(tone: g.tone, title: label, zh: zh),
+      builder: (_) =>
+          _MemoSheet(tone: g.tone, title: label, zh: zh, aiOn: aiOn),
     );
-    if (memo == null || !mounted) return;
+    if (res == null || !mounted) return;
+    final (memo, askLuna) = res;
     if (picked.isNotEmpty) await recordEmotionWord(picked);
 
     _leaving = true;
@@ -1287,7 +1299,10 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
             curve: Curves.easeOut);
       }
 
-      if (ball.memo.isEmpty) {
+      // 沒寫字、或選了不讓 Luna 回應，就只留下球。
+      // 但有高風險字眼時一定走下面的安全回應——那段不會送去 AI。
+      if (ball.memo.isEmpty ||
+          (!askLuna && !RiskEngine.mentionsHighRisk(ball.memo))) {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(
@@ -1387,6 +1402,84 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
       );
   }
 
+  /// 選罐子要保存多久。
+  ///
+  /// 換成比較短的時間時，會先說清楚有幾顆會被拿掉，
+  /// 確認之後才動——不讓使用者在不知道的情況下失去自己的球。
+  Future<void> _chooseKeep(bool zh) async {
+    final current = await MemoryBallStore.loadKeep();
+    if (!mounted) return;
+    final picked = await showModalBottomSheet<JarKeep>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: Text(zh ? '罐子要保存多久？' : 'How long should the jar keep balls?',
+                    style: Theme.of(context).textTheme.titleMedium),
+              ),
+              for (final k in JarKeep.values)
+                ListTile(
+                  leading: Icon(
+                    k == current
+                        ? Icons.radio_button_checked_rounded
+                        : Icons.radio_button_off_rounded,
+                    color: k == current
+                        ? Theme.of(context).colorScheme.primary
+                        : null,
+                  ),
+                  title: Text(k.label(zh)),
+                  subtitle: Text(k.hint(zh)),
+                  onTap: () => Navigator.pop(context, k),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (picked == null || picked == current || !mounted) return;
+
+    final losing = MemoryBallStore.countExpired(_all, picked);
+    if (losing > 0) {
+      final ok = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(zh ? '換成「${picked.label(zh)}」？' : 'Switch to "${picked.label(zh)}"?'),
+          content: Text(zh
+              ? '有 $losing 顆球超過這個時間，會被拿掉，拿掉之後就找不回來了。'
+              : '$losing balls are older than this and will be removed for good.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(zh ? '取消' : 'Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(zh ? '確定' : 'Switch'),
+            ),
+          ],
+        ),
+      );
+      if (ok != true || !mounted) return;
+    }
+
+    await MemoryBallStore.saveKeep(picked);
+    await _load();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(
+        content: Text(zh ? '罐子會${picked.label(zh)}' : 'The jar will ${picked.label(zh).toLowerCase()}'),
+        duration: const Duration(seconds: 2),
+      ));
+  }
+
   Widget _empty(bool zh, ThemeData theme) {
     return Center(
       child: Padding(
@@ -1403,8 +1496,9 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
             const SizedBox(height: 7),
             Text(
               zh
-                  ? '在情緒詞彙庫裡找到一個詞，\n或做完一次練習，就會留下一顆球。'
-                  : 'Name a feeling in the dictionary,\nor finish a practice, to leave a ball here.',
+                  // 以前寫「或做完一次練習」，但練習其實不會留下球
+                  ? '在上面選一種心情，\n或在情緒詞彙庫找到一個詞，就會留下一顆球。'
+                  : 'Pick a mood above, or name a feeling\nin the dictionary, to leave a ball here.',
               textAlign: TextAlign.center,
               style: GoogleFonts.nunitoSans(
                 fontSize: 13,
@@ -1419,6 +1513,9 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
   }
 
   Widget _filterRow(bool zh, ThemeData theme) {
+    // 只列罐子裡真的有的來源。「呼吸練習」那些點下去永遠是空的，
+    // 比沒有那個選項更讓人困惑。只有一種來源時，這排篩選不是篩選，整排不顯示。
+    final sources = _all.map((b) => b.source).toSet();
     return SizedBox(
       height: 46,
       child: ListView(
@@ -1452,8 +1549,9 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
               ),
             ),
           ],
-          const SizedBox(width: 10),
-          for (final s in BallSource.values) ...[
+          if (sources.length > 1) const SizedBox(width: 10),
+          for (final s in BallSource.values.where(
+              (s) => sources.length > 1 && sources.contains(s))) ...[
             _chip(
               label: s.label(zh),
               selected: _sourceFilter == s,
@@ -2317,10 +2415,18 @@ class _EchoRingPainter extends CustomPainter {
 /// 自己持有輸入框的 controller：表單收起的動畫還在跑時輸入框還在畫面上，
 /// 在外面 await 完就 dispose 的話會用到已經釋放的 controller。
 class _MemoSheet extends StatefulWidget {
-  const _MemoSheet({required this.tone, required this.title, required this.zh});
+  const _MemoSheet({
+    required this.tone,
+    required this.title,
+    required this.zh,
+    required this.aiOn,
+  });
   final GlassTone tone;
   final String title;
   final bool zh;
+
+  /// 有沒有設定 AI 金鑰。決定要不要顯示「送去 AI」的說明和開關
+  final bool aiOn;
 
   @override
   State<_MemoSheet> createState() => _MemoSheetState();
@@ -2328,6 +2434,9 @@ class _MemoSheet extends StatefulWidget {
 
 class _MemoSheetState extends State<_MemoSheet> {
   final _ctrl = TextEditingController();
+
+  /// 要不要讓 Luna 回應。關掉的話便條只存在手機裡，不會送去 AI。
+  bool _askLuna = true;
 
   @override
   void dispose() {
@@ -2373,12 +2482,49 @@ class _MemoSheetState extends State<_MemoSheet> {
                   border: const OutlineInputBorder(),
                 ),
               ),
+              // ── 隱私 ─────────────────────────────────────
+              //
+              // README 承諾日記留在手機裡。便條要送去 AI 才能產生回應，
+              // 所以寫的當下就說清楚，並讓使用者可以選擇不送。
+              Row(
+                children: [
+                  Icon(
+                    widget.aiOn && _askLuna
+                        ? Icons.cloud_outlined
+                        : Icons.lock_outline_rounded,
+                    size: 15,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      !widget.aiOn
+                          ? (zh ? '只存在這支手機，不會上傳' : 'Stays on this device only')
+                          : _askLuna
+                              ? (zh ? '會送到 AI 服務，讓 Luna 回應你' : 'Sent to the AI service so Luna can reply')
+                              : (zh ? '只存在這支手機，Luna 不會回應' : 'Stays on this device. No reply.'),
+                      style: GoogleFonts.nunitoSans(
+                        fontSize: 12,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                  if (widget.aiOn)
+                    Semantics(
+                      label: zh ? '讓 Luna 回應' : 'Let Luna reply',
+                      child: Switch(
+                        value: _askLuna,
+                        onChanged: (v) => setState(() => _askLuna = v),
+                      ),
+                    ),
+                ],
+              ),
               const SizedBox(height: 6),
               Row(
                 children: [
                   Expanded(
                     child: TextButton(
-                      onPressed: () => Navigator.pop(context, ''),
+                      onPressed: () => Navigator.pop(context, ('', false)),
                       style: TextButton.styleFrom(
                           minimumSize: const Size.fromHeight(48)),
                       child: Text(zh ? '不寫，直接留下' : 'Just leave it'),
@@ -2387,7 +2533,8 @@ class _MemoSheetState extends State<_MemoSheet> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: FilledButton(
-                      onPressed: () => Navigator.pop(context, _ctrl.text.trim()),
+                      onPressed: () =>
+                          Navigator.pop(context, (_ctrl.text.trim(), _askLuna)),
                       style: FilledButton.styleFrom(
                         minimumSize: const Size.fromHeight(48),
                         backgroundColor: main,

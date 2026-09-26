@@ -123,7 +123,7 @@ extension BallSourceX on BallSource {
       };
 
   String label(bool zh) => switch (this) {
-        BallSource.grounding => zh ? '著地練習' : 'Grounding',
+        BallSource.grounding => zh ? '五感回神' : 'Grounding',
         BallSource.checkin => zh ? '心情記錄' : 'Check-in',
         BallSource.breathing => zh ? '呼吸練習' : 'Breathing',
         BallSource.lunaChat => zh ? '跟 Luna 聊天' : 'Chat with Luna',
@@ -256,6 +256,38 @@ class MemoryBall {
       createdAt.day == other.day;
 }
 
+/// 罐子要保存多久。使用者自己選，預設一直保存。
+///
+/// ── 為什麼預設不自動刪 ─────────────────────────────────
+///
+/// 球是使用者自己留下的。App 自動刪掉，等於替他決定「這段該忘了」。
+/// 而且回頭看的價值常常在幾週、幾個月之後才出現——
+/// 「上學期期中我都是有壓力，這學期好多了」。
+///
+/// 一學期取 18 週：高中、大學的壓力幾乎都跟著學期走。
+enum JarKeep { forever, semester, month }
+
+extension JarKeepX on JarKeep {
+  /// null 表示一直保存
+  int? get days => switch (this) {
+        JarKeep.forever => null,
+        JarKeep.semester => 126,
+        JarKeep.month => 30,
+      };
+
+  String label(bool zh) => switch (this) {
+        JarKeep.forever => zh ? '一直保存' : 'Keep everything',
+        JarKeep.semester => zh ? '保存一學期' : 'Keep one semester',
+        JarKeep.month => zh ? '保存一個月' : 'Keep one month',
+      };
+
+  String hint(bool zh) => switch (this) {
+        JarKeep.forever => zh ? '直到你自己清空為止' : 'Until you empty the jar yourself',
+        JarKeep.semester => zh ? '約 18 週，看得出開學到期末的變化' : 'About 18 weeks, a whole term',
+        JarKeep.month => zh ? '只留最近的，罐子比較輕' : 'Only the recent ones',
+      };
+}
+
 /// 讀寫記憶球。
 ///
 /// 所有方法都容忍資料損壞——一顆球的 JSON 壞掉不該讓整個罐子讀不出來。
@@ -268,6 +300,39 @@ class MemoryBallStore {
   /// 幾千顆球的 JSON 會讓 App 啟動變慢。
   /// 搬到 Drift 之後這個限制就可以拿掉。
   static const _maxBalls = 500;
+
+  static const _keepKey = 'gleam_keep';
+
+  static Future<JarKeep> loadKeep() async {
+    final p = await SharedPreferences.getInstance();
+    final name = p.getString(_keepKey);
+    return JarKeep.values.firstWhere((k) => k.name == name,
+        orElse: () => JarKeep.forever);
+  }
+
+  static Future<void> saveKeep(JarKeep keep) async {
+    final p = await SharedPreferences.getInstance();
+    await p.setString(_keepKey, keep.name);
+  }
+
+  /// 依使用者選的保存時間，會被拿掉的球有幾顆。換設定前先問用的。
+  static int countExpired(List<MemoryBall> all, JarKeep keep, {DateTime? now}) {
+    final days = keep.days;
+    if (days == null) return 0;
+    final cutoff = (now ?? DateTime.now()).subtract(Duration(days: days));
+    return all.where((b) => b.createdAt.isBefore(cutoff)).length;
+  }
+
+  /// 拿掉超過保存時間的球。選「一直保存」時什麼都不做。
+  static Future<void> applyKeepRule() async {
+    final keep = await loadKeep();
+    final days = keep.days;
+    if (days == null) return;
+    final all = await load();
+    final cutoff = DateTime.now().subtract(Duration(days: days));
+    final kept = all.where((b) => !b.createdAt.isBefore(cutoff)).toList();
+    if (kept.length != all.length) await _saveAll(kept);
+  }
 
   static Future<List<MemoryBall>> load() async {
     final p = await SharedPreferences.getInstance();

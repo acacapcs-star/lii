@@ -61,7 +61,10 @@ class BackgroundThemeState {
       case BgColorChoice.navyDark:
         return const Color(0xFF16283C); // 帶藍的深色，像 logo 球球，不那麼黑
       case BgColorChoice.forestDark:
-        return const Color(0xFF12261C); // 真正的深墨綠（原本誤植成深藍）
+        // 夜紫：原本是深墨綠。
+        // 名稱 forestDark 刻意不改——使用者存過的設定用的是這個名字，
+        // 改名的話已經選了它的人，下次打開會找不到自己的選擇。
+        return const Color(0xFF2C2442);
     }
   }
 
