@@ -54,8 +54,8 @@ class AISafetyEngine {
       );
     }
 
-    // 第二級：黃區（ERS 45~70）
-    if (ersScore >= 45) {
+    // 第二級：黃區（ERS 40~70）
+    if (ersScore >= 40) {
       return InterventionConfig(
         level: InterventionLevel.yellow,
         message: isZh

@@ -99,7 +99,7 @@ is dropped and its weight redistributed across physical and behaviour as
 (personal mean stress − 50) × 0.1`, clamped to 0–100. The same raw score means
 different things for different people.
 
-**Tiers**: red ≥ 70, amber ≥ 45, green below.
+**Tiers**: red ≥ 70, amber ≥ 40, green below. The ERS engine and the check-in risk engine share these bands.
 
 ### The language stream: a methodological fix, recorded
 
@@ -532,7 +532,7 @@ The bar lives in `lib/core/widgets/lii_bottom_nav.dart`. The side drawer is kept
 | Exhibition mode | Settings has a switch that unlocks all six crystals so judges can view them. Off by default — crystals are earned by breathing, never bought or drawn |
 | Weekly Persona | One of six animals (otter, capybara, turtle, squirrel, bear, butterfly) computed from that week's actual mood / stress / energy records. **No quiz to fill in** |
 
-The home screen also carries a draggable Luna Pacer orb (night sky on one side, coloured glass on the other, turned by swiping) and the crystal collection: six crystals — ice from the start, sea at 3 breathing sessions, amethyst at 7, amber at 14, moss at a 3-day streak, dawn at 7, with a hint showing how far the next one is. The breathing mode the orb opens follows ERS, using the same bands as the ERS engine and the home status text (0–44 green, 45–69 amber, 70 and above red). Double-tapping the orb opens a Joy-Con style controller pinned to the bottom centre: the stick moves the orb (further push, faster movement), holding + or − resizes continuously, and ◎ returns it to the default spot. Size ranges from 44 to 180, and both size and position are remembered.
+The home screen also carries a draggable Luna Pacer orb (night sky on one side, coloured glass on the other, turned by swiping) and the crystal collection: six crystals — ice from the start, sea at 3 breathing sessions, amethyst at 7, amber at 14, moss at a 3-day streak, dawn at 7, with a hint showing how far the next one is. The breathing mode the orb opens follows ERS, using the same bands as the ERS engine and the home status text (0–39 green, 40–69 amber, 70 and above red). Double-tapping the orb opens a Joy-Con style controller pinned to the bottom centre: the stick moves the orb (further push, faster movement), holding + or − resizes continuously, and ◎ returns it to the default spot. Size ranges from 44 to 180, and both size and position are remembered.
 
 ### Reports
 
@@ -622,8 +622,8 @@ flowchart TD
 
     ENG["ers_engine<br/>0.40·language + 0.35·emotion + 0.25·routine<br/>3-day rolling mean · missing stream renormalised"]
 
-    G["GREEN 0–44<br/>nothing withdrawn"]
-    A["AMBER 45–69<br/>prompting withdrawn"]
+    G["GREEN 0–39<br/>nothing withdrawn"]
+    A["AMBER 40–69<br/>prompting withdrawn"]
     RD["RED 70–100<br/>ranking withdrawn"]
 
     T1["Trend charts"]
@@ -670,7 +670,7 @@ Engine                           ers_engine
                                       │
                  ┌────────────────────┼────────────────────┐
                  ▼                    ▼                    ▼
-Tiers        GREEN 0–44          AMBER 45–69          RED 70–100
+Tiers        GREEN 0–39          AMBER 40–69          RED 70–100
              nothing withdrawn   prompting withdrawn  ranking withdrawn
                  │                    │                    │
                  ▼                    ▼                    ▼

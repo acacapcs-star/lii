@@ -206,7 +206,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
           final h = (v / 100.0).clamp(0.05, 1.0) * 100;
           final c = v >= 70
               ? const Color(0xFFD14343)
-              : v >= 45
+              : v >= 40
                   ? const Color(0xFFF5A623)
                   : const Color(0xFF0ABFBC);
           return Column(mainAxisAlignment: MainAxisAlignment.end, children: [

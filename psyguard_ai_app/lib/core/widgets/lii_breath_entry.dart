@@ -5,8 +5,8 @@
 //
 // 對應規則沿用你 risk_engine 裡本來就有的門檻，不另外發明：
 //   ERS >= 70 → safety flow（序曲壓成 5 秒 + 求助入口）
-//   ERS >= 45 → check-in（序曲縮到 60%）
-//   門檻和 ers_engine 一致：0–44 綠、45–69 黃、70 以上紅。
+//   ERS >= 40 → check-in（序曲縮到 60%）
+//   門檻全 App 一致：0–39 綠、40–69 黃、70 以上紅（ers_engine、risk_engine 都是這組）。
 //   其餘      → daily（完整序曲）
 // ═══════════════════════════════════════════════════════════
 
@@ -42,7 +42,7 @@ const double kJoyBottom = 110;
 /// ERS 分數 → 用哪種模式出現。門檻跟 risk_engine 一致。
 LiiBreathMode liiModeFromErs(int ers) {
   if (ers >= 70) return LiiBreathMode.safety;
-  if (ers >= 45) return LiiBreathMode.checkIn;
+  if (ers >= 40) return LiiBreathMode.checkIn;
   return LiiBreathMode.daily;
 }
 
@@ -51,13 +51,13 @@ LiiBreathMode liiModeFromErs(int ers) {
 /// 低落和焦慮要分開，因為處理方式是相反的：
 /// 焦慮用長吐氣壓交感神經；低落用長吐氣只會更往下沉，要等長節奏提振。
 // BREATH_ERS 用 ERS 分數決定節奏，門檻和 ers_engine、首頁狀態文字同一組：
-// 0–44 綠 / 45–69 黃 / 70 以上紅。以前這裡是 40 / 70，
+// 0–39 綠 / 40–69 黃 / 70 以上紅。以前這裡 70 分算黃燈，
 // 導致 70 分時序曲用安全模式、節奏卻是黃燈的，同一個分數兩種說法。
 //   綠 calm     4-2-4-2 -> 4-4-4-4   維持
 //   黃 low      3-0-3-0 -> 4-0-4-0   短促，先讓身體動起來
 //   紅 anxious  4-2-4-0 -> 4-7-8-0   吐氣拉長，把喚起度壓下來
 BreathMood liiMoodFromErs(int ers) {
-  if (ers < 45) return BreathMood.calm;
+  if (ers < 40) return BreathMood.calm;
   if (ers < 70) return BreathMood.low;
   return BreathMood.anxious;
 }

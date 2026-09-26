@@ -138,7 +138,7 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
               recent.length;
       final trueLevel = smoothed >= 70
           ? 'red'
-          : smoothed >= 45
+          : smoothed >= 40
               ? 'yellow'
               : 'green';
       // ALERTS_RED_ENABLED 使用者可以在設定頁關掉紅色等級。預設是開的。

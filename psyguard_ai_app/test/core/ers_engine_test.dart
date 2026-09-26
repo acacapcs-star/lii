@@ -31,7 +31,7 @@ void main() {
       baseline,
     );
     expect(r.riskLevel, 'green');
-    expect(r.adjustedERS, lessThan(45));
+    expect(r.adjustedERS, lessThan(40));
   });
 
   test('a strained day is yellow', () {
@@ -50,7 +50,7 @@ void main() {
       baseline,
     );
     expect(r.riskLevel, 'yellow');
-    expect(r.adjustedERS, inInclusiveRange(45, 69.99));
+    expect(r.adjustedERS, inInclusiveRange(40, 69.99));
   });
 
   test('all three streams in distress is red', () {

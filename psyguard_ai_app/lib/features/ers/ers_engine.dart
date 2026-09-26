@@ -124,7 +124,7 @@ class ERSEngine {
     // 紅燈閾值：70分（三串流同時異常才會到達）
     final riskLevel = adjustedERS >= 70
         ? 'red'
-        : adjustedERS >= 45
+        : adjustedERS >= 40
             ? 'yellow'
             : 'green';
 

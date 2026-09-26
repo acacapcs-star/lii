@@ -151,7 +151,7 @@ class _StreamBadge extends StatelessWidget {
   Color get _color {
     if (score < 0) return const Color(0xFF9AA5B1);
     if (score >= 70) return const Color(0xFFD14343);
-    if (score >= 45) return const Color(0xFFF5A623);
+    if (score >= 40) return const Color(0xFFF5A623);
     return const Color(0xFF0ABFBC);
   }
 
