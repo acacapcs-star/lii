@@ -24,6 +24,24 @@ final snowAccumulationProvider =
 /// 每一輪隨機選一個口袋當狐狸的藏身處；找到後換下一輪（換口袋躲）。
 class FoxHideoutController extends ChangeNotifier {
   final List<int> _spots = [];
+
+  // ── 為什麼不能直接 Future.microtask(notifyListeners) ──
+  //
+  // 卡片被拿掉時會呼叫 unregister()，通知排在下一個 microtask。
+  // 如果那時候 controller 本身也剛被釋放（離開頁面、熱重啟、測試結束），
+  // 排好的通知就會打在一個已經 dispose 的物件上，Flutter 直接報錯。
+  // 所以通知前先確認自己還活著。
+  bool _disposed = false;
+
+  void _notifySoon() => Future.microtask(() {
+        if (!_disposed) notifyListeners();
+      });
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
   final math.Random _rng = math.Random();
   int _salt = math.Random().nextInt(1 << 31);
 
@@ -37,18 +55,18 @@ class FoxHideoutController extends ChangeNotifier {
   void register(int id) {
     if (_spots.contains(id)) return;
     _spots.add(id);
-    Future.microtask(notifyListeners);
+    _notifySoon();
   }
 
   void unregister(int id) {
     _spots.remove(id);
-    Future.microtask(notifyListeners);
+    _notifySoon();
   }
 
   /// 被找到了！重新抽一個地方躲。
   void found() {
     _salt = _rng.nextInt(1 << 31);
-    Future.microtask(notifyListeners);
+    _notifySoon();
   }
 }
 
