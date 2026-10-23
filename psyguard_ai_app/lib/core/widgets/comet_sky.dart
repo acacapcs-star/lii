@@ -30,7 +30,7 @@ class CometSky extends StatefulWidget {
   const CometSky({
     super.key,
     this.child,
-    this.starCount = 40,
+    this.starCount = 22,
   });
 
   /// 疊在星空上面的東西（例如「Luna」那行字）
@@ -53,8 +53,9 @@ class _CometSkyState extends State<CometSky>
   /// 可以點的那幾顆
   List<_BrightStar> _bright = [];
 
-  /// 極光的光帶
-  late final List<_AuroraBand> _aurora;
+
+
+  // 極光已移除——光帶讓夜空太雜亂
 
   /// 目前這一顆彗星。null 表示現在是空檔。
   _Comet? _comet;
@@ -92,9 +93,9 @@ class _CometSkyState extends State<CometSky>
         y = _rnd.nextDouble();
       }
 
-      // 平方讓小星星佔多數——那才像真的天空
+      // 平方讓小星星佔多數——那才像真的天空；尺寸整體縮小讓夜空更靜
       final t = _rnd.nextDouble();
-      final r = 0.7 + t * t * 2.1;
+      final r = 0.5 + t * t * 1.3;
 
       return _Star(
         x: x,
@@ -106,26 +107,7 @@ class _CometSkyState extends State<CometSky>
       );
     });
 
-    // 極光：兩條扁平的橫帶，掛在上半部。
-    //
-    // 顏色用藍——綠色的極光在這個夜空上太搶眼。
-    final auroraColors = [
-      const Color(0xFF5BA8E0),   // 天藍
-      const Color(0xFF6FC4E8),   // 淺藍偏青
-      const Color(0xFF7C9FE0),   // 藍偏紫
-    ];
-    _aurora = List.generate(2, (i) {
-      return _AuroraBand(
-        y: 0.18 + _rnd.nextDouble() * 0.26,
-        thickness: 0.09 + _rnd.nextDouble() * 0.07,
-        color: auroraColors[i % auroraColors.length],
-        phase: _rnd.nextDouble() * math.pi * 2,
-        speed: 0.12 + _rnd.nextDouble() * 0.12,
-        // 起伏壓很小——那樣才是一排橫的，不是翻滾的
-        waveAmp: 0.008 + _rnd.nextDouble() * 0.010,
-        waveFreq: 1.4 + _rnd.nextDouble() * 1.6,
-      );
-    });
+    // 極光已移除
 
     _ctrl = AnimationController(
       vsync: this,
@@ -305,7 +287,6 @@ class _CometSkyState extends State<CometSky>
                 child: CustomPaint(
                   painter: _SkyPainter(
                     stars: _stars,
-                    aurora: _aurora,
                     bright: _bright,
                     comet: _comet,
                     time: _ctrl.value * 60,
@@ -407,37 +388,6 @@ class _BrightStar {
   final double phase;
 }
 
-/// 一條極光光幕。
-///
-/// 極光是橫掛在天上的光簾，不是垂直的光柱——
-/// 垂直加上下淡的漸層就變成聚光燈了。
-class _AuroraBand {
-  _AuroraBand({
-    required this.y,
-    required this.thickness,
-    required this.color,
-    required this.phase,
-    required this.speed,
-    required this.waveAmp,
-    required this.waveFreq,
-  });
-
-  /// 掛在畫面的哪個高度（0 到 1）
-  final double y;
-
-  /// 厚度，佔畫面高度的比例
-  final double thickness;
-
-  final Color color;
-
-  /// 波動的相位，錯開才不會幾條一起晃
-  final double phase;
-  final double speed;
-
-  /// 起伏的幅度與頻率
-  final double waveAmp;
-  final double waveFreq;
-}
 
 class _Comet {
   _Comet({
@@ -463,7 +413,6 @@ class _Comet {
 class _SkyPainter extends CustomPainter {
   _SkyPainter({
     required this.stars,
-    required this.aurora,
     required this.bright,
     required this.comet,
     required this.time,
@@ -471,109 +420,30 @@ class _SkyPainter extends CustomPainter {
   });
 
   final List<_Star> stars;
-  final List<_AuroraBand> aurora;
   final List<_BrightStar> bright;
   final _Comet? comet;
   final double time;
   final int? activeStar;
 
-  /// 拖尾畫幾顆點
-  static const _tailDots = 12;
+  /// 拖尾畫幾顆點（減少拖尾讓彗星更輕盈）
+  static const _tailDots = 8;
 
   @override
   void paint(Canvas canvas, Size size) {
-    // 順序就是圖層：極光在最後面，星星穿過它，彗星在最前面
-    _paintAurora(canvas, size);
+    // 星星在後，彗星在前；極光已移除以保持夜空簡潔
     _paintStars(canvas, size);
     _paintBright(canvas, size);
     if (comet != null) _paintComet(canvas, size, comet!);
   }
 
 
-  /// 畫極光。
-  ///
-  /// 下緣是鋸齒狀的——那是極光最好認的特徵。
-  /// 真實的極光下緣是一道道垂直的褶皺，像布簾被風吹出來的皺褶。
-  ///
-  /// 跟聚光燈的差別在漸層方向：聚光燈上濃下淡（光源在上），
-  /// 極光相反——下緣有明確的輪廓，上緣散進夜空。
-  void _paintAurora(Canvas canvas, Size size) {
-    const spikes = 22;
-
-    for (final b in aurora) {
-      final path = Path();
-      final baseY = b.y * size.height;
-      final th = b.thickness * size.height;
-
-      double waveAt(double t) {
-        return math.sin(t * b.waveFreq * math.pi * 2 +
-                    time * b.speed + b.phase) *
-                b.waveAmp +
-            math.sin(t * b.waveFreq * 2.7 * math.pi * 2 +
-                    time * b.speed * 0.7) *
-                b.waveAmp *
-                0.4;
-      }
-
-      // 上緣：平滑，散進夜空
-      for (int i = 0; i <= spikes; i++) {
-        final t = i / spikes;
-        final x = t * size.width;
-        final y = baseY + waveAt(t) * size.height;
-        if (i == 0) {
-          path.moveTo(x, y);
-        } else {
-          path.lineTo(x, y);
-        }
-      }
-
-      // 下緣：鋸齒，從右往左走回來
-      for (int i = spikes; i >= 0; i--) {
-        final t = i / spikes;
-        final x = t * size.width;
-        final topY = baseY + waveAt(t) * size.height;
-
-        // 用索引當種子，同一個尖角每幀都一樣長。
-        // 乘數要小——太大在 web 上會超過安全整數範圍。
-        final seed = ((i * 7919) % 1000) / 1000.0;
-        final seed2 = ((i * 40503 + 17) % 1000) / 1000.0;
-
-        // 長短交錯，那個節奏讓它像褶皺不像鋸子
-        final lenFactor =
-            (i % 2 == 0) ? 0.75 + seed * 0.55 : 0.35 + seed2 * 0.35;
-        final envelope = 0.6 + 0.4 * math.sin(t * 2.6 + b.phase);
-
-        path.lineTo(x, topY + th * lenFactor * envelope);
-      }
-      path.close();
-
-      final rect = Rect.fromLTWH(0, baseY - th * 0.2, size.width, th * 1.9);
-      final paint = Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            b.color.withValues(alpha: 0.0),
-            b.color.withValues(alpha: 0.07),
-            b.color.withValues(alpha: 0.13),
-            b.color.withValues(alpha: 0.02),
-          ],
-          stops: const [0.0, 0.30, 0.72, 1.0],
-        ).createShader(rect)
-        ..blendMode = BlendMode.plus
-        ..maskFilter = MaskFilter.blur(BlurStyle.normal, th * 0.16);
-
-      canvas.drawPath(path, paint);
-    }
-  }
-
   void _paintStars(Canvas canvas, Size size) {
     final p = Paint()..style = PaintingStyle.fill;
 
     for (final s in stars) {
-      // 每顆星用自己的相位和週期明滅，所以不會同步
+      // 每顆星用自己的相位和週期明滅，所以不會同步；壓低亮度讓夜空更沉靜
       final breath = 0.5 + 0.5 * math.sin(time * s.speed + s.phase);
-      final alpha = 0.38 + breath * 0.52;
+      final alpha = 0.20 + breath * 0.35;
 
       final c = Offset(s.x * size.width, s.y * size.height);
 
@@ -658,7 +528,7 @@ class _SkyPainter extends CustomPainter {
     // 拖尾：往回畫一串點，越後面越小越淡。
     // 尾巴的長度跟畫面大小有關，不是寫死的像素——
     // 不然在平板上會顯得太短。
-    final tailLen = size.width * 0.16;
+    final tailLen = size.width * 0.09;
     final ux = -c.dx, uy = -c.dy;
     final norm = math.sqrt(ux * ux + uy * uy);
 
