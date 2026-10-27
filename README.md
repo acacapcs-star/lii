@@ -436,6 +436,15 @@ hook is reserved — connecting an anonymised database later means rewriting
 - **Usage analytics stay on the device**
   (`core/analytics/usage_tracker.dart`) — page open counts and dwell time are
   recorded for research purposes and never uploaded.
+- **English month names are abbreviated; Chinese ones are not**
+  (`lib/l10n/month_names.dart`) — Chinese month names are always two
+  characters and fit any cell, while English ones run from three letters to
+  nine, so `September` wraps in a narrow cell and the layout breaks in one
+  language only. `May` keeps no full stop, because it is not an abbreviation.
+  Fixing it surfaced a second problem: the calendar and the home screen's
+  "this month" card each held their own copy of the list, the calendar was
+  switched to abbreviations and the home card was not, and the same month
+  read differently in two places. Both now read from one file.
 
 ---
 
@@ -485,6 +494,42 @@ controller, playing once per call.
 
 ---
 
+## Appearance: colour, image, and one name that no longer means what it says
+
+The background is two independent choices — a colour and an optional image — stored separately in `bg_theme_color`, `bg_image` and `bg_theme_mode` (`lib/core/theme/background_theme_service.dart`).
+
+Seven colours: four for light mode, three for dark.
+
+| Choice | Hex | Note |
+|---|---|---|
+| `blueLight` | `#E3F2FD` | default |
+| `greenLight` | `#E8F5E9` | |
+| `pinkLight` | `#FDF2F6` | a very pale rose, so cards stay readable on top |
+| `rainbowLight` | `#FBF4FA` | see below |
+| `navyDark` | `#16283C` | blue-leaning dark, close to the logo orb, not plain black |
+| `forestDark` | `#2C2442` | the name is wrong on purpose — see below |
+| `pureBlack` | `#070707` | not actually black — see below |
+
+Four background images layer over the colour: none, night, sea, dawn.
+
+### Three decisions recorded in the colour table
+
+**"Rainbow" is almost not a rainbow.** A full-spectrum background covers everything placed on it, so the choice takes only the palest end of the range and leaves a faint wash. The name describes the intent; the value is what the screen can carry.
+
+**"Pure black" is `#070707`, not `#000000`.** On an OLED panel a true black background is indistinguishable from a powered-off screen, and every card edge disappears with it. Seven points of grey is enough to keep the boundaries.
+
+**`forestDark` is purple, and the name stays wrong.** The colour was originally a deep forest green and was later changed to a night purple. The enum name was not renamed, because that name is what is already written into the `SharedPreferences` of anyone who selected it — renaming the identifier would have made those users open the app and find their own choice missing. The inconsistency is the cost of not breaking saved settings, and it is cheaper than the alternative.
+
+### Custom photos
+
+Pacer cards and the daily cable card accept the user's own photo. The source resolves in a fixed order — custom photo, then the selected preset image, then no image at all and the solid colour shows through. A photo is stored either as a file path or inline as `b64:` base64, so the web build works where there is no file system to point at.
+
+### Comet sky
+
+The drawer header runs a drawn night sky (`lib/core/widgets/comet_sky.dart`): stars at varying temperatures and brightness, plus comets. Aurora bands were built and then removed on 23 Oct 2026 — they worked, but competed with the header text and made the panel harder to read.
+
+---
+
 ## Information architecture
 
 Fourteen features are grouped into four sections on the home screen, sorted by three questions: *would I open this on purpose* (tools), *did I produce it* (things you saved), *do I set it once and never touch it again* (settings, kept in the drawer).
@@ -499,6 +544,8 @@ A three-tab bar sits at the foot of the app:
 
 The bar lives in `lib/core/widgets/lii_bottom_nav.dart`. The side drawer is kept as a second path to everything, including reports, safety flow and settings.
 
+The file defines five tabs and renders three. Luna (`/voice`) and Profile (`/profile`) keep their routes and reach the user through the drawer instead. The bar was laid out for five, with Luna as a raised centre button — a dark circle with a gold microphone, tapping it opening the voice page and a long press starting a recording straight away. That widget (`_centerItem`) is written and is not mounted: three fit a 62px bar with a readable 10px label under each icon and five do not, and a centre button only reads as a centre when the count is odd. Nothing became unreachable; two destinations moved rather than being cut.
+
 ## Complete feature map
 
 33 routes. The drawer lists 17 destinations as a flat list; the bottom bar carries the three most-used.
@@ -511,7 +558,7 @@ The bar lives in `lib/core/widgets/lii_bottom_nav.dart`. The side drawer is kept
 | Check-in | Titled "Check-in". Three sliders — Emotional Stability, Emotional Ease, Emotional Resilience (0–100%, higher is better) — plus a daily note; the ERS card opens itself once saved. History page included |
 | Sleep Log | Sleep Duration, Difficulty Falling Asleep, Bedtime and Wake Time. History page included |
 | Trends | 7/14/30-day slider, personal-vs-group comparison, research baseline |
-| Calendar | Annual overview, red and amber items grouped by week. **Swipe left for the locked secret calendar** |
+| Calendar | Annual overview, red and amber items grouped by week. **Swipe left for the locked secret calendar.** Tapping a week opens a sheet for it — days sliced 1–7, 8–14 and so on — with a quick to-do entry, so an item can be added without leaving the month view. The sheet uses `isScrollControlled` and pads by `viewInsets.bottom`; without that it keeps its original height and the keyboard covers the field being typed into |
 | Silence check | After three days without a record, the next time the student opens lii it asks how they are and opens the check-in sliders. No push notification, no streak, no day count. Ignored, it disappears in eight seconds |
 
 ### Practice
@@ -553,7 +600,21 @@ The home screen also carries a draggable Luna Pacer orb (night sky on one side, 
 
 ### Home screen
 
-A greeting with a light/dark toggle, then four swipeable status cards (the first showing today's well-being). Below that, four sections:
+A greeting with a light/dark toggle, then a four-page deck: today's status, the Luna companion card, and two sticky notes — pink for anything, mint for the day's priorities. Each note saves on every keystroke to its own key, so nothing has to be submitted and nothing is lost by navigating away.
+
+Both notes carry a reaction layer (`LunaNoteReaction`). Write something, tap, and Luna answers over the note as a watermark that types itself out and fades after six seconds. **The note underneath never moves** — the reply is laid over the writing, not inserted into it, so the user's own text is never pushed around by something they did not write.
+
+| Rule | Why |
+|---|---|
+| The button appears only when an API key is set | Otherwise it would promise a reply it cannot give |
+| **The button disappears at red risk** | Deliberate silence — the lightest voice is the wrong one for the worst day |
+| The reply fades rather than staying | A jotted note should not grow a conversation underneath it |
+
+Its language follows **what was written in the note**, not the app's setting: the text is scanned for CJK characters and the prompt is built accordingly. Someone running the app in English may still jot in Chinese, and a reply in the wrong language reads as not having been read at all.
+
+The voice is deliberately not the Gleam echo's — light and a little cheeky, with no advice, no questions and no comfort. A sticky note is a throwaway thought, and treating it as a disclosure would make the note feel like a form to fill in.
+
+Below that, four sections:
 
 | Section | Cards |
 |---|---|
