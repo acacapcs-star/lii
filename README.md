@@ -32,7 +32,7 @@ This repository was renamed to `lii` in August 2026 (formerly `PsyGuard-AI`); th
 | Period | Apr – May 2026 | 10 Jul 2026 – present |
 | Authorship | Four-student team, advisor Kai-Chun Hou | **Independently developed forward by Yu-Shin Lan** |
 | Scope | Flutter MVP: AI companion chat, check-in, sleep log, trend charts | Three-stream ERS, three-tier intervention, risk-inverse response, three-layer privacy, encrypted journal, speech features, breathing overture |
-| Recognition | 23rd Y.S. Awards, Apr 2026 — Honorable Mention, Senior-High AI Application (75 entries); Miao Feng-Chiang Technology Innovation Award, 3 of 714 entries, presented jointly to the team and its advisor | Submitted to the Da Vinci International Invention Exhibition; **result not yet announced** |
+| Recognition | 23rd Y.S. Awards, Apr 2026 — Honorable Mention, Senior-High AI Application (75 entries); Miao Feng-Chiang Technology Innovation Award, 3 of 714 entries, presented jointly to the team and its advisor | Submitted to the Da Vinci International Invention Exhibition; **golden medal** |
 
 There is a two-month gap between the phases. **All 55 commits from 10 July 2026
 onward are the author's own work.**
