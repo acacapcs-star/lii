@@ -1166,16 +1166,17 @@ lii/
     │   └── widget_test.dart
     ├── integration_test/
     │   └── app_flow_test.dart
-    └── lib/                                    123 files · ~38,800 lines
+    └── lib/                                    126 files · ~46,700 lines
         ├── main.dart
         ├── app/
         │   ├── app.dart
-        │   ├── router.dart                     33 routes
+        │   ├── router.dart                     34 routes
         │   └── theme.dart
         ├── l10n/
         │   ├── app_language.dart
         │   ├── app_strings.dart
-        │   └── strings_zh_tw.dart
+        │   ├── strings_zh_tw.dart
+        │   └── month_names.dart             one list, read by both the calendar and the home card
         ├── core/                               ← engines and services shared across pages
         │   ├── ers/
         │   │   ├── speech_metrics.dart         speech features: rate · neg-words · pauses
@@ -1205,7 +1206,7 @@ lii/
         │   │   ├── ai_chat_repository.dart     context memory + message summarisation
         │   │   ├── ai_error_formatter.dart
         │   │   ├── ai_lang_pref.dart          reply-language preference and prompt directive
-│   │   ├── ai_local_messages.dart      offline and high-risk local replies
+        │   │   ├── ai_local_messages.dart      offline and high-risk local replies
         │   │   ├── app_config_controller.dart
         │   │   └── dio_provider.dart
         │   ├── storage/
@@ -1234,11 +1235,12 @@ lii/
         │   │   └── mock_data_seeder.dart
         │   ├── settings/
         │   │   └── font_scale_provider.dart
-        │   └── widgets/                        26 widgets
+        │   └── widgets/                        30 widgets
         │       ├── lii_orb.dart                gradient + path · no filters
         │       ├── luna_orb.dart
-        │       ├── memory_ball.dart                    記憶球的資料層
-        │       ├── mood_bar.dart                         Gleam 微光頁面
+        │       ├── memory_ball.dart            the memory ball's data layer
+        │       ├── mood_bar.dart               the Gleam page
+        │       ├── gleam_reply.dart            GLEAM_ECHO marker · 5 angles · local fallback
         │       ├── luna_pacer_card.dart
         │       ├── floating_pacer.dart         grouped by author
         │       ├── lii_breath_entry.dart       reuses risk_engine thresholds
@@ -1257,6 +1259,7 @@ lii/
         │       ├── fish_pond.dart
         │       ├── hoop_corner.dart            layout and physics share proportions
         │       ├── flowing_water.dart
+        │       ├── comet_sky.dart              drawn sky · drawer header
         │       ├── pet_reminder_bubble.dart
         │       ├── floating_app_brand.dart     long-press opens the atmosphere menu
         │       ├── app_brand_icon.dart
@@ -1280,7 +1283,7 @@ lii/
             ├── safety/presentation/
             │   └── safety_page.dart
             ├── home/presentation/
-            │   ├── home_page.dart
+            │   ├── home_page.dart               4-page deck · LunaNoteReaction overlays the two sticky notes
             │   └── encouragement_banner.dart   no AI calls
             ├── dashboard/presentation/
             │   └── dashboard_page.dart         local data only
