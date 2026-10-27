@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../../../l10n/month_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../l10n/app_language.dart';
 import '../../../core/security/local_settings_service.dart';
-import '../../../core/theme/background_theme_service.dart';
 import 'note_page.dart';
 import '../../../core/security/secret_diary_lock.dart';
 import '../../../core/security/secret_swipe_shell.dart';
@@ -127,13 +127,21 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
   }
 
   void _showWeekDetail(bool isZh, int month, int weekIndex, _WeekSummary week) {
+    // 這一週是哪幾天：月曆是 1–7、8–14… 這樣切的
+    final daysInMonth = DateTime(_year, month + 1, 0).day;
+    final firstDay = weekIndex * 7 + 1;
+    final weekDays = [
+      for (var d = firstDay; d <= daysInMonth && d < firstDay + 7; d++) d
+    ];
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (ctx) {
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.fromLTRB(
+                20, 20, 20, 20 + MediaQuery.of(ctx).viewInsets.bottom),
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,6 +186,22 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
                         ),
                         ),
                       )),
+                  const Divider(height: 28),
+                  _QuickTodo(
+                    isZh: isZh,
+                    month: month,
+                    days: weekDays,
+                    accent: _bar,
+                    onAdd: (day, text, level) async {
+                      await _addTodo(month, day, text, level);
+                      if (ctx.mounted) Navigator.pop(ctx);
+                      if (!mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(isZh ? '已加到 $month/$day' : 'Added to $month/$day'),
+                        duration: const Duration(seconds: 2),
+                      ));
+                    },
+                  ),
                 ],
               ),
             ),
@@ -185,6 +209,42 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
         );
       },
     );
+  }
+
+  /// 把一個待辦加到某一天的筆記裡。
+  ///
+  /// 存的格式跟筆記頁完全一樣（打勾框、優先度），
+  /// 所以在筆記頁打開那一天，看到的就是這一條，可以照常打勾、改字、拖動。
+  /// 優先度：紅 → red3、黃 → yellow3、一般 → green3（筆記頁的預設）。
+  Future<void> _addTodo(int month, int day, String text, int level) async {
+    final prefs = await SharedPreferences.getInstance();
+    final prefix = widget.secret ? 'secret_note_' : 'note_';
+    final key = '$prefix${_year}_${month}_$day';
+    var list = <dynamic>[];
+    final raw = prefs.getString(key);
+    if (raw != null) {
+      try {
+        final decoded = widget.secret ? _lock.decryptContent(raw) : raw;
+        list = jsonDecode(decoded) as List<dynamic>;
+      } catch (_) {
+        // 讀不出來的話不要蓋掉——那一天原本的內容比這一條待辦重要
+        return;
+      }
+    }
+    final priority = switch (level) {
+      0 => NotePriority.red3,
+      1 => NotePriority.yellow3,
+      _ => NotePriority.green3,
+    };
+    list.add(NoteItem(
+      text: text,
+      type: NoteItemType.checkbox,
+      priority: priority,
+    ).toJson());
+    final encoded = jsonEncode(list);
+    await prefs.setString(
+        key, widget.secret ? _lock.encryptContent(encoded) : encoded);
+    await _loadAllMonths();
   }
 
   Widget _buildDotsRow(List items, Color color) {
@@ -281,13 +341,7 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
   }
 
   static const _monthNamesZh = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
-  // 用縮寫不用全名。
-  // 'September' 九個字母在窄格子裡會換行，
-  // 而中文的「九月」兩個字剛好——所以只有英文版會爆。
-  static const _monthNamesEn = [
-    'Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.',
-    'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.',
-  ];
+  static const _monthNamesEn = kMonthShortEn;
 
   @override
   Widget build(BuildContext context) {
@@ -426,14 +480,15 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
                         ...weeks.asMap().entries.map((entry) {
                         final weekIdx = entry.key;
                         final week = entry.value;
-                        final hasAny = week.redItems.isNotEmpty || week.yellowItems.isNotEmpty;
-                        final themeColor = ref.watch(backgroundThemeProvider).backgroundColor;
                         final isEven = weekIdx % 2 == 0;
+                        // 斑馬紋用月份標題的顏色淡淡一層，不跟背景色走——
+                        // 背景選深色（夜紫、深藍、純黑）時，深色混進白色只會變成一片灰。
                         final stripeColor = isEven
                             ? Colors.white
-                            : Color.alphaBlend(themeColor.withValues(alpha: 0.18), Colors.white);
+                            : Color.alphaBlend(_bar.withValues(alpha: 0.10), Colors.white);
                         return GestureDetector(
-                          onTap: hasAny ? () => _showWeekDetail(isZh, month, weekIdx, week) : null,
+                          // 空的週也可以點：點進去就能直接新增待辦
+                          onTap: () => _showWeekDetail(isZh, month, weekIdx, week),
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                             margin: const EdgeInsets.only(bottom: 4),
@@ -480,6 +535,148 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
                 );
               },
             ),
+    );
+  }
+}
+
+/// 週詳細裡的「新增待辦」：選哪一天、選重要程度、寫一句，按新增。
+///
+/// 自己持有輸入框的 controller：表單收起的動畫還在跑時輸入框還在畫面上，
+/// 在外面 await 完就 dispose 的話會用到已經釋放的 controller。
+class _QuickTodo extends StatefulWidget {
+  const _QuickTodo({
+    required this.isZh,
+    required this.month,
+    required this.days,
+    required this.accent,
+    required this.onAdd,
+  });
+
+  final bool isZh;
+  final int month;
+  final List<int> days;
+  final Color accent;
+
+  /// level：0 紅（緊急）、1 黃（重要）、2 一般
+  final Future<void> Function(int day, String text, int level) onAdd;
+
+  @override
+  State<_QuickTodo> createState() => _QuickTodoState();
+}
+
+class _QuickTodoState extends State<_QuickTodo> {
+  final _ctrl = TextEditingController();
+  late int _day;
+  int _level = 1; // 預設「重要」：新增完馬上就會出現在月曆上
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final today = DateTime.now();
+    // 這週有今天就預設今天，沒有就選這週第一天
+    _day = (today.month == widget.month && widget.days.contains(today.day))
+        ? today.day
+        : widget.days.first;
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final text = _ctrl.text.trim();
+    if (text.isEmpty || _saving) return;
+    setState(() => _saving = true);
+    await widget.onAdd(_day, text, _level);
+    if (mounted) setState(() => _saving = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final zh = widget.isZh;
+    final levels = [
+      (zh ? '緊急' : 'Urgent', Colors.red),
+      (zh ? '重要' : 'Important', Colors.amber),
+      (zh ? '一般' : 'Normal', Colors.grey),
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(zh ? '新增待辦' : 'Add a to-do',
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+        const SizedBox(height: 10),
+        // 哪一天
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: [
+            for (final d in widget.days)
+              ChoiceChip(
+                label: Text('${widget.month}/$d'),
+                selected: _day == d,
+                onSelected: (_) => setState(() => _day = d),
+                selectedColor: widget.accent.withValues(alpha: 0.25),
+              ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        // 重要程度（紅、黃才會出現在月曆和首頁的重點行事曆）
+        Wrap(
+          spacing: 6,
+          children: [
+            for (var i = 0; i < levels.length; i++)
+              ChoiceChip(
+                avatar: CircleAvatar(backgroundColor: levels[i].$2, radius: 5),
+                label: Text(levels[i].$1),
+                selected: _level == i,
+                onSelected: (_) => setState(() => _level = i),
+                selectedColor: widget.accent.withValues(alpha: 0.25),
+              ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _ctrl,
+                maxLength: 60,
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) => _submit(),
+                decoration: InputDecoration(
+                  hintText: zh ? '例：交報告、社團開會' : 'e.g. Hand in report',
+                  border: const OutlineInputBorder(),
+                  isDense: true,
+                  counterText: '',
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            FilledButton(
+              onPressed: _saving ? null : _submit,
+              style: FilledButton.styleFrom(
+                backgroundColor: widget.accent,
+                minimumSize: const Size(64, 48),
+              ),
+              child: Text(zh ? '新增' : 'Add'),
+            ),
+          ],
+        ),
+        if (_level == 2)
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Text(
+              zh
+                  ? '「一般」會存進那天的筆記，但不會出現在重點行事曆上'
+                  : '"Normal" goes into that day\'s note but not the key calendar',
+              style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+            ),
+          ),
+      ],
     );
   }
 }

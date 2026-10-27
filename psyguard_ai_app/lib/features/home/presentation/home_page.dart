@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import '../../../l10n/month_names.dart';
 import 'dart:convert';
 
 import 'dart:async';
@@ -2561,10 +2562,8 @@ class ThisMonthCard extends StatefulWidget {
   State<ThisMonthCard> createState() => _ThisMonthCardState();
 }
 
-String _monthName(int m) => const [
-      'January','February','March','April','May','June',
-      'July','August','September','October','November','December'
-    ][m - 1];
+// 月份縮寫統一從 month_names.dart 來，跟月曆同一份
+String _monthName(int m) => monthShortEn(m);
 
 class _ThisMonthCardState extends State<ThisMonthCard> {
   List<Map<String, dynamic>> _items = const [];

@@ -22,3 +22,4 @@ build/
 *.nybak
 *.scfix
 *.orig
+.ipynb_checkpoints/
