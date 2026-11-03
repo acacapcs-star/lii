@@ -8,9 +8,6 @@ import '../../../core/network/app_config_controller.dart';
 import '../../../core/network/ai_lang_pref.dart';
 import 'package:flutter/material.dart';
 
-// 教學用 GlobalKey，頂層宣告讓所有 class 都能存取
-final _gBrandKey = GlobalKey();
-final _gOrbKey = GlobalKey();
 import 'orb_tutorial.dart';
 
 import '../../../core/widgets/comet_sky.dart';
@@ -50,6 +47,11 @@ import 'dart:io';
 import '../../../core/crystals/crystal_collection_page.dart';
 import '../../bookmark/presentation/bookmark_page.dart'
     show kBookmarkBgColors, kBookmarkBgImages;
+
+// 教學用 GlobalKey，頂層宣告讓所有 class 都能存取
+final _gBrandKey = GlobalKey();
+final _gOrbKey = GlobalKey();
+Offset? _gOrbCenter;
 
 // ─────────────────────────────────────────────────────────
 // PACER 底色濃度。改這三個數字就能調「底色蓋住背景圖」的程度。
@@ -243,6 +245,7 @@ class HomePage extends ConsumerWidget {
                   stress: c?.stressScore,
                   energy: c?.energyScore,
                   ersScore: ers,
+                  onCenterChanged: (center) { _gOrbCenter = center; },
                 );
               }),
             ),
@@ -464,25 +467,21 @@ class _HomeContentState extends State<_HomeContent> {
 
   Future<void> _maybeShowOrbTutorial() async {
     final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool('orb_tutorial_seen') == true) return;
-    await prefs.setBool('orb_tutorial_seen', true);
+    if (prefs.getBool('orb_tutorial_seen_v3') == true) return;
+    await prefs.setBool('orb_tutorial_seen_v3', true);
     if (!mounted) return;
     final zh = widget.copy.isZhTw;
 
     Offset brandCenter = Offset(MediaQuery.of(context).size.width / 2, 80);
+    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox?;
     final brandBox = _gBrandKey.currentContext?.findRenderObject() as RenderBox?;
-    if (brandBox != null) {
-      final pos = brandBox.localToGlobal(Offset.zero);
+    if (brandBox != null && overlay != null) {
+      final pos = brandBox.localToGlobal(Offset.zero, ancestor: overlay);
       brandCenter = Offset(pos.dx + brandBox.size.width / 2, pos.dy + brandBox.size.height / 2);
     }
 
-    Offset orbCenter = Offset(MediaQuery.of(context).size.width - 64,
-        MediaQuery.of(context).size.height - 110);
-    final orbBox = _gOrbKey.currentContext?.findRenderObject() as RenderBox?;
-    if (orbBox != null) {
-      final pos = orbBox.localToGlobal(Offset.zero);
-      orbCenter = Offset(pos.dx + orbBox.size.width / 2, pos.dy + orbBox.size.height / 2);
-    }
+    final sz = MediaQuery.of(context).size;
+    final orbCenter = _gOrbCenter ?? Offset(sz.width - 63, sz.height - 395);
 
     await showOrbTutorial(context, zh: zh, brandCenter: brandCenter, orbCenter: orbCenter);
   }
@@ -559,7 +558,7 @@ class _HomeContentState extends State<_HomeContent> {
     WidgetsBinding.instance
         .addPostFrameCallback((_) async {
           // 等多一個 frame 讓所有 widget 都 render 完，GlobalKey 才抓得到座標
-          await Future.delayed(const Duration(milliseconds: 300));
+          await Future.delayed(const Duration(milliseconds: 800));
           await _maybeShowOrbTutorial();
           await _maybeShowDailyPacer();
         });

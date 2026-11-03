@@ -10,6 +10,8 @@ Future<void> showOrbTutorial(BuildContext context, {
   required bool zh,
   Offset brandCenter = const Offset(200, 100),
   Offset orbCenter = const Offset(330, 700),
+  GlobalKey? brandKey,
+  GlobalKey? orbKey,
 }) async {
   await showGeneralDialog(
     context: context,
@@ -20,7 +22,8 @@ Future<void> showOrbTutorial(BuildContext context, {
     transitionBuilder: (ctx, anim, _, child) =>
         FadeTransition(opacity: CurvedAnimation(parent: anim, curve: Curves.easeOut), child: child),
     pageBuilder: (ctx, _, __) => _OrbTutorialPage(
-        zh: zh, brandCenter: brandCenter, orbCenter: orbCenter),
+        zh: zh, brandCenter: brandCenter, orbCenter: orbCenter,
+        brandKey: brandKey, orbKey: orbKey),
   );
 }
 
@@ -28,8 +31,11 @@ class _OrbTutorialPage extends StatefulWidget {
   final bool zh;
   final Offset brandCenter;
   final Offset orbCenter;
+  final GlobalKey? brandKey;
+  final GlobalKey? orbKey;
   const _OrbTutorialPage({required this.zh,
-      required this.brandCenter, required this.orbCenter});
+      required this.brandCenter, required this.orbCenter,
+      this.brandKey, this.orbKey});
   @override
   State<_OrbTutorialPage> createState() => _OrbTutorialPageState();
 }
@@ -40,16 +46,37 @@ class _OrbTutorialPageState extends State<_OrbTutorialPage>
   bool _tapped = false;
   bool _confirmed = false;
 
+  late Offset _brandCenter;
+  late Offset _orbCenter;
+
   late AnimationController _ripple1, _ripple2, _confirmAnim, _pulseAnim;
 
   @override
   void initState() {
     super.initState();
+    _brandCenter = widget.brandCenter;
+    _orbCenter = widget.orbCenter;
     _ripple1 = AnimationController(vsync: this, duration: const Duration(milliseconds: 700));
     _ripple2 = AnimationController(vsync: this, duration: const Duration(milliseconds: 700));
     _confirmAnim = AnimationController(vsync: this, duration: const Duration(milliseconds: 400));
     _pulseAnim = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))
       ..repeat(reverse: true);
+    // 等第一幀後重新用 GlobalKey 讀真實位置
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final overlay = Overlay.of(context).context.findRenderObject() as RenderBox?;
+      if (overlay == null) return;
+      final bBox = widget.brandKey?.currentContext?.findRenderObject() as RenderBox?;
+      final oBox = widget.orbKey?.currentContext?.findRenderObject() as RenderBox?;
+      if (bBox != null) {
+        final p = bBox.localToGlobal(Offset.zero, ancestor: overlay);
+        setState(() => _brandCenter = Offset(p.dx + bBox.size.width / 2, p.dy + bBox.size.height / 2));
+      }
+      if (oBox != null) {
+        final p = oBox.localToGlobal(Offset.zero, ancestor: overlay);
+        setState(() => _orbCenter = Offset(p.dx + oBox.size.width / 2, p.dy + oBox.size.height / 2));
+      }
+    });
   }
 
   @override
@@ -95,7 +122,7 @@ class _OrbTutorialPageState extends State<_OrbTutorialPage>
   }
 
   void _nextStep() {
-    if (_step >= 3) {
+    if (_step >= 1) {
       if (mounted) Navigator.of(context).pop();
       return;
     }
@@ -107,22 +134,17 @@ class _OrbTutorialPageState extends State<_OrbTutorialPage>
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final zh = widget.zh;
-    final topCenter = widget.brandCenter;
-    final botCenter = widget.orbCenter;
-    final isTopStep = _step <= 1;
-    final center = isTopStep ? topCenter : botCenter;
+    final topCenter = _brandCenter;
+    final botCenter = _orbCenter;
+    final center = topCenter; // 只教天上的球
     const orbR = 50.0;
 
     final List<Map<String, String>> steps = zh ? [
       {'icon': '👆', 'action': '短按', 'desc': '觸發當下氛圍的彩蛋效果', 'hint': '試試點一下球'},
       {'icon': '✋', 'action': '長按', 'desc': '打開氛圍選單，切換你喜歡的感覺', 'hint': '長按看看'},
-      {'icon': '👆👆', 'action': '連點兩下', 'desc': '進入自由移動模式，把球拖到你想要的地方', 'hint': '快速點兩下'},
-      {'icon': '✋', 'action': '長按', 'desc': '打開 Pacer 收藏，看你存的語錄', 'hint': '長按試試'},
     ] : [
       {'icon': '👆', 'action': 'Tap', 'desc': 'Trigger the current mood effect', 'hint': 'Try tapping the orb'},
       {'icon': '✋', 'action': 'Hold', 'desc': 'Open the mood menu to change the vibe', 'hint': 'Press and hold'},
-      {'icon': '👆👆', 'action': 'Double tap', 'desc': 'Enter free-move mode, drag it anywhere', 'hint': 'Tap twice quickly'},
-      {'icon': '✋', 'action': 'Hold', 'desc': 'Open your Pacer collection', 'hint': 'Press and hold'},
     ];
 
     final step = steps[_step];

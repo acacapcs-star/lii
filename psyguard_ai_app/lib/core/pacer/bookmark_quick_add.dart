@@ -38,7 +38,7 @@ class BookmarkQuickAdd {
       colorIndex: 2,
     );
     await add(
-      quote: "Right now, nothing is happening. You are safe.",
+      quote: "此刻什麼都沒有發生，你是安全的。",
       author: 'Luna',
       toneIndex: 0,
       colorIndex: 0,

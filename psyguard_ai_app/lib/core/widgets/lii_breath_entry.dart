@@ -88,7 +88,9 @@ class LiiBreathButton extends StatefulWidget {
   /// safety flow 那顆「我現在想找人說話」按下去要做什麼
   final VoidCallback? onAskForHelp;
 
-  const LiiBreathButton({
+  final void Function(Offset center)? onCenterChanged;
+
+  LiiBreathButton({
     super.key,
     this.ers,
     this.mood,
@@ -96,6 +98,7 @@ class LiiBreathButton extends StatefulWidget {
     this.energy,
     this.ersScore,
     this.onAskForHelp,
+    this.onCenterChanged,
   });
 
   @override
@@ -453,6 +456,11 @@ class _LiiBreathButtonState extends State<LiiBreathButton>
       final top = pos.dy.clamp(0.0, (h - _size).clamp(0.0, h));
       _curLeft = left;
       _curTop = top;
+
+      // 通知外部球的中心位置
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.onCenterChanged?.call(Offset(left + _size / 2, top + _size / 2));
+      });
 
       return Stack(children: [
         Positioned(
