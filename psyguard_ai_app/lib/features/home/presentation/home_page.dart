@@ -8,7 +8,6 @@ import '../../../core/network/app_config_controller.dart';
 import '../../../core/network/ai_lang_pref.dart';
 import 'package:flutter/material.dart';
 
-import 'orb_tutorial.dart';
 
 import '../../../core/widgets/comet_sky.dart';
 import '../../../core/widgets/lii_bottom_nav.dart';
@@ -49,9 +48,6 @@ import '../../bookmark/presentation/bookmark_page.dart'
     show kBookmarkBgColors, kBookmarkBgImages;
 
 // 教學用 GlobalKey，頂層宣告讓所有 class 都能存取
-final _gBrandKey = GlobalKey();
-final _gOrbKey = GlobalKey();
-Offset? _gOrbCenter;
 
 // ─────────────────────────────────────────────────────────
 // PACER 底色濃度。改這三個數字就能調「底色蓋住背景圖」的程度。
@@ -176,7 +172,7 @@ class HomePage extends ConsumerWidget {
           centerTitle: true,
           title: Padding(
             padding: const EdgeInsets.only(top: 10),
-            child: FloatingAppBrandIcon(key: _gBrandKey, size: 66),
+            child: FloatingAppBrandIcon(size: 66),
           ),
         ),
         body: PawTapLayer(
@@ -240,12 +236,10 @@ class HomePage extends ConsumerWidget {
                 final ers = ref.watch(homeDashboardProvider).valueOrNull
                     ?.ersScore;
                 return LiiBreathButton(
-                  key: _gOrbKey,
                   mood: c?.moodScore,
                   stress: c?.stressScore,
                   energy: c?.energyScore,
                   ersScore: ers,
-                  onCenterChanged: (center) { _gOrbCenter = center; },
                 );
               }),
             ),
@@ -461,29 +455,8 @@ class _HomeContentState extends State<_HomeContent> {
             return _dailyPacerCard(ctx, deck, zh);
           },
         ),
-      ).then((_) => _maybeShowOrbTutorial());
+      );
     } catch (_) {}
-  }
-
-  Future<void> _maybeShowOrbTutorial() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool('orb_tutorial_seen_v3') == true) return;
-    await prefs.setBool('orb_tutorial_seen_v3', true);
-    if (!mounted) return;
-    final zh = widget.copy.isZhTw;
-
-    Offset brandCenter = Offset(MediaQuery.of(context).size.width / 2, 80);
-    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox?;
-    final brandBox = _gBrandKey.currentContext?.findRenderObject() as RenderBox?;
-    if (brandBox != null && overlay != null) {
-      final pos = brandBox.localToGlobal(Offset.zero, ancestor: overlay);
-      brandCenter = Offset(pos.dx + brandBox.size.width / 2, pos.dy + brandBox.size.height / 2);
-    }
-
-    final sz = MediaQuery.of(context).size;
-    final orbCenter = _gOrbCenter ?? Offset(sz.width - 63, sz.height - 395);
-
-    await showOrbTutorial(context, zh: zh, brandCenter: brandCenter, orbCenter: orbCenter);
   }
 
   Widget _dailyPacerCard(
@@ -559,8 +532,7 @@ class _HomeContentState extends State<_HomeContent> {
         .addPostFrameCallback((_) async {
           // 等多一個 frame 讓所有 widget 都 render 完，GlobalKey 才抓得到座標
           await Future.delayed(const Duration(milliseconds: 800));
-          await _maybeShowOrbTutorial();
-          await _maybeShowDailyPacer();
+                await _maybeShowDailyPacer();
         });
     await SilenceDetector().recordActivity();
     // CUM_IN_PROVIDER 累積次數改由 provider 提供，這裡不用再查一次
