@@ -8,6 +8,11 @@ import '../../../core/network/app_config_controller.dart';
 import '../../../core/network/ai_lang_pref.dart';
 import 'package:flutter/material.dart';
 
+// 教學用 GlobalKey，頂層宣告讓所有 class 都能存取
+final _gBrandKey = GlobalKey();
+final _gOrbKey = GlobalKey();
+import 'orb_tutorial.dart';
+
 import '../../../core/widgets/comet_sky.dart';
 import '../../../core/widgets/lii_bottom_nav.dart';
 import '../../ers/silence_detector.dart';
@@ -169,7 +174,7 @@ class HomePage extends ConsumerWidget {
           centerTitle: true,
           title: Padding(
             padding: const EdgeInsets.only(top: 10),
-            child: FloatingAppBrandIcon(size: 66),
+            child: FloatingAppBrandIcon(key: _gBrandKey, size: 66),
           ),
         ),
         body: PawTapLayer(
@@ -233,6 +238,7 @@ class HomePage extends ConsumerWidget {
                 final ers = ref.watch(homeDashboardProvider).valueOrNull
                     ?.ersScore;
                 return LiiBreathButton(
+                  key: _gOrbKey,
                   mood: c?.moodScore,
                   stress: c?.stressScore,
                   energy: c?.energyScore,
@@ -416,6 +422,7 @@ class _HomeContent extends StatefulWidget {
 class _HomeContentState extends State<_HomeContent> {
   String _homePetType = 'otter';
 
+
   Future<void> _maybeShowDailyPacer() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -438,17 +445,46 @@ class _HomeContentState extends State<_HomeContent> {
       final deck = all.take(5).toList();
       await prefs.setString('daily_pacer_date', todayStr);
       if (!mounted) return;
-      showDialog(
+      showGeneralDialog(
         context: context,
-        builder: (ctx) => Consumer(
+        barrierDismissible: true,
+        barrierLabel: 'pacer',
+        barrierColor: Colors.black54,
+        transitionDuration: const Duration(milliseconds: 200),
+        pageBuilder: (ctx, _, __) => Consumer(
           builder: (c, r, _) {
             final zh =
                 AppStrings.of(r.watch(appLanguageControllerProvider)).isZhTw;
             return _dailyPacerCard(ctx, deck, zh);
           },
         ),
-      );
+      ).then((_) => _maybeShowOrbTutorial());
     } catch (_) {}
+  }
+
+  Future<void> _maybeShowOrbTutorial() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('orb_tutorial_seen') == true) return;
+    await prefs.setBool('orb_tutorial_seen', true);
+    if (!mounted) return;
+    final zh = widget.copy.isZhTw;
+
+    Offset brandCenter = Offset(MediaQuery.of(context).size.width / 2, 80);
+    final brandBox = _gBrandKey.currentContext?.findRenderObject() as RenderBox?;
+    if (brandBox != null) {
+      final pos = brandBox.localToGlobal(Offset.zero);
+      brandCenter = Offset(pos.dx + brandBox.size.width / 2, pos.dy + brandBox.size.height / 2);
+    }
+
+    Offset orbCenter = Offset(MediaQuery.of(context).size.width - 64,
+        MediaQuery.of(context).size.height - 110);
+    final orbBox = _gOrbKey.currentContext?.findRenderObject() as RenderBox?;
+    if (orbBox != null) {
+      final pos = orbBox.localToGlobal(Offset.zero);
+      orbCenter = Offset(pos.dx + orbBox.size.width / 2, pos.dy + orbBox.size.height / 2);
+    }
+
+    await showOrbTutorial(context, zh: zh, brandCenter: brandCenter, orbCenter: orbCenter);
   }
 
   Widget _dailyPacerCard(
@@ -521,7 +557,12 @@ class _HomeContentState extends State<_HomeContent> {
       if (mounted) setState(() => _homePetType = pt);
     } catch (_) {}
     WidgetsBinding.instance
-        .addPostFrameCallback((_) => _maybeShowDailyPacer());
+        .addPostFrameCallback((_) async {
+          // 等多一個 frame 讓所有 widget 都 render 完，GlobalKey 才抓得到座標
+          await Future.delayed(const Duration(milliseconds: 300));
+          await _maybeShowOrbTutorial();
+          await _maybeShowDailyPacer();
+        });
     await SilenceDetector().recordActivity();
     // CUM_IN_PROVIDER 累積次數改由 provider 提供，這裡不用再查一次
     final alert = await SilenceDetector().checkSilence();
@@ -3017,6 +3058,93 @@ class _LunaNoteReactionState extends ConsumerState<LunaNoteReaction> {
           ),
         ),
       ],
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 彩球教學覆蓋層：Pacer 關掉後第一次出現，說明短按／長按
+// ═══════════════════════════════════════════════════════════
+class _OrbTutorialOverlay extends StatelessWidget {
+  final bool zh;
+  const _OrbTutorialOverlay({required this.zh});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: SafeArea(
+        child: Align(
+          alignment: Alignment.bottomRight,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 24, bottom: 120),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                _bubble(
+                  icon: Icons.touch_app_rounded,
+                  title: zh ? '短按' : 'Tap',
+                  desc: zh ? '進入呼吸練習' : 'Start breathing exercise',
+                ),
+                const SizedBox(height: 10),
+                _bubble(
+                  icon: Icons.pan_tool_rounded,
+                  title: zh ? '長按' : 'Hold',
+                  desc: zh ? '開啟水晶收藏' : 'Open crystal collection',
+                ),
+                const SizedBox(height: 18),
+                GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white30),
+                    ),
+                    child: Text(
+                      zh ? '知道了 ✓' : 'Got it ✓',
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                // 指向右下角彩球的箭頭
+                const Padding(
+                  padding: EdgeInsets.only(right: 8),
+                  child: Icon(Icons.arrow_downward_rounded, color: Colors.white70, size: 28),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _bubble({required IconData icon, required String title, required String desc}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white24),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.white70, size: 20),
+          const SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
+              Text(desc, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

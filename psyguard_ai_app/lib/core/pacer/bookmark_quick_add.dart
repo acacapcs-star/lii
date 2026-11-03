@@ -26,13 +26,13 @@ class BookmarkQuickAdd {
 
     // 倒著加，因為 add() 是 insert(0)，最後一句會排在最上面
     await add(
-      quote: "Remember to take time to breathe.",
-      author: 'Homeroom teacher',
+      quote: "記得留時間給自己呼吸。",
+      author: '導師',
       toneIndex: 4,
       colorIndex: 4,
     );
     await add(
-      quote: "It's okay if you did nothing today. You were breathing.",
+      quote: "今天什麼都沒做也沒關係，你還在呼吸。",
       author: 'Luna',
       toneIndex: 2,
       colorIndex: 2,
@@ -80,43 +80,24 @@ class BookmarkQuickAdd {
     await prefs.setString(_key, jsonEncode(list));
   }
 
-  // EN_SEED demo 走英文，這 12 句預設 pacer 一併換成英文
   static const Map<BreathMood, List<List<String>>> _quotes = {
     BreathMood.anxious: [
-      ["Right now, nothing is happening. You are safe.", 'Luna'],
-      [
-        "A fast heartbeat doesn't mean danger. It's just running ahead of you.",
-        'Homeroom teacher'
-      ],
-      [
-        "You don't have to think through the whole day. Just the next ten minutes.",
-        'Homeroom teacher'
-      ],
-      [
-        "You just slowed your breathing down. You can do more than you think.",
-        'Luna'
-      ],
+      ['此刻什麼都沒有發生，你是安全的。', 'Luna'],
+      ['心跳快不代表危險，它只是跑在你前面而已。', '導師'],
+      ['不用把整天想完，先想接下來十分鐘就好。', '導師'],
+      ['你剛剛讓自己的呼吸慢下來了，你比你想的更有能力。', 'Luna'],
     ],
     BreathMood.low: [
-      ["It's okay if you did nothing today. You were breathing.", 'Luna'],
-      [
-        "You don't have to feel better right away. Take your time, I'll wait.",
-        'Luna'
-      ],
-      [
-        "You're the one who made it this far. That's not a small thing.",
-        'Homeroom teacher'
-      ],
-      [
-        "You don't have to pretend to be bright in the dark. I'll just stay.",
-        'Luna'
-      ],
+      ['今天什麼都沒做也沒關係，你還在呼吸。', 'Luna'],
+      ['不用馬上好起來，慢慢來，我在這裡等你。', 'Luna'],
+      ['能走到這裡的人是你，這不是小事。', '導師'],
+      ['在黑暗裡不用假裝發光，我就陪著你。', 'Luna'],
     ],
     BreathMood.calm: [
-      ["This is enough. You don't have to do more.", 'Luna'],
-      ["You took care of yourself today.", 'Homeroom teacher'],
-      ["Quiet days are worth remembering too.", 'Luna'],
-      ["Remember to take time to breathe.", 'Homeroom teacher'],
+      ['這樣就夠了，不用再多做什麼。', 'Luna'],
+      ['今天你照顧了自己。', '導師'],
+      ['安靜的日子也值得被記住。', 'Luna'],
+      ['記得留時間給自己呼吸。', '導師'],
     ],
   };
 
