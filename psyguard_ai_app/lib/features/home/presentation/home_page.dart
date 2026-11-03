@@ -1529,7 +1529,7 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
               StickyNotePage(
                 color: const Color(0xFFE4F5F0),
                 borderColor: const Color(0xFF41C8A2),
-                hintText: 'Key priorities today... 🌿',
+                hintText: '今天的重點事項... 🌿',
                 storageKey: 'sticky_mint',
               ),
             ],
@@ -2911,7 +2911,7 @@ class _LunaNoteReactionState extends ConsumerState<LunaNoteReaction> {
     final prompt = zh
         ? '這是使用者隨手寫的便條，請用兩到三句話輕鬆回應，可以吐槽但不要說教，'
             '不要給建議、不要問問題、不要安慰。便條內容：$text'
-        : 'This is a quick note the user jotted down. React in two or three short '
+        : '這是使用者快速記下的筆記。用兩三句簡短的話回應，'
             'sentences, light and a bit cheeky. No advice, no questions, no comfort. '
             'Note: $text';
 
