@@ -1154,6 +1154,7 @@ class _GroundingPageState extends ConsumerState<GroundingPage> {
   final _page = PageController();
   final _fall = MoodFallController();
   int _index = 0;
+  bool _showIntro = true; // 先顯示說明頁
 
   /// 五頁各自的輸入框：5、4、3、2、1 格
   late final List<List<TextEditingController>> _ctrls = [
@@ -1255,6 +1256,58 @@ class _GroundingPageState extends ConsumerState<GroundingPage> {
           zh ? '寫下你此刻身體的一種感覺' : 'One thing your body feels',
           zh ? '腳踩在地上，那就是你在這裡的證據。' : 'Your feet on the floor. You are here.'),
     ];
+
+    // 說明頁
+    if (_showIntro) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFF7F4FF),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(28, 24, 28, 28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.close_rounded, size: 22),
+                  color: const Color(0xFF6A41C8),
+                  onPressed: () => Navigator.of(context).pop(false),
+                ),
+                const SizedBox(height: 24),
+                const Text('5-4-3-2-1', style: TextStyle(fontSize: 13, color: Color(0xFF6A41C8), fontWeight: FontWeight.w600, letterSpacing: 1.2)),
+                const SizedBox(height: 8),
+                Text(
+                  zh ? '五感回神' : 'Grounding',
+                  style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w700, color: Color(0xFF1A1A2E)),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  zh
+                      ? '當焦慮、恐慌或思緒打結的時候，大腦會陷在「想像的威脅」裡，忘記你其實在安全的地方。\n\n五感回神讓你用五種感官——視覺、觸覺、聽覺、嗅覺、體感——把注意力拉回此刻、此地、此身。\n\n研究顯示這個方法可以在幾分鐘內降低焦慮感，對於恐慌發作或情緒過載特別有效。'
+                      : 'When anxiety, panic, or racing thoughts take over, your brain gets stuck in imagined threats and forgets you\'re actually safe.\n\nGrounding uses your five senses — sight, touch, sound, smell, and feeling — to bring your attention back to the present moment.\n\nResearch shows this can reduce anxiety within minutes, especially during panic or emotional overwhelm.',
+                  style: const TextStyle(fontSize: 15.5, height: 1.7, color: Color(0xFF3A3A4A)),
+                ),
+                const Spacer(),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFF6A41C8),
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
+                    onPressed: () => setState(() => _showIntro = false),
+                    child: Text(
+                      zh ? '開始' : 'Start',
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     final s = steps[_index];
     final left = _remaining(_index);

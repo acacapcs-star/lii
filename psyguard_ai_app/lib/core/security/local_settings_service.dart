@@ -39,7 +39,7 @@ final appLanguageControllerProvider =
     });
 
 class AppLanguageController extends StateNotifier<AppLanguage> {
-  AppLanguageController(this._settings) : super(AppLanguage.english);
+  AppLanguageController(this._settings) : super(AppLanguage.zhTw);
 
   final LocalSettingsService _settings;
 
