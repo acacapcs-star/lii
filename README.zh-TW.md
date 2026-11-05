@@ -4,6 +4,9 @@
 
 *狀況越糟，lii 說得越少。*
 
+![展覽現場](davinci_poster.JPG)
+![DaVinci Expo](davinci_expo.JPG)
+
 **[▶ 線上試用](https://gorgeous-hamster-ccf26c.netlify.app/#/welcome)** ｜ [English](README.md) ｜ [繁體中文](README.zh-TW.md)
 
 > 網頁版可直接開啟試玩，無需安裝。AI 對話需自備 OpenAI 相容 API key(設定頁填入)；未填時為離線模式、使用 demo 回覆，其餘功能皆可正常操作。
