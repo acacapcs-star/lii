@@ -151,13 +151,26 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
     final last = _i == _pages.length - 1;
     final atmPage = _i == _pages.length - 2; // 倒數第二頁 = 氛圍選擇頁
 
+    // 背景顏色：與首頁相同邏輯 — 季節氛圍優先，否則用燈光模式
+    final moodIsDark = ref.watch(backgroundThemeProvider).mode == BgMode.dark;
+    final moodColor = ref.watch(moodThemeProvider).backgroundColorFor(moodIsDark);
+    final bgBase = moodColor.a != 0
+        ? moodColor
+        : ref.watch(backgroundThemeProvider).backgroundColor;
+
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
+      body: AnimatedContainer(
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeInOut,
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF4A7FA5), Color(0xFF2C5282), Color(0xFF1A3558)],
+            colors: [
+              bgBase,
+              Color.lerp(bgBase, Colors.black, 0.3)!,
+              Color.lerp(bgBase, Colors.black, 0.5)!,
+            ],
           ),
         ),
         child: SafeArea(
