@@ -469,7 +469,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
   }
 }
 
-// ── 球球互動示範（第 4 頁用）：FloatingAppBrandIcon 有繩子的球，可拖動縮放 ──
+// ── 球球互動示範（index 4）：LunaOrbLive 無繩球，雙擊解鎖後可拖動縮放+/- ──
 class _OrbDemo extends StatefulWidget {
   const _OrbDemo();
   @override
