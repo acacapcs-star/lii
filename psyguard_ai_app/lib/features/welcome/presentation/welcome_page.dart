@@ -7,6 +7,7 @@ import '../../../core/security/local_settings_service.dart';
 import '../../../core/theme/background_theme_service.dart';
 import '../../../core/theme/mood_theme_service.dart';
 import '../../../core/widgets/floating_app_brand.dart';
+import '../../../core/widgets/luna_orb.dart';
 import '../../../l10n/app_language.dart';
 
 // ── 頁面資料 ──────────────────────────────────────────────────────────────────
@@ -382,6 +383,25 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // 有繩子的球：點一下彩蛋，長按切換氛圍（循環）
+          GestureDetector(
+            onTap: () {
+              // 點擊彩蛋：觸發「已套用」卡片顯示
+              if (_selectedAtmIdx >= 0) {
+                _previewCtrl.forward(from: 0);
+                Future.delayed(const Duration(seconds: 3), () {
+                  if (mounted) _previewCtrl.reverse();
+                });
+              }
+            },
+            onLongPress: () {
+              // 長按：切換到下一個氛圍
+              final next = (_selectedAtmIdx + 1) % _atmItems.length;
+              _selectAtm(next);
+            },
+            child: const FloatingAppBrandIcon(size: 90),
+          ),
+          const SizedBox(height: 16),
           Text(
             isZh ? '選一個氛圍\n陪你開始' : 'Pick an atmosphere\nto begin with',
             textAlign: TextAlign.center,
@@ -526,7 +546,7 @@ class _OrbDemoState extends State<_OrbDemo> {
                     : null,
                 child: Transform.scale(
                   scale: _scale,
-                  child: const FloatingAppBrandIcon(size: 110),
+                  child: const LunaOrbLive(w: 110),
                 ),
               ),
             ),
