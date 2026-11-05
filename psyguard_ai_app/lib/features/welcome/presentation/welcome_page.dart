@@ -338,7 +338,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // 第 4 頁（index 4）：球球示範，空 emoji + 有互動球
-          if (p.emoji.isEmpty && pageIdx == 4) ...[
+          if (p.emoji.isEmpty && pageIdx == 3) ...[
             const _OrbDemo(),
             const SizedBox(height: 28),
           ] else if (p.emoji.isNotEmpty) ...[
