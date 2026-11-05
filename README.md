@@ -3,6 +3,10 @@
 **A proactive, tiered AI emotional health app.**
 
 *The worse it gets, the less lii says.*
+![展覽現場](davinci_poster.JPG)
+![DaVinci Expo](davinci_expo.jpg)
+
+*Presented at All American DaVinci International Innovation and Invention Expo, Southern Utah University, 2026*
 
 **[▶ Live demo](https://gorgeous-hamster-ccf26c.netlify.app/#/home)** | [English](README.md) | [繁體中文](README.zh-TW.md)
 
