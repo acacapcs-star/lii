@@ -512,84 +512,141 @@ class _OrbDemoState extends State<_OrbDemo> {
   Offset _pos = Offset.zero;
   double _scale = 1.0;
   bool _joystick = false;
-  double _scaleBase = 1.0;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
-        alignment: Alignment.center,
-        children: [
-          // 提示文字
-          Positioned(
-            bottom: 0,
+      fit: StackFit.expand,
+      children: [
+        // 提示文字
+        Positioned(
+          bottom: 8,
+          left: 0,
+          right: 0,
+          child: Center(
             child: Text(
-              _joystick ? '拖動換位置・再點兩下鎖定' : '點兩下解鎖操控',
+              _joystick ? '拖動球改位置・再點兩下鎖定' : '點兩下解鎖操控',
               style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.5),
                   fontSize: 12,
                   letterSpacing: 1),
             ),
           ),
+        ),
 
-          // ＋／－ 大小按鈕（解鎖後才顯示）
-          if (_joystick)
-            Positioned(
-              bottom: 24,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _SizeBtn(
-                    icon: Icons.remove,
-                    onTap: () => setState(
-                        () => _scale = (_scale - 0.1).clamp(0.5, 2.0)),
-                  ),
-                  const SizedBox(width: 24),
-                  _SizeBtn(
-                    icon: Icons.add,
-                    onTap: () => setState(
-                        () => _scale = (_scale + 0.1).clamp(0.5, 2.0)),
-                  ),
-                ],
-              ),
-            ),
-
-          // 球本體
-          Transform.translate(
-            offset: _pos,
-            child: GestureDetector(
-              onDoubleTap: () => setState(() => _joystick = !_joystick),
-              onScaleStart: _joystick ? (d) { _scaleBase = _scale; } : null,
-              onScaleUpdate: _joystick
-                  ? (d) => setState(() {
-                        _pos += d.focalPointDelta;
-                        _scale = (_scaleBase * d.scale).clamp(0.5, 2.0);
-                      })
-                  : null,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                decoration: _joystick
-                    ? BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.4),
-                            width: 1.5))
+        // 球本體（可拖動）
+        AnimatedPositioned(
+          duration: const Duration(milliseconds: 80),
+          curve: Curves.easeOut,
+          // 把 _pos 從中心偏移轉成 left/top
+          left: null,
+          top: null,
+          child: Builder(builder: (ctx) {
+            final size = MediaQuery.of(ctx).size;
+            return Transform.translate(
+              offset: _pos,
+              child: GestureDetector(
+                onDoubleTap: () => setState(() => _joystick = !_joystick),
+                onPanUpdate: _joystick
+                    ? (d) => setState(() => _pos += d.delta)
                     : null,
-                child: Transform.scale(
-                  scale: _scale,
-                  child: const FloatingAppBrandIcon(size: 80),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  decoration: _joystick
+                      ? BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.35),
+                              width: 1.5))
+                      : null,
+                  child: Transform.scale(
+                    scale: _scale,
+                    child: const FloatingAppBrandIcon(size: 80),
+                  ),
+                ),
+              ),
+            );
+          }),
+        ),
+
+        // 黑色膠囊 controller（解鎖後才顯示）
+        if (_joystick)
+          Positioned(
+            bottom: 36,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                height: 56,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1C1C2E),
+                  borderRadius: BorderRadius.circular(32),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.4),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // 左邊：小球 joystick（拖動它來移動球）
+                    GestureDetector(
+                      onPanUpdate: (d) =>
+                          setState(() => _pos += d.delta),
+                      child: Container(
+                        width: 48,
+                        height: 48,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 32,
+                            height: 32,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color(0xFFF5A623), // 橙黃色球
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    // 右邊：+ / - / 置中
+                    _CapsuleBtn(
+                      icon: Icons.add,
+                      onTap: () => setState(
+                          () => _scale = (_scale + 0.1).clamp(0.4, 2.5)),
+                    ),
+                    _CapsuleBtn(
+                      icon: Icons.remove,
+                      onTap: () => setState(
+                          () => _scale = (_scale - 0.1).clamp(0.4, 2.5)),
+                    ),
+                    _CapsuleBtn(
+                      icon: Icons.filter_tilt_shift,
+                      onTap: () =>
+                          setState(() => _pos = Offset.zero),
+                    ),
+                    const SizedBox(width: 4),
+                  ],
                 ),
               ),
             ),
           ),
-        ],
-      );
+      ],
+    );
   }
 }
 
-class _SizeBtn extends StatelessWidget {
+class _CapsuleBtn extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
-  const _SizeBtn({required this.icon, required this.onTap});
+  const _CapsuleBtn({required this.icon, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -598,12 +655,12 @@ class _SizeBtn extends StatelessWidget {
       child: Container(
         width: 36,
         height: 36,
+        margin: const EdgeInsets.symmetric(horizontal: 2),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white.withValues(alpha: 0.15),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+          color: Colors.white.withValues(alpha: 0.08),
         ),
-        child: Icon(icon, color: Colors.white, size: 18),
+        child: Icon(icon, color: Colors.white70, size: 18),
       ),
     );
   }
