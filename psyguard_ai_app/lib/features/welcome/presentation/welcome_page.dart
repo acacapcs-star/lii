@@ -76,10 +76,10 @@ const _pages = <_Page>[
     bg: [Color(0xFF4A6B8F), Color(0xFF2E4A6B), Color(0xFF1A2E4A)],
   ),
   _Page(
-    titleZh: '選一個你喜歡的氛圍',
-    titleEn: 'Choose your vibe',
-    bodyZh: '點一下球球，就能看到彩蛋預覽。\n滑動下方選單，換個心情換個底色。',
-    bodyEn: 'Tap the orb to preview the season\'s effect.\nSwipe to pick an atmosphere.',
+    titleZh: '選一個氛圍\n陪你開始',
+    titleEn: 'Pick a vibe\nto start with',
+    bodyZh: '之後長按天上的球可以隨時切換',
+    bodyEn: 'Long press the orb anytime to switch.',
     bg: [Color(0xFF3A5A7A), Color(0xFF1E3A5A), Color(0xFF0F1F36)],
   ),
   _Page(
