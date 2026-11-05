@@ -4,7 +4,7 @@
 
 *The worse it gets, the less lii says.*
 ![展覽現場](davinci_poster.JPG)
-![DaVinci Expo](davinci_expo.jpg)
+![DaVinci Expo](davinci_expo.JPG)
 
 *Presented at All American DaVinci International Innovation and Invention Expo, Southern Utah University, 2026*
 
