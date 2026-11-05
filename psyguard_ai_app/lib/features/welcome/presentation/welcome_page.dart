@@ -490,7 +490,7 @@ class _OrbDemoState extends State<_OrbDemo> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 260,
+      height: 320,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -551,7 +551,7 @@ class _OrbDemoState extends State<_OrbDemo> {
                     : null,
                 child: Transform.scale(
                   scale: _scale,
-                  child: const FloatingAppBrandIcon(size: 110),
+                  child: const FloatingAppBrandIcon(size: 80),
                 ),
               ),
             ),
