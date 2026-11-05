@@ -346,7 +346,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
           // index 4：球球示範
           if (pageIdx == 4) ...[
             const _OrbDemo(),
-            const SizedBox(height: 28),
+            const SizedBox(height: 16),
           ] else if (p.emoji.isNotEmpty) ...[
             Text(p.emoji, style: const TextStyle(fontSize: 52)),
             const SizedBox(height: 28),
@@ -490,7 +490,7 @@ class _OrbDemoState extends State<_OrbDemo> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 320,
+      height: 200,
       child: Stack(
         alignment: Alignment.center,
         children: [
