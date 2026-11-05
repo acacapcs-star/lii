@@ -551,7 +551,7 @@ class _OrbDemoState extends State<_OrbDemo> {
                     : null,
                 child: Transform.scale(
                   scale: _scale,
-                  child: const LunaOrbLive(w: 110),
+                  child: const FloatingAppBrandIcon(size: 110),
                 ),
               ),
             ),
