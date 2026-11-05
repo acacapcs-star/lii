@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/security/local_settings_service.dart';
+import '../../../core/theme/mood_theme_service.dart';
+import '../../../core/widgets/floating_app_brand.dart';
 import '../../../core/widgets/luna_orb.dart';
 import '../../../l10n/app_language.dart';
 
@@ -72,6 +74,13 @@ const _pages = <_Page>[
     bodyEn:
         'Pacer Lift saves what people said to you as\ncable cars; one comes back on a hard day.\nRules choose the moment, but a person\nwrote the words.',
     bg: [Color(0xFF4A6B8F), Color(0xFF2E4A6B), Color(0xFF1A2E4A)],
+  ),
+  _Page(
+    titleZh: '選一個你喜歡的氛圍',
+    titleEn: 'Choose your vibe',
+    bodyZh: '點一下球球，就能看到彩蛋預覽。\n滑動下方選單，換個心情換個底色。',
+    bodyEn: 'Tap the orb to preview the season\'s effect.\nSwipe to pick an atmosphere.',
+    bg: [Color(0xFF3A5A7A), Color(0xFF1E3A5A), Color(0xFF0F1F36)],
   ),
   _Page(
     titleZh: '沒有你的同意\n不會有人知道',
@@ -222,7 +231,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: 150, child: Center(child: _art(i))),
+          SizedBox(height: i == 6 ? 220 : 150, child: Center(child: _art(i))),
           const SizedBox(height: 34),
           Text(
             isZh ? p.titleZh : p.titleEn,
@@ -275,6 +284,8 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
             width: 132, height: 132, child: LunaOrbLive(w: 0));
       case 5:
         return _cableCar();
+      case 6:
+        return _atmosphereArt();
       default:
         return Icon(Icons.lock_outline_rounded,
             size: 74, color: Colors.white.withValues(alpha: 0.85));
@@ -406,7 +417,23 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
     );
   }
 
-  /// 纜線上掛著一張卡
+  // ── 氛圍選擇頁 ──────────────────────────────────────────────────────────────
+  static const _atmList = [
+    (MoodTheme.christmas,  '🎄 聖誕節', Color(0xFFFFFBF5)),
+    (MoodTheme.newYear,    '🧧 過年',   Color(0xFFFFF3F3)),
+    (MoodTheme.spring,     '🌸 春',     Color(0xFFFCE4EC)),
+    (MoodTheme.summer,     '☀️ 夏',     Color(0xFFE0F7FA)),
+    (MoodTheme.autumn,     '🍁 秋',     Color(0xFFFBE9E0)),
+    (MoodTheme.winter,     '❄️ 冬',     Color(0xFFE8F0F7)),
+    (MoodTheme.winterBreak,'🧣 寒假',   Color(0xFFF3E9E0)),
+    (MoodTheme.summerBreak,'🏖️ 暑假',   Color(0xFFFFF3D6)),
+    (MoodTheme.none,       '✨ 無氛圍', Color(0xFF4A7FA5)),
+  ];
+
+  Widget _atmosphereArt() {
+    return _AtmospherePanel(atmList: _atmList);
+  }
+
   Widget _cableCar() {
     return SizedBox(
       width: 200,
@@ -456,6 +483,114 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ── 氛圍選擇面板（獨立 ConsumerStatefulWidget，方便管理狀態）────────────────
+class _AtmospherePanel extends ConsumerStatefulWidget {
+  final List<(MoodTheme, String, Color)> atmList;
+  const _AtmospherePanel({required this.atmList});
+
+  @override
+  ConsumerState<_AtmospherePanel> createState() => _AtmospherePanelState();
+}
+
+class _AtmospherePanelState extends ConsumerState<_AtmospherePanel> {
+  int _selected = -1; // -1 = 未選
+  late final ScrollController _scrollCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollCtrl = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pick(int idx) async {
+    setState(() => _selected = idx);
+    final mood = widget.atmList[idx].$1;
+    await ref.read(moodThemeProvider.notifier).setMood(mood);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // 被繩子綁著的球 + 點擊提示
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            const FloatingAppBrandIcon(size: 90),
+            Positioned(
+              bottom: -4,
+              child: Text(
+                '點擊球即可查看預覽彩蛋',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.55),
+                  fontSize: 11,
+                  letterSpacing: 0.8,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        // 可滾動輪播選單
+        SizedBox(
+          height: 68,
+          child: ListView.builder(
+            controller: _scrollCtrl,
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            itemCount: widget.atmList.length,
+            itemBuilder: (ctx, i) {
+              final (_, label, bg) = widget.atmList[i];
+              final isOn = _selected == i;
+              final center = i == widget.atmList.length ~/ 2;
+              // 距離中心的「淡化」邏輯交由 scroll offset 計算較複雜，
+              // 這裡用選中高亮 + 未選半透明作簡易版
+              final alpha = isOn ? 1.0 : (center ? 0.75 : 0.45);
+              return GestureDetector(
+                onTap: () => _pick(i),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 220),
+                  margin: const EdgeInsets.symmetric(horizontal: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: bg.withValues(alpha: isOn ? 0.9 : 0.25),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: isOn ? 0.9 : 0.3),
+                      width: isOn ? 2 : 1,
+                    ),
+                    boxShadow: isOn
+                        ? [BoxShadow(color: bg.withValues(alpha: 0.5), blurRadius: 10, spreadRadius: 1)]
+                        : null,
+                  ),
+                  child: Opacity(
+                    opacity: alpha,
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        color: isOn ? const Color(0xFF1A2A3A) : Colors.white,
+                        fontSize: 13,
+                        fontWeight: isOn ? FontWeight.w700 : FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
