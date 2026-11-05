@@ -153,11 +153,16 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
     final atmPage = _i == _pages.length - 2; // 倒數第二頁 = 氛圍選擇頁
 
     // 背景顏色：與首頁相同邏輯 — 季節氛圍優先，否則用燈光模式
+    // fallback 深藍，避免 provider 初始值是白色時整頁銀灰
+    const _defaultBg = Color(0xFF2C5282);
     final moodIsDark = ref.watch(backgroundThemeProvider).mode == BgMode.dark;
     final moodColor = ref.watch(moodThemeProvider).backgroundColorFor(moodIsDark);
+    final _providerBg = ref.watch(backgroundThemeProvider).backgroundColor;
     final bgBase = moodColor.a != 0
         ? moodColor
-        : ref.watch(backgroundThemeProvider).backgroundColor;
+        : (_providerBg == Colors.white || _providerBg.computeLuminance() > 0.5
+            ? _defaultBg
+            : _providerBg);
 
     return Scaffold(
       body: AnimatedContainer(
