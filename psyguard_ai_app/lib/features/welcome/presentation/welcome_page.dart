@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/security/local_settings_service.dart';
-import '../../../core/theme/background_theme_service.dart';
 import '../../../l10n/app_language.dart';
 
 class _Page {
@@ -60,13 +59,6 @@ const List<_Page> _pages = [
     'Pacer Lift saves what people said to you as\ncable cars; one comes back on a hard day.\nRules choose the moment,\nbut a person wrote the words.',
   ),
   _Page(
-    '🎨',
-    '選一個氛圍\n陪你開始',
-    'Pick an atmosphere\nto begin with',
-    '之後長按天上的球可以隨時切換',
-    'Long-press the orb anytime to change it',
-  ),
-  _Page(
     '🔒',
     '沒有你的同意\n不會有人知道',
     'Nothing leaves\nwithout you',
@@ -85,7 +77,6 @@ class WelcomePage extends ConsumerStatefulWidget {
 class _WelcomePageState extends ConsumerState<WelcomePage> {
   final _ctrl = PageController();
   int _i = 0;
-  BgColorChoice? _selectedAtm;
 
   @override
   void dispose() {
@@ -97,7 +88,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
     final settings = ref.read(localSettingsServiceProvider);
     await settings.setWelcomeSeen();
     await settings.setConsentAccepted(version: 1);
-    if (mounted) context.go('/home');
+    if (mounted) context.go('/pet');
   }
 
   @override
@@ -144,9 +135,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
                   controller: _ctrl,
                   itemCount: _pages.length,
                   onPageChanged: (v) => setState(() => _i = v),
-                  itemBuilder: (context, i) => i == _pages.length - 2
-                      ? _atmSlide(isZh)
-                      : _slide(_pages[i], isZh, i == 0),
+                  itemBuilder: (context, i) => _slide(_pages[i], isZh, i == 0),
                 ),
               ),
               // 進度點
@@ -250,75 +239,6 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
               height: 1.85,
               color: Colors.white.withValues(alpha: 0.78),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _atmSlide(bool isZh) {
-    const items = [
-      (icon: '💙', labelZh: '藍光', choice: BgColorChoice.blueLight,    bg: Color(0xFF2A4A7A)),
-      (icon: '💚', labelZh: '綠光', choice: BgColorChoice.greenLight,   bg: Color(0xFF2A5A3A)),
-      (icon: '🌸', labelZh: '粉光', choice: BgColorChoice.pinkLight,    bg: Color(0xFF6A3A5A)),
-      (icon: '🌈', labelZh: '彩虹', choice: BgColorChoice.rainbowLight, bg: Color(0xFF4A3A6A)),
-      (icon: '🌙', labelZh: '深藍', choice: BgColorChoice.navyDark,     bg: Color(0xFF0D1A3A)),
-      (icon: '🌲', labelZh: '森林', choice: BgColorChoice.forestDark,   bg: Color(0xFF0D2A1A)),
-      (icon: '⬛', labelZh: '純黑', choice: BgColorChoice.pureBlack,    bg: Color(0xFF0D0D0D)),
-    ];
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text('🎨', style: TextStyle(fontSize: 52)),
-          const SizedBox(height: 28),
-          const Text(
-            '選一個氛圍\n陪你開始',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600, height: 1.4, color: Colors.white),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            isZh ? '之後長按天上的球可以隨時切換' : 'Long-press the orb anytime to change it',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14.5, height: 1.85, color: Colors.white.withValues(alpha: 0.78)),
-          ),
-          const SizedBox(height: 32),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 12,
-            runSpacing: 12,
-            children: items.map((a) {
-              final selected = _selectedAtm == a.choice;
-              return GestureDetector(
-                onTap: () {
-                  setState(() => _selectedAtm = a.choice);
-                  ref.read(backgroundThemeProvider.notifier).setColor(a.choice);
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: 72,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    color: a.bg.withValues(alpha: 0.75),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: selected ? Colors.white : Colors.white.withValues(alpha: 0.2),
-                      width: selected ? 2.5 : 1,
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(a.icon, style: const TextStyle(fontSize: 26)),
-                      const SizedBox(height: 4),
-                      Text(a.labelZh, style: TextStyle(fontSize: 10, color: Colors.white.withValues(alpha: 0.85))),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
           ),
         ],
       ),
