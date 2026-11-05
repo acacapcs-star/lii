@@ -465,20 +465,45 @@ class _OrbDemoState extends State<_OrbDemo> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 240,
+      height: 260,
       child: Stack(
         alignment: Alignment.center,
         children: [
+          // 提示文字
           Positioned(
             bottom: 0,
             child: Text(
-              _joystick ? '拖動換位置・拉開調大小・再點兩下鎖定' : '點兩下解鎖操控',
+              _joystick ? '拖動換位置・再點兩下鎖定' : '點兩下解鎖操控',
               style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.5),
                   fontSize: 12,
                   letterSpacing: 1),
             ),
           ),
+
+          // ＋／－ 大小按鈕（解鎖後才顯示）
+          if (_joystick)
+            Positioned(
+              bottom: 24,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _SizeBtn(
+                    icon: Icons.remove,
+                    onTap: () => setState(
+                        () => _scale = (_scale - 0.1).clamp(0.5, 2.0)),
+                  ),
+                  const SizedBox(width: 24),
+                  _SizeBtn(
+                    icon: Icons.add,
+                    onTap: () => setState(
+                        () => _scale = (_scale + 0.1).clamp(0.5, 2.0)),
+                  ),
+                ],
+              ),
+            ),
+
+          // 球本體
           Transform.translate(
             offset: _pos,
             child: GestureDetector(
@@ -507,6 +532,29 @@ class _OrbDemoState extends State<_OrbDemo> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SizeBtn extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  const _SizeBtn({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white.withValues(alpha: 0.15),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+        ),
+        child: Icon(icon, color: Colors.white, size: 18),
       ),
     );
   }
