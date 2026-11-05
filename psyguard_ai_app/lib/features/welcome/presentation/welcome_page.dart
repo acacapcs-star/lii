@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/security/local_settings_service.dart';
 import '../../../core/theme/background_theme_service.dart';
 import '../../../core/theme/mood_theme_service.dart';
-import '../../../core/widgets/luna_orb.dart';
+import '../../../core/widgets/floating_app_brand.dart';
 import '../../../l10n/app_language.dart';
 
 // ── 頁面資料 ──────────────────────────────────────────────────────────────────
@@ -436,7 +436,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
   }
 }
 
-// ── 球球互動示範（第 4 頁用）────────────────────────────────────────────────
+// ── 球球互動示範（第 4 頁用）：FloatingAppBrandIcon 有繩子的球，可拖動縮放 ──
 class _OrbDemo extends StatefulWidget {
   const _OrbDemo();
   @override
@@ -452,7 +452,7 @@ class _OrbDemoState extends State<_OrbDemo> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 220,
+      height: 240,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -488,8 +488,7 @@ class _OrbDemoState extends State<_OrbDemo> {
                     : null,
                 child: Transform.scale(
                   scale: _scale,
-                  child: const SizedBox(
-                      width: 120, height: 120, child: LunaOrbLive(w: 0)),
+                  child: const FloatingAppBrandIcon(size: 110),
                 ),
               ),
             ),
