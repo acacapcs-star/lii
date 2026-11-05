@@ -338,16 +338,43 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
 
   // ── 一般內容頁 ──────────────────────────────────────────────────────────────
   Widget _slide(_Page p, bool isZh, bool isCover, int pageIdx) {
+    // index 4：球球頁，全頁自由拖動
+    if (pageIdx == 4) {
+      return Stack(
+        children: [
+          const Positioned.fill(child: _OrbDemo()),
+          Positioned(
+            left: 32, right: 32, bottom: 20,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  isZh ? p.titleZh : p.titleEn,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontSize: 25, fontWeight: FontWeight.w600,
+                      height: 1.4, color: Colors.white),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  isZh ? p.bodyZh : p.bodyEn,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 13, height: 1.8,
+                      color: Colors.white.withValues(alpha: 0.75)),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // index 4：球球示範
-          if (pageIdx == 4) ...[
-            const _OrbDemo(),
-            const SizedBox(height: 16),
-          ] else if (p.emoji.isNotEmpty) ...[
+          if (p.emoji.isNotEmpty) ...[
             Text(p.emoji, style: const TextStyle(fontSize: 52)),
             const SizedBox(height: 28),
           ],
@@ -489,9 +516,7 @@ class _OrbDemoState extends State<_OrbDemo> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 200,
-      child: Stack(
+    return Stack(
         alignment: Alignment.center,
         children: [
           // 提示文字
@@ -557,8 +582,7 @@ class _OrbDemoState extends State<_OrbDemo> {
             ),
           ),
         ],
-      ),
-    );
+      );
   }
 }
 
