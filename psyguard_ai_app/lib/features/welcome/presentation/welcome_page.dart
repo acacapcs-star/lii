@@ -30,7 +30,7 @@ const List<_Page> _pages = [
       '給台灣青少年的\n心理健康夥伴',
       'A mental health companion\nbuilt for youth in Taiwan'),
   _Page('🔉', '狀況越差\n它說得越少', 'The worse it gets,\nthe less it says',
-      '大部分 App 在你最累的時候講最多話。\nlii 相反，分數越高，它越安靜。',
+      '大部分 App 在你最累的時候講最多話。\nlii 相反，ERS 分數越高，它越安靜。',
       'Most apps talk more when you are struggling.\nlii does the opposite: the higher the score,\nthe quieter it gets.'),
   _Page('📊', '每天一分鐘\n分數看得懂', 'One minute a day',
       '記情緒、睡眠時間、入睡難易度。\nERS 把三種訊號算成一個分數，\n每個數字都追得到來源，不是 AI 猜的。',
@@ -42,10 +42,10 @@ const List<_Page> _pages = [
       '點一下：陪你呼吸，從你的速度慢慢放慢\n長按：看水晶收藏，練習過會變成水晶\n拖著走：換位置\n拉四個角：調大小',
       'Tap: breathe with Luna. It starts at your own\npace, then slows down.\nHold: your crystals, unlocked by practice.\nDrag to move it. Pull a corner to resize.'),
   _Page('🚡', '別人說過的話\n留到你需要的那天', 'Saved for the day\nyou need it',
-      'Pacer Lift 把有人對你說過的話收成纜車，\n心情低的那天自己浮上來。\n時機是規則挑的，話是人說的。',
+      '把值得收藏的一段話，製作成一張 Pacer，\nLift 在你需要的時候把它送到你面前',
       'Pacer Lift saves what people said to you as\ncable cars; one comes back on a hard day.\nRules choose the moment,\nbut a person wrote the words.'),
   _Page('', '選一個氛圍\n陪你開始', 'Pick an atmosphere\nto begin with',
-      '之後長按天上的球可以隨時切換',
+      '長按夜空球可以隨時切換',
       'Long-press the orb anytime to change it'),
   _Page('🔒', '沒有你的同意\n不會有人知道', 'Nothing leaves\nwithout you',
       '日記加密留在手機裡。\n危機字詞在送進 AI 之前就被攔下。\nlii 不是醫療工具，也不能取代專業人員。',
@@ -517,7 +517,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
           const SizedBox(height: 10),
           Text(
             isZh
-                ? '之後長按天上的球可以隨時切換'
+                ? '長按夜空球可以隨時切換'
                 : 'Long-press the orb anytime to change it',
             textAlign: TextAlign.center,
             style: TextStyle(
