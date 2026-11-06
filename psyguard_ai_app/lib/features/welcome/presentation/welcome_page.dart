@@ -296,7 +296,13 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
                       itemCount: _pages.length,
                       onPageChanged: (v) => setState(() => _i = v),
                       itemBuilder: (context, i) => i == _pages.length - 2
-                          ? _atmSlide(isZh)
+                          ? _AtmSlide(
+                              isZh: isZh,
+                              items: _atmItems,
+                              selectedIdx: _selectedAtmIdx,
+                              onSelect: _selectAtm,
+                              previewCtrl: _previewCtrl,
+                            )
                           : _slide(_pages[i], isZh, i == 0, i),
                     ),
                   ),
@@ -482,7 +488,48 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
   }
 
   // ── 氛圍選擇頁 ──────────────────────────────────────────────────────────────
-  Widget _atmSlide(bool isZh) {
+}
+
+// ── 氛圍選擇頁（獨立 StatefulWidget，確保 tile 選中狀態即時更新）────────────
+class _AtmSlide extends StatefulWidget {
+  final bool isZh;
+  final List<_AtmItem> items;
+  final int selectedIdx;
+  final Future<void> Function(int) onSelect;
+  final AnimationController previewCtrl;
+
+  const _AtmSlide({
+    required this.isZh,
+    required this.items,
+    required this.selectedIdx,
+    required this.onSelect,
+    required this.previewCtrl,
+  });
+
+  @override
+  State<_AtmSlide> createState() => _AtmSlideState();
+}
+
+class _AtmSlideState extends State<_AtmSlide> {
+  late int _sel;
+
+  @override
+  void initState() {
+    super.initState();
+    _sel = widget.selectedIdx;
+  }
+
+  @override
+  void didUpdateWidget(_AtmSlide old) {
+    super.didUpdateWidget(old);
+    if (old.selectedIdx != widget.selectedIdx) {
+      setState(() => _sel = widget.selectedIdx);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isZh = widget.isZh;
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -492,16 +539,15 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
           // 有繩子的球：點一下彩蛋，長按切換氛圍（循環）
           GestureDetector(
             onTap: () {
-              // 點擊球：直接觸發彩蛋預覽卡片
-              _previewCtrl.forward(from: 0);
+              widget.previewCtrl.forward(from: 0);
               Future.delayed(const Duration(seconds: 3), () {
-                if (mounted) _previewCtrl.reverse();
+                if (mounted) widget.previewCtrl.reverse();
               });
             },
             onLongPress: () {
-              // 長按：切換到下一個氛圍
-              final next = (_selectedAtmIdx + 1) % _atmItems.length;
-              _selectAtm(next);
+              final next = (_sel + 1) % widget.items.length;
+              setState(() => _sel = next);
+              widget.onSelect(next);
             },
             child: const FloatingAppBrandIcon(size: 90),
           ),
@@ -510,20 +556,15 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
             isZh ? '選一個氛圍\n陪你開始' : 'Pick an atmosphere\nto begin with',
             textAlign: TextAlign.center,
             style: const TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.w600,
-                height: 1.4,
-                color: Colors.white),
+                fontSize: 25, fontWeight: FontWeight.w600,
+                height: 1.4, color: Colors.white),
           ),
           const SizedBox(height: 10),
           Text(
-            isZh
-                ? '長按夜空球可以隨時切換'
-                : 'Long-press the orb anytime to change it',
+            isZh ? '長按夜空球可以隨時切換' : 'Long-press the orb anytime to change it',
             textAlign: TextAlign.center,
             style: TextStyle(
-                fontSize: 14.5,
-                height: 1.85,
+                fontSize: 14.5, height: 1.85,
                 color: Colors.white.withValues(alpha: 0.78)),
           ),
           const SizedBox(height: 24),
@@ -531,16 +572,13 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
             alignment: WrapAlignment.center,
             spacing: 10,
             runSpacing: 10,
-            children: List.generate(_atmItems.length, (idx) {
-              final a = _atmItems[idx];
-              final selected = _selectedAtmIdx == idx;
+            children: List.generate(widget.items.length, (idx) {
+              final a = widget.items[idx];
+              final selected = _sel == idx;
               return GestureDetector(
                 onTap: () {
-                  _selectAtm(idx);
-                  _previewCtrl.forward(from: 0);
-                  Future.delayed(const Duration(seconds: 3), () {
-                    if (mounted) _previewCtrl.reverse();
-                  });
+                  setState(() => _sel = idx);
+                  widget.onSelect(idx);
                 },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
@@ -559,28 +597,26 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(a.emoji,
-                          style: const TextStyle(fontSize: 22)),
+                      Text(a.emoji, style: const TextStyle(fontSize: 22)),
                       const SizedBox(height: 3),
                       Text(isZh ? a.labelZh : a.labelEn,
                           style: TextStyle(
                               fontSize: 9,
-                              color:
-                                  Colors.white.withValues(alpha: 0.85))),
+                              color: Colors.white.withValues(alpha: 0.85))),
                     ],
                   ),
                 ),
               );
             }),
           ),
-          // 選中氛圍後在下方顯示彩蛋卡（方便小螢幕捲到這裡看）
-          if (_selectedAtmIdx >= 0) ...[
+          // 選中氛圍後在下方同步顯示彩蛋卡
+          if (_sel >= 0) ...[
             const SizedBox(height: 20),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
               child: _EasterCard(
-                key: ValueKey(_selectedAtmIdx),
-                item: _atmItems[_selectedAtmIdx],
+                key: ValueKey(_sel),
+                item: widget.items[_sel],
                 isZh: isZh,
               ),
             ),
