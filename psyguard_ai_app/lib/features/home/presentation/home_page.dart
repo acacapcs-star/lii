@@ -279,6 +279,7 @@ class HomePage extends ConsumerWidget {
     final zh = copy.isZhTw;
     final items = <(String, String, IconData)>[
       ('/home', copy.navHome, Icons.home_rounded),
+      ('/welcome', zh ? '🌙 夜空球' : '🌙 Night Orb', Icons.auto_awesome_rounded),
       ('#', zh ? '每日紀錄' : 'Daily', Icons.circle),
       ('/dashboard', zh ? '儀表板' : 'Dashboard', Icons.dashboard_rounded),
       ('/checkin', copy.navCheckin, Icons.edit_note_rounded),

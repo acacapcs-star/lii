@@ -26,20 +26,20 @@ class BookmarkQuickAdd {
 
     // 倒著加，因為 add() 是 insert(0)，最後一句會排在最上面
     await add(
-      quote: "Remember to take time to breathe.",
-      author: 'Homeroom teacher',
+      quote: "以後都可以跟我講喔 0v0/",
+      author: 'lii',
       toneIndex: 4,
       colorIndex: 4,
     );
     await add(
-      quote: "It's okay if you did nothing today. You were breathing.",
-      author: 'Luna',
+      quote: "把想說的話存在這裡，它會在對的時候出現。",
+      author: 'lii',
       toneIndex: 2,
       colorIndex: 2,
     );
     await add(
-      quote: "Right now, nothing is happening. You are safe.",
-      author: 'Luna',
+      quote: "嗨，初次見面捏 =w=",
+      author: 'lii',
       toneIndex: 0,
       colorIndex: 0,
     );
