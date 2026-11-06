@@ -131,11 +131,41 @@ final homeDashboardProvider =
   );
 });
 
-class HomePage extends ConsumerWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
+  final _nameCtrl = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadName();
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadName() async {
+    final name = await ref.read(localSettingsServiceProvider).getUserName();
+    if (mounted && name != null) _nameCtrl.text = name;
+  }
+
+  Future<void> _saveName(String val) async {
+    final name = val.trim();
+    if (name.isEmpty) return;
+    await ref.read(localSettingsServiceProvider).setUserName(name);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final dashboard = ref.watch(homeDashboardProvider);
     final theme = Theme.of(context);
     final copy = AppStrings.of(ref.watch(appLanguageControllerProvider));
@@ -324,11 +354,31 @@ class HomePage extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Image.asset(
-                      'assets/images/lii_ball.png',
-                      width: 52,
-                      height: 52,
-                      fit: BoxFit.contain,
+                    Row(
+                      children: [
+                        Image.asset(
+                          'assets/images/lii_ball.png',
+                          width: 52,
+                          height: 52,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            controller: _nameCtrl,
+                            style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
+                            decoration: InputDecoration(
+                              hintText: 'lii 要怎麼稱呼你？',
+                              hintStyle: const TextStyle(color: Colors.white54, fontSize: 15),
+                              enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white38)),
+                              focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(vertical: 4),
+                            ),
+                            onSubmitted: _saveName,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

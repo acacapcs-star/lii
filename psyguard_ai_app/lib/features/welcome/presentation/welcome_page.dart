@@ -27,7 +27,7 @@ class _Page {
 
 const List<_Page> _pages = [
   _Page('', 'lii', 'lii',
-      '給台灣青少年的\n心理健康夥伴',
+      '想聊聊，lii 一直都在',
       'A mental health companion\nbuilt for youth in Taiwan'),
   _Page('🔉', '狀況越差\n它說得越少', 'The worse it gets,\nthe less it says',
       '大部分 App 在你最累的時候講最多話。\nlii 相反，ERS 分數越高，它越安靜。',
@@ -128,48 +128,6 @@ const _atmItems = [
     easterImg: 'assets/images/mood_icecream.png',
     easterZh: '暑假就該吃冰淇淋', easterEn: 'Ice cream season!',
   ),
-  _AtmItem(
-    emoji: '💙', labelZh: '藍光', labelEn: 'Blue',
-    bg: Color(0xFF2A4A7A), bgColor: BgColorChoice.blueLight,
-    easterImg: 'assets/images/mood_drink_1.png',
-    easterZh: '藍色讓心靜下來', easterEn: 'Blue calms the mind',
-  ),
-  _AtmItem(
-    emoji: '💚', labelZh: '綠光', labelEn: 'Green',
-    bg: Color(0xFF2A5A3A), bgColor: BgColorChoice.greenLight,
-    easterImg: 'assets/images/mood_paw_1.png',
-    easterZh: '綠光裡有個小腳印', easterEn: 'A paw print in the green',
-  ),
-  _AtmItem(
-    emoji: '🌸', labelZh: '粉光', labelEn: 'Pink',
-    bg: Color(0xFF6A3A5A), bgColor: BgColorChoice.pinkLight,
-    easterImg: 'assets/images/mood_petal_1.png',
-    easterZh: '粉色花瓣飄下來', easterEn: 'Pink petals falling',
-  ),
-  _AtmItem(
-    emoji: '🌈', labelZh: '彩虹', labelEn: 'Rainbow',
-    bg: Color(0xFF4A3A6A), bgColor: BgColorChoice.rainbowLight,
-    easterImg: 'assets/images/mood_fish_1.png',
-    easterZh: '彩虹尾端有條魚', easterEn: 'A fish at the rainbow\'s end',
-  ),
-  _AtmItem(
-    emoji: '🌙', labelZh: '深藍', labelEn: 'Navy',
-    bg: Color(0xFF0D1A3A), bgColor: BgColorChoice.navyDark,
-    easterImg: 'assets/images/mood_penguin.png',
-    easterZh: '深夜企鵝陪你', easterEn: 'A penguin in the dark',
-  ),
-  _AtmItem(
-    emoji: '🌲', labelZh: '森林', labelEn: 'Forest',
-    bg: Color(0xFF0D2A1A), bgColor: BgColorChoice.forestDark,
-    easterImg: 'assets/images/mood_fox_lamp.jpg',
-    easterZh: '森林裡的狐狸燈', easterEn: 'Fox lamp in the forest',
-  ),
-  _AtmItem(
-    emoji: '⬛', labelZh: '純黑', labelEn: 'Black',
-    bg: Color(0xFF0D0D0D), bgColor: BgColorChoice.pureBlack,
-    easterImg: 'assets/images/mood_hq_boy.png',
-    easterZh: '黑暗中有人陪你', easterEn: 'Someone\'s here in the dark',
-  ),
 ];
 
 // ── WelcomePage ───────────────────────────────────────────────────────────────
@@ -182,6 +140,7 @@ class WelcomePage extends ConsumerStatefulWidget {
 class _WelcomePageState extends ConsumerState<WelcomePage>
     with TickerProviderStateMixin {
   final _ctrl = PageController();
+  final _nameCtrl = TextEditingController();
   int _i = 0;
 
   // 氛圍選擇狀態
@@ -206,12 +165,15 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
   @override
   void dispose() {
     _ctrl.dispose();
+    _nameCtrl.dispose();
     _previewCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _finish() async {
     final settings = ref.read(localSettingsServiceProvider);
+    final name = _nameCtrl.text.trim();
+    if (name.isNotEmpty) await settings.setUserName(name);
     await settings.setWelcomeSeen();
     await settings.setConsentAccepted(version: 1);
     if (mounted) context.go('/home');
@@ -296,7 +258,21 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
                       itemCount: _pages.length,
                       onPageChanged: (v) => setState(() => _i = v),
                       itemBuilder: (context, i) => i == _pages.length - 2
-                          ? _atmSlide(isZh)
+                          ? _AtmSlide(
+                              isZh: isZh,
+                              items: _atmItems,
+                              selectedIdx: _selectedAtmIdx,
+                              onSelect: _selectAtm,
+                              previewCtrl: _previewCtrl,
+                              onApply: () {
+                                // 從 sidebar 進來（已看過 welcome）→ pop 回首頁
+                                if (Navigator.of(context).canPop()) {
+                                  context.pop();
+                                } else {
+                                  _finish();
+                                }
+                              },
+                            )
                           : _slide(_pages[i], isZh, i == 0, i),
                     ),
                   ),
@@ -361,45 +337,6 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
                 ],
               ),
 
-              // 彩蛋 / 已套用浮動卡片
-              if (atmPage)
-                Positioned(
-                  bottom: 120,
-                  left: 20,
-                  right: 20,
-                  child: FadeTransition(
-                    opacity: _previewFade,
-                    child: SlideTransition(
-                      position: _previewSlide,
-                      child: Center(
-                        child: _selectedAtmIdx >= 0
-                            ? _EasterCard(
-                                item: _atmItems[_selectedAtmIdx],
-                                isZh: isZh,
-                              )
-                            : Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 24, vertical: 16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white
-                                      .withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                      color: Colors.white
-                                          .withValues(alpha: 0.3)),
-                                ),
-                                child: Text(
-                                  isZh ? '點下方選一個氛圍' : 'Pick one below',
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
-                ),
             ],
           ),
         ),
@@ -476,31 +413,95 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
                 height: 1.85,
                 color: Colors.white.withValues(alpha: 0.78)),
           ),
+          if (isCover) ...[
+            const SizedBox(height: 32),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 260),
+              child: TextField(
+                controller: _nameCtrl,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white, fontSize: 15),
+                decoration: InputDecoration(
+                  hintText: isZh ? 'lii 要怎麼稱呼你？（暱稱也可以）' : 'What should lii call you? (nickname is fine)',
+                  hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.45), fontSize: 14),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.4)),
+                  ),
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white, width: 1.5),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
 
   // ── 氛圍選擇頁 ──────────────────────────────────────────────────────────────
-  Widget _atmSlide(bool isZh) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+}
+
+// ── 氛圍選擇頁（獨立 StatefulWidget，確保 tile 選中狀態即時更新）────────────
+class _AtmSlide extends StatefulWidget {
+  final bool isZh;
+  final List<_AtmItem> items;
+  final int selectedIdx;
+  final Future<void> Function(int) onSelect;
+  final AnimationController previewCtrl;
+  final VoidCallback? onApply;
+
+  const _AtmSlide({
+    required this.isZh,
+    required this.items,
+    required this.selectedIdx,
+    required this.onSelect,
+    required this.previewCtrl,
+    this.onApply,
+  });
+
+  @override
+  State<_AtmSlide> createState() => _AtmSlideState();
+}
+
+class _AtmSlideState extends State<_AtmSlide> {
+  late int _sel;
+
+  @override
+  void initState() {
+    super.initState();
+    _sel = widget.selectedIdx;
+  }
+
+  @override
+  void didUpdateWidget(_AtmSlide old) {
+    super.didUpdateWidget(old);
+    if (old.selectedIdx != widget.selectedIdx) {
+      setState(() => _sel = widget.selectedIdx);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isZh = widget.isZh;
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // 有繩子的球：點一下彩蛋，長按切換氛圍（循環）
           GestureDetector(
             onTap: () {
-              // 點擊球：直接觸發彩蛋預覽卡片
-              _previewCtrl.forward(from: 0);
+              widget.previewCtrl.forward(from: 0);
               Future.delayed(const Duration(seconds: 3), () {
-                if (mounted) _previewCtrl.reverse();
+                if (mounted) widget.previewCtrl.reverse();
               });
             },
             onLongPress: () {
-              // 長按：切換到下一個氛圍
-              final next = (_selectedAtmIdx + 1) % _atmItems.length;
-              _selectAtm(next);
+              final next = (_sel + 1) % widget.items.length;
+              setState(() => _sel = next);
+              widget.onSelect(next);
             },
             child: const FloatingAppBrandIcon(size: 90),
           ),
@@ -509,69 +510,93 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
             isZh ? '選一個氛圍\n陪你開始' : 'Pick an atmosphere\nto begin with',
             textAlign: TextAlign.center,
             style: const TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.w600,
-                height: 1.4,
-                color: Colors.white),
+                fontSize: 25, fontWeight: FontWeight.w600,
+                height: 1.4, color: Colors.white),
           ),
           const SizedBox(height: 10),
           Text(
-            isZh
-                ? '長按夜空球可以隨時切換'
-                : 'Long-press the orb anytime to change it',
+            isZh ? '長按夜空球可以隨時切換' : 'Long-press the orb anytime to change it',
             textAlign: TextAlign.center,
             style: TextStyle(
-                fontSize: 14.5,
-                height: 1.85,
+                fontSize: 14.5, height: 1.85,
                 color: Colors.white.withValues(alpha: 0.78)),
           ),
           const SizedBox(height: 24),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 10,
-            runSpacing: 10,
-            children: List.generate(_atmItems.length, (idx) {
-              final a = _atmItems[idx];
-              final selected = _selectedAtmIdx == idx;
-              return GestureDetector(
-                onTap: () {
-                  _selectAtm(idx);
-                  _previewCtrl.forward(from: 0);
-                  Future.delayed(const Duration(seconds: 3), () {
-                    if (mounted) _previewCtrl.reverse();
-                  });
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: a.bg.withValues(alpha: 0.75),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: selected
-                          ? Colors.white
-                          : Colors.white.withValues(alpha: 0.2),
-                      width: selected ? 2.5 : 1,
+          // 最大寬度 480 讓 tile 在寬螢幕也強制換行（每行最多 ~6 個）
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 10,
+              runSpacing: 10,
+              children: List.generate(widget.items.length, (idx) {
+                final a = widget.items[idx];
+                final selected = _sel == idx;
+                return GestureDetector(
+                  onTap: () {
+                    setState(() => _sel = idx);
+                    widget.onSelect(idx);
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: a.bg.withValues(alpha: 0.75),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: selected
+                            ? Colors.white
+                            : Colors.white.withValues(alpha: 0.2),
+                        width: selected ? 2.5 : 1,
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(a.emoji, style: const TextStyle(fontSize: 22)),
+                        const SizedBox(height: 3),
+                        Text(isZh ? a.labelZh : a.labelEn,
+                            style: TextStyle(
+                                fontSize: 9,
+                                color: Colors.white.withValues(alpha: 0.85))),
+                      ],
                     ),
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(a.emoji,
-                          style: const TextStyle(fontSize: 22)),
-                      const SizedBox(height: 3),
-                      Text(isZh ? a.labelZh : a.labelEn,
-                          style: TextStyle(
-                              fontSize: 9,
-                              color:
-                                  Colors.white.withValues(alpha: 0.85))),
-                    ],
+                );
+              }),
+            ),
+          ),
+          // 選中氛圍後在下方同步顯示彩蛋卡 + 套用返回按鈕
+          if (_sel >= 0) ...[
+            const SizedBox(height: 20),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: _EasterCard(
+                key: ValueKey(_sel),
+                item: widget.items[_sel],
+                isZh: isZh,
+              ),
+            ),
+            const SizedBox(height: 16),
+            if (widget.onApply != null)
+              GestureDetector(
+                onTap: widget.onApply,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
+                  ),
+                  child: Text(
+                    isZh ? '✓ 套用並返回' : '✓ Apply & Go Back',
+                    style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                 ),
-              );
-            }),
-          ),
+              ),
+            const SizedBox(height: 16),
+          ],
         ],
       ),
     );
@@ -582,7 +607,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
 class _EasterCard extends StatefulWidget {
   final _AtmItem item;
   final bool isZh;
-  const _EasterCard({required this.item, required this.isZh});
+  const _EasterCard({super.key, required this.item, required this.isZh});
   @override
   State<_EasterCard> createState() => _EasterCardState();
 }
@@ -710,6 +735,7 @@ class _OrbDemoState extends State<_OrbDemo> {
   // 球位置：null = 畫面正中央
   Offset? _pos;
   double _size = 90.0;
+  double _scaleBase = 90.0;  // pinch-to-zoom 起始大小
   bool _ctrlOpen = false;
   Timer? _hideCtrl;
   Timer? _stickTimer;
@@ -841,6 +867,13 @@ class _OrbDemoState extends State<_OrbDemo> {
             onTap: () => showLiiBreath(context, mood: BreathMood.calm),
             onLongPress: () => showCrystalCollection(context),
             onDoubleTap: _openCtrl,
+            onScaleStart: (_) => _scaleBase = _size,
+            onScaleUpdate: (d) {
+              if (d.pointerCount >= 2) {
+                // 雙指 pinch-to-zoom
+                setState(() => _size = (_scaleBase * d.scale).clamp(_minSize, _maxSize));
+              }
+            },
             child: Image.asset('assets/images/lii_ball.png'),
           ),
         ),
@@ -854,7 +887,7 @@ class _OrbDemoState extends State<_OrbDemo> {
             child: Text(
               _ctrlOpen
                   ? '搖桿移動・+/-調大小・再點兩下關閉'
-                  : '點一下・長按・拖著走・點兩下操控',
+                  : '點一下・長按・雙指縮放・點兩下操控',
               style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.5),
                   fontSize: 12,
