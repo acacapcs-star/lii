@@ -596,7 +596,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
 class _EasterCard extends StatefulWidget {
   final _AtmItem item;
   final bool isZh;
-  const _EasterCard({required this.item, required this.isZh});
+  const _EasterCard({super.key, required this.item, required this.isZh});
   @override
   State<_EasterCard> createState() => _EasterCardState();
 }
