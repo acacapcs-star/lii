@@ -492,6 +492,23 @@ Long-pressing the floating lii orb (`floating_app_brand.dart`) opens the
 atmosphere menu; `mood_fall_overlay.dart` is the app-wide falling-effect
 controller, playing once per call.
 
+### Onboarding atmosphere selection: `welcome/presentation/welcome_page.dart`
+
+The 7th slide (second-to-last) of the first-launch onboarding lets users pick an atmosphere before entering the app. The choice is applied immediately, and an easter-egg card for that atmosphere appears below the grid.
+
+| Atmosphere | Easter egg |
+|---|---|
+| 🎄 Christmas | Santa Cat is watching |
+| 🧧 Lunar NY | Happy New Year! |
+| 🌸 Spring | A bunny hides in spring |
+| ☀️ Summer | Summer beach awaits |
+| 🍂 Autumn | A fox hides in the leaves |
+| ❄️ Winter | Snowcat in the snow |
+| ⛷️ Winter Hols | Baby penguin on vacation |
+| 🏖️ Summer Hols | Ice cream season! |
+
+The easter-egg image bounces once on selection (sin curve, plays once). Re-entering this page from the sidebar shows an "Apply & Go Back" button that pops instead of re-running the full onboarding flow.
+
 ---
 
 ## Appearance: colour, image, and one name that no longer means what it says

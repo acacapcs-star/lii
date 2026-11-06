@@ -328,6 +328,23 @@ onboarding 之後會跳一次說明，因為沒人知道的設定跟不存在的
 
 `floating_app_brand.dart` 的飄浮 lii 球長按即可叫出氛圍選單，`mood_fall_overlay.dart` 是全 App 共用的飄落控制器，呼叫一次播放一次。
 
+### Onboarding 氛圍選擇：`welcome/presentation/welcome_page.dart`
+
+首次啟動的第 7 頁（倒數第二頁）讓使用者在進入 App 之前先選定一種氛圍。選擇後立即套用，並顯示該氛圍專屬的彩蛋卡片。
+
+| 氛圍 | 彩蛋圖說（中） | 彩蛋圖說（英） |
+|---|---|---|
+| 🎄 聖誕節 | 聖誕貓貓在偷看你 | Santa Cat is watching |
+| 🧧 過年 | 恭喜發財，紅包拿來 | Happy New Year! |
+| 🌸 春 | 春天藏了一隻兔兔 | A bunny hides in spring |
+| ☀️ 夏 | 夏日海灘等你來 | Summer beach awaits |
+| 🍂 秋 | 落葉裡躲著一隻狐狸 | A fox hides in the leaves |
+| ❄️ 冬 | 雪地裡有個雪貓咪 | Snowcat in the snow |
+| ⛷️ 寒假 | 寒假小企鵝出沒 | Baby penguin on vacation |
+| 🏖️ 暑假 | 暑假就該吃冰淇淋 | Ice cream season! |
+
+選中後彩蛋圖片會跳一下（sin 曲線，播一次即停），顯示「已套用這個氛圍 ✓」。從側欄重新進入此頁時，「套用並返回」會直接 `pop` 而不重跑 onboarding 流程。
+
 ---
 
 ## 外觀：顏色、圖片，以及一個已經名不符實的名字
