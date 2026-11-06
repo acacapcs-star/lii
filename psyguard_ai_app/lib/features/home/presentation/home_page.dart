@@ -164,6 +164,68 @@ class _HomePageState extends ConsumerState<HomePage> {
     await ref.read(localSettingsServiceProvider).setUserName(name);
   }
 
+  void _showBgPicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (ctx) {
+        const moods = [
+          (MoodTheme.none, '無', '😶'),
+          (MoodTheme.christmas, '聖誕節', '🎄'),
+          (MoodTheme.newYear, '過年', '🧧'),
+          (MoodTheme.spring, '春', '🌸'),
+          (MoodTheme.summer, '夏', '☀️'),
+          (MoodTheme.autumn, '秋', '🍂'),
+          (MoodTheme.winter, '冬', '❄️'),
+          (MoodTheme.winterBreak, '寒假', '⛷️'),
+          (MoodTheme.summerBreak, '暑假', '🏖️'),
+        ];
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('選擇氛圍', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 20),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  alignment: WrapAlignment.center,
+                  children: moods.map((m) {
+                    return GestureDetector(
+                      onTap: () {
+                        ref.read(moodThemeProvider.notifier).setMood(m.$1);
+                        Navigator.pop(ctx);
+                      },
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 60, height: 60,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: const Color(0xFFF5F5F5),
+                              border: Border.all(color: Colors.grey.shade300, width: 1.5),
+                            ),
+                            child: Center(child: Text(m.$3, style: const TextStyle(fontSize: 28))),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(m.$2, style: const TextStyle(fontSize: 12)),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final dashboard = ref.watch(homeDashboardProvider);
@@ -199,7 +261,10 @@ class _HomePageState extends ConsumerState<HomePage> {
           centerTitle: true,
           title: Padding(
             padding: const EdgeInsets.only(top: 10),
-            child: FloatingAppBrandIcon(size: 66),
+            child: GestureDetector(
+              onLongPress: () => _showBgPicker(context),
+              child: FloatingAppBrandIcon(size: 66),
+            ),
           ),
         ),
         body: PawTapLayer(
