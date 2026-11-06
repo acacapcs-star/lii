@@ -1146,7 +1146,7 @@ lii/
             ├── persona/presentation/
             │   └── persona_page.dart           6 隻動物 · 不用做題
             ├── welcome/presentation/
-            │   ├── welcome_page.dart
+            │   ├── welcome_page.dart           onboarding 氛圍選擇 · 8 種主題 · 各含彩蛋圖
             │   └── consent_page.dart           分項授權
             ├── onboarding/
             │   └── onboarding_guide.dart       4 張卡 · 只跳一次

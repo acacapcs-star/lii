@@ -1324,7 +1324,7 @@ lii/
             ├── profile/presentation/
             │   └── profile_page.dart           saved things and settings
             ├── welcome/presentation/
-            │   ├── welcome_page.dart
+            │   ├── welcome_page.dart           onboarding atmosphere · 8 themes · each with easter egg
             │   └── consent_page.dart           granular consent
             ├── onboarding/
             │   └── onboarding_guide.dart       4 cards · shown once
