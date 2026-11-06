@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'mood_fall_overlay.dart';
 import 'snow_cap.dart';
 import '../theme/mood_theme_service.dart';
+import '../theme/background_theme_service.dart';
 import '../security/local_settings_service.dart';
 import '../../l10n/app_language.dart';
 
@@ -46,60 +47,131 @@ class _FloatingAppBrandIconState extends ConsumerState<FloatingAppBrandIcon>
   void _showMoodPicker() {
     final isZh = ref.read(appLanguageControllerProvider) == AppLanguage.zhTw;
     final currentMood = ref.read(moodThemeProvider);
+    final currentBg = ref.read(backgroundThemeProvider).colorChoice;
+
+    // 完整 15 種氛圍，與 welcome page 保持同步
+    // (emoji, labelZh, labelEn, moodTheme?, bgColor?)
+    const items = [
+      ('🎄', '聖誕節', 'Christmas',   MoodTheme.christmas,  null),
+      ('🧧', '過年',   'Lunar NY',    MoodTheme.newYear,    null),
+      ('🌸', '春',     'Spring',      MoodTheme.spring,     null),
+      ('☀️', '夏',     'Summer',      MoodTheme.summer,     null),
+      ('🍂', '秋',     'Autumn',      MoodTheme.autumn,     null),
+      ('❄️', '冬',     'Winter',      MoodTheme.winter,     null),
+      ('⛷️', '寒假',   'Winter Hols', MoodTheme.winterBreak, null),
+      ('🏖️', '暑假',   'Summer Hols', MoodTheme.summerBreak, null),
+      ('💙', '藍光',   'Blue',        null, BgColorChoice.blueLight),
+      ('💚', '綠光',   'Green',       null, BgColorChoice.greenLight),
+      ('🌸', '粉光',   'Pink',        null, BgColorChoice.pinkLight),
+      ('🌈', '彩虹',   'Rainbow',     null, BgColorChoice.rainbowLight),
+      ('🌙', '深藍',   'Navy',        null, BgColorChoice.navyDark),
+      ('🌲', '森林',   'Forest',      null, BgColorChoice.forestDark),
+      ('⬛', '純黑',   'Black',       null, BgColorChoice.pureBlack),
+    ];
+
+    // tile 背景色（深色系，與 welcome page 同）
+    const tileBgs = [
+      Color(0xFF1A4A2A), // 聖誕節
+      Color(0xFF5A1A1A), // 過年
+      Color(0xFF6A3A5A), // 春
+      Color(0xFF1A4A5A), // 夏
+      Color(0xFF5A3A1A), // 秋
+      Color(0xFF1A3A5A), // 冬
+      Color(0xFF2A3A4A), // 寒假
+      Color(0xFF4A3A1A), // 暑假
+      Color(0xFF2A4A7A), // 藍光
+      Color(0xFF2A5A3A), // 綠光
+      Color(0xFF6A3A5A), // 粉光
+      Color(0xFF4A3A6A), // 彩虹
+      Color(0xFF0D1A3A), // 深藍
+      Color(0xFF0D2A1A), // 森林
+      Color(0xFF0D0D0D), // 純黑
+    ];
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: const Color(0xFF1A2A4A),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (ctx) {
         return SafeArea(
           child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  isZh ? '選擇氛圍' : 'Choose a Mood',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 16),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  alignment: WrapAlignment.center,
-                  children: MoodTheme.values.map((mood) {
-                    final selected = mood == currentMood;
-                    return GestureDetector(
-                      onTap: () {
-                        ref.read(moodThemeProvider.notifier).setMood(mood);
-                        Navigator.pop(ctx);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: selected ? const Color(0xFF0ABFBC).withValues(alpha: 0.15) : Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(
-                            color: selected ? const Color(0xFF0ABFBC) : Colors.grey.shade300,
-                            width: selected ? 1.5 : 1,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 拖曳把手
+                  Container(
+                    width: 36, height: 4,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  Text(
+                    isZh ? '選擇氛圍' : 'Choose a Mood',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+                  ),
+                  const SizedBox(height: 16),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 480),
+                    child: Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      alignment: WrapAlignment.center,
+                      children: List.generate(items.length, (i) {
+                        final (emoji, zh, en, mood, bgColor) = items[i];
+                        final selected = mood != null
+                            ? mood == currentMood
+                            : bgColor != null && bgColor == currentBg && currentMood == MoodTheme.none;
+                        return GestureDetector(
+                          onTap: () {
+                            if (mood != null) {
+                              ref.read(moodThemeProvider.notifier).setMood(mood);
+                            } else if (bgColor != null) {
+                              ref.read(moodThemeProvider.notifier).setMood(MoodTheme.none);
+                              ref.read(backgroundThemeProvider.notifier).setColor(bgColor);
+                            }
+                            Navigator.pop(ctx);
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 150),
+                            width: 64,
+                            height: 64,
+                            decoration: BoxDecoration(
+                              color: tileBgs[i].withValues(alpha: 0.85),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: selected
+                                    ? Colors.white
+                                    : Colors.white.withValues(alpha: 0.2),
+                                width: selected ? 2.5 : 1,
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(emoji, style: const TextStyle(fontSize: 22)),
+                                const SizedBox(height: 3),
+                                Text(
+                                  isZh ? zh : en,
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                    color: Colors.white.withValues(alpha: 0.85),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          isZh ? mood.labelZh() : mood.labelEn(),
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: selected ? const Color(0xFF0ABFBC) : Colors.black87,
-                            fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ],
+                        );
+                      }),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
           ),
         );
       },

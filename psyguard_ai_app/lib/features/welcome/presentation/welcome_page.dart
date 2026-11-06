@@ -128,48 +128,6 @@ const _atmItems = [
     easterImg: 'assets/images/mood_icecream.png',
     easterZh: '暑假就該吃冰淇淋', easterEn: 'Ice cream season!',
   ),
-  _AtmItem(
-    emoji: '💙', labelZh: '藍光', labelEn: 'Blue',
-    bg: Color(0xFF2A4A7A), bgColor: BgColorChoice.blueLight,
-    easterImg: 'assets/images/mood_drink_1.png',
-    easterZh: '藍色讓心靜下來', easterEn: 'Blue calms the mind',
-  ),
-  _AtmItem(
-    emoji: '💚', labelZh: '綠光', labelEn: 'Green',
-    bg: Color(0xFF2A5A3A), bgColor: BgColorChoice.greenLight,
-    easterImg: 'assets/images/mood_paw_1.png',
-    easterZh: '綠光裡有個小腳印', easterEn: 'A paw print in the green',
-  ),
-  _AtmItem(
-    emoji: '🌸', labelZh: '粉光', labelEn: 'Pink',
-    bg: Color(0xFF6A3A5A), bgColor: BgColorChoice.pinkLight,
-    easterImg: 'assets/images/mood_petal_1.png',
-    easterZh: '粉色花瓣飄下來', easterEn: 'Pink petals falling',
-  ),
-  _AtmItem(
-    emoji: '🌈', labelZh: '彩虹', labelEn: 'Rainbow',
-    bg: Color(0xFF4A3A6A), bgColor: BgColorChoice.rainbowLight,
-    easterImg: 'assets/images/mood_fish_1.png',
-    easterZh: '彩虹尾端有條魚', easterEn: 'A fish at the rainbow\'s end',
-  ),
-  _AtmItem(
-    emoji: '🌙', labelZh: '深藍', labelEn: 'Navy',
-    bg: Color(0xFF0D1A3A), bgColor: BgColorChoice.navyDark,
-    easterImg: 'assets/images/mood_penguin.png',
-    easterZh: '深夜企鵝陪你', easterEn: 'A penguin in the dark',
-  ),
-  _AtmItem(
-    emoji: '🌲', labelZh: '森林', labelEn: 'Forest',
-    bg: Color(0xFF0D2A1A), bgColor: BgColorChoice.forestDark,
-    easterImg: 'assets/images/mood_fox_lamp.jpg',
-    easterZh: '森林裡的狐狸燈', easterEn: 'Fox lamp in the forest',
-  ),
-  _AtmItem(
-    emoji: '⬛', labelZh: '純黑', labelEn: 'Black',
-    bg: Color(0xFF0D0D0D), bgColor: BgColorChoice.pureBlack,
-    easterImg: 'assets/images/mood_hq_boy.png',
-    easterZh: '黑暗中有人陪你', easterEn: 'Someone\'s here in the dark',
-  ),
 ];
 
 // ── WelcomePage ───────────────────────────────────────────────────────────────
@@ -375,45 +333,6 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
                 ],
               ),
 
-              // 彩蛋 / 已套用浮動卡片
-              if (atmPage)
-                Positioned(
-                  bottom: 120,
-                  left: 20,
-                  right: 20,
-                  child: FadeTransition(
-                    opacity: _previewFade,
-                    child: SlideTransition(
-                      position: _previewSlide,
-                      child: Center(
-                        child: _selectedAtmIdx >= 0
-                            ? _EasterCard(
-                                item: _atmItems[_selectedAtmIdx],
-                                isZh: isZh,
-                              )
-                            : Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 24, vertical: 16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white
-                                      .withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                      color: Colors.white
-                                          .withValues(alpha: 0.3)),
-                                ),
-                                child: Text(
-                                  isZh ? '點下方選一個氛圍' : 'Pick one below',
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
-                ),
             ],
           ),
         ),
