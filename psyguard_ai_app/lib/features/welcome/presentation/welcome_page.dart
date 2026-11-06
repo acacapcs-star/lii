@@ -302,6 +302,14 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
                               selectedIdx: _selectedAtmIdx,
                               onSelect: _selectAtm,
                               previewCtrl: _previewCtrl,
+                              onApply: () {
+                                // 從 sidebar 進來（已看過 welcome）→ pop 回首頁
+                                if (Navigator.of(context).canPop()) {
+                                  context.pop();
+                                } else {
+                                  _finish();
+                                }
+                              },
                             )
                           : _slide(_pages[i], isZh, i == 0, i),
                     ),
@@ -497,6 +505,7 @@ class _AtmSlide extends StatefulWidget {
   final int selectedIdx;
   final Future<void> Function(int) onSelect;
   final AnimationController previewCtrl;
+  final VoidCallback? onApply;
 
   const _AtmSlide({
     required this.isZh,
@@ -504,6 +513,7 @@ class _AtmSlide extends StatefulWidget {
     required this.selectedIdx,
     required this.onSelect,
     required this.previewCtrl,
+    this.onApply,
   });
 
   @override
@@ -568,48 +578,52 @@ class _AtmSlideState extends State<_AtmSlide> {
                 color: Colors.white.withValues(alpha: 0.78)),
           ),
           const SizedBox(height: 24),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 10,
-            runSpacing: 10,
-            children: List.generate(widget.items.length, (idx) {
-              final a = widget.items[idx];
-              final selected = _sel == idx;
-              return GestureDetector(
-                onTap: () {
-                  setState(() => _sel = idx);
-                  widget.onSelect(idx);
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: a.bg.withValues(alpha: 0.75),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: selected
-                          ? Colors.white
-                          : Colors.white.withValues(alpha: 0.2),
-                      width: selected ? 2.5 : 1,
+          // 最大寬度 480 讓 tile 在寬螢幕也強制換行（每行最多 ~6 個）
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 10,
+              runSpacing: 10,
+              children: List.generate(widget.items.length, (idx) {
+                final a = widget.items[idx];
+                final selected = _sel == idx;
+                return GestureDetector(
+                  onTap: () {
+                    setState(() => _sel = idx);
+                    widget.onSelect(idx);
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: a.bg.withValues(alpha: 0.75),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: selected
+                            ? Colors.white
+                            : Colors.white.withValues(alpha: 0.2),
+                        width: selected ? 2.5 : 1,
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(a.emoji, style: const TextStyle(fontSize: 22)),
+                        const SizedBox(height: 3),
+                        Text(isZh ? a.labelZh : a.labelEn,
+                            style: TextStyle(
+                                fontSize: 9,
+                                color: Colors.white.withValues(alpha: 0.85))),
+                      ],
                     ),
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(a.emoji, style: const TextStyle(fontSize: 22)),
-                      const SizedBox(height: 3),
-                      Text(isZh ? a.labelZh : a.labelEn,
-                          style: TextStyle(
-                              fontSize: 9,
-                              color: Colors.white.withValues(alpha: 0.85))),
-                    ],
-                  ),
-                ),
-              );
-            }),
+                );
+              }),
+            ),
           ),
-          // 選中氛圍後在下方同步顯示彩蛋卡
+          // 選中氛圍後在下方同步顯示彩蛋卡 + 套用返回按鈕
           if (_sel >= 0) ...[
             const SizedBox(height: 20),
             AnimatedSwitcher(
@@ -620,6 +634,23 @@ class _AtmSlideState extends State<_AtmSlide> {
                 isZh: isZh,
               ),
             ),
+            const SizedBox(height: 16),
+            if (widget.onApply != null)
+              GestureDetector(
+                onTap: widget.onApply,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
+                  ),
+                  child: Text(
+                    isZh ? '✓ 套用並返回' : '✓ Apply & Go Back',
+                    style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ),
             const SizedBox(height: 16),
           ],
         ],
