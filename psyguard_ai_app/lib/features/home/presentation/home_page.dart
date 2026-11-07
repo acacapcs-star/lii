@@ -196,6 +196,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     return GestureDetector(
                       onTap: () {
                         ref.read(moodThemeProvider.notifier).setMood(m.$1);
+                        ref.read(moodFallControllerProvider).play();
                         Navigator.pop(ctx);
                       },
                       child: Column(
@@ -262,6 +263,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           title: Padding(
             padding: const EdgeInsets.only(top: 10),
             child: GestureDetector(
+              onTap: () => ref.read(moodFallControllerProvider).play(),
               onLongPress: () => _showBgPicker(context),
               child: FloatingAppBrandIcon(size: 66),
             ),
