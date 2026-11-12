@@ -710,26 +710,6 @@ class _HomeContentState extends State<_HomeContent> {
 
     final exploreCards = [
       _cardData(
-        copy.navCheckin,
-        copy.emotionalRelease,
-        Icons.edit_note_rounded,
-        const Color(0xFFC85341),
-        '/checkin',
-        copy.isZhTw
-            ? '把心裡的感受寫下來，讓自己慢慢看見、慢慢理解。'
-            : 'Write down what you feel so you can see and understand it more gently.',
-      ),
-      _cardData(
-        copy.navSleep,
-        copy.sleepStatus,
-        Icons.bedtime_outlined,
-        const Color(0xFF8FC841),
-        '/sleep',
-        copy.isZhTw
-            ? '看見每晚的睡眠變化，慢慢找回適合自己的作息節奏。'
-            : 'Track nightly sleep changes and rebuild a rhythm that fits you.',
-      ),
-      _cardData(
         copy.navChat,
         copy.supportiveChat,
         Icons.forum_outlined,
@@ -748,6 +728,26 @@ class _HomeContentState extends State<_HomeContent> {
         copy.isZhTw
             ? '說「嘿，在嗎？」，直接講出來就好。'
             : 'Say "Hey Luna" to wake up your companion.',
+      ),
+      _cardData(
+        copy.navSleep,
+        copy.sleepStatus,
+        Icons.bedtime_outlined,
+        const Color(0xFF8FC841),
+        '/sleep',
+        copy.isZhTw
+            ? '看見每晚的睡眠變化，慢慢找回適合自己的作息節奏。'
+            : 'Track nightly sleep changes and rebuild a rhythm that fits you.',
+      ),
+      _cardData(
+        copy.navCheckin,
+        copy.emotionalRelease,
+        Icons.edit_note_rounded,
+        const Color(0xFFC85341),
+        '/checkin',
+        copy.isZhTw
+            ? '把心裡的感受寫下來，讓自己慢慢看見、慢慢理解。'
+            : 'Write down what you feel so you can see and understand it more gently.',
       ),
     ];
 
@@ -861,13 +861,16 @@ class _HomeContentState extends State<_HomeContent> {
           crossAxisCount: 2,
           mainAxisSpacing: 14,
           crossAxisSpacing: 14,
-          childAspectRatio: 1.15,
+          childAspectRatio: 1.0,
           children: [
-            ...exploreCards.map((card) {
+            ...exploreCards.asMap().entries.map((entry) {
+            final idx = entry.key;
+            final card = entry.value;
             final isBoldTarget =
                 _hasNegativeSignal &&
                 (card['route'] == '/chat' || card['route'] == '/tools');
             final isShakeTarget = _isHighRisk && (card['route'] == '/safety');
+            final labels = ['1', '2', '3', '4'];
 
             return MicroShake(
               enabled: isShakeTarget,
@@ -883,6 +886,7 @@ class _HomeContentState extends State<_HomeContent> {
                 isBold: isBoldTarget,
                 tooltipTitle: card['title'] as String,
                 tooltipDescription: card['tooltip'] as String,
+                cornerLabel: idx < labels.length ? labels[idx] : null,
               ),
             );
           }),
@@ -942,7 +946,7 @@ class _HomeContentState extends State<_HomeContent> {
           crossAxisCount: 2,
           mainAxisSpacing: 14,
           crossAxisSpacing: 14,
-          childAspectRatio: 1.15,
+          childAspectRatio: 1.0,
           children: [
             _InteractiveCard(
               title: copy.isZhTw ? '我的水晶' : 'My Crystals',
@@ -1011,7 +1015,7 @@ class _HomeContentState extends State<_HomeContent> {
           crossAxisCount: 2,
           mainAxisSpacing: 14,
           crossAxisSpacing: 14,
-          childAspectRatio: 1.15,
+          childAspectRatio: 1.0,
           children: [
             _InteractiveCard(
               title: copy.isZhTw ? '我的專屬格言' : 'My Quote Cards',
@@ -1157,6 +1161,7 @@ class _InteractiveCard extends StatefulWidget {
     this.tooltipTitle,
     this.tooltipDescription,
     this.onTapOverride,
+    this.cornerLabel,
   });
 
   final String title;
@@ -1169,6 +1174,7 @@ class _InteractiveCard extends StatefulWidget {
   final String? tooltipTitle;
   final String? tooltipDescription;
   final VoidCallback? onTapOverride;
+  final String? cornerLabel;
 
   @override
   State<_InteractiveCard> createState() => _InteractiveCardState();
@@ -1283,45 +1289,64 @@ class _InteractiveCardState extends State<_InteractiveCard>
             borderRadius: BorderRadius.circular(24),
 
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Stack(
             children: [
-              FoxPocket(
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: widget.color.withValues(alpha: 0.24),
-                    borderRadius: BorderRadius.circular(12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FoxPocket(
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: widget.color.withValues(alpha: 0.24),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(widget.icon, color: widget.color, size: 20),
+                    ),
                   ),
-                  child: Icon(widget.icon, color: widget.color, size: 20),
-                ),
+                  const SizedBox(height: 10),
+                  Text(
+                    widget.title,
+                    style: GoogleFonts.nunitoSans(
+                      fontSize: 15,
+                      fontWeight:
+                          widget.isBold ? FontWeight.w600 : FontWeight.w600,
+                      color: onCard,
+                      height: 1.15,
+                    ),
+                    maxLines: 1,
+                    softWrap: true,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    widget.subtitle,
+                    style: GoogleFonts.nunitoSans(
+                      fontSize: 11,
+                      color: onCardSoft,
+                    ),
+                    maxLines: 1,
+                    softWrap: true,
+                  ),
+                ],
               ),
-              const SizedBox(height: 10),
-              Text(
-                widget.title,
-                style: GoogleFonts.nunitoSans(
-                  fontSize: 15,
-                  fontWeight:
-                      widget.isBold ? FontWeight.w600 : FontWeight.w600,
-                  color: onCard,
-                  height: 1.15,
+              if (widget.cornerLabel != null)
+                Positioned(
+                  right: widget.cornerLabel == '1' || widget.cornerLabel == '3' ? 8 : null,
+                  left: widget.cornerLabel == '2' || widget.cornerLabel == '4' ? 8 : null,
+                  bottom: widget.cornerLabel == '1' || widget.cornerLabel == '2' ? 8 : null,
+                  top: widget.cornerLabel == '3' || widget.cornerLabel == '4' ? 8 : null,
+                  child: Text(
+                    widget.cornerLabel!,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: onCardSoft.withValues(alpha: 0.5),
+                    ),
+                  ),
                 ),
-                maxLines: 1,
-                softWrap: true,
-              ),
-              const SizedBox(height: 2),
-              Text(
-                widget.subtitle,
-                style: GoogleFonts.nunitoSans(
-                  fontSize: 11,
-                  color: onCardSoft,
-                ),
-                maxLines: 1,
-                softWrap: true,
-              ),
             ],
           ),
         ),
