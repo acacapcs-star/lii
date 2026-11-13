@@ -377,6 +377,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     final zh = copy.isZhTw;
     final items = <(String, String, IconData)>[
       ('/home', copy.navHome, Icons.home_rounded),
+      ('/welcome', zh ? '歡迎頁' : 'Welcome', Icons.auto_awesome),
       ('#', zh ? '每日紀錄' : 'Daily', Icons.circle),
       ('/dashboard', zh ? '儀表板' : 'Dashboard', Icons.dashboard_rounded),
       ('/checkin', copy.navCheckin, Icons.edit_note_rounded),
