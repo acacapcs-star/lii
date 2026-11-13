@@ -1154,6 +1154,7 @@ class _GroundingPageState extends ConsumerState<GroundingPage> {
   final _page = PageController();
   final _fall = MoodFallController();
   int _index = 0;
+  bool _showIntro = true; // 先顯示說明頁
 
   /// 五頁各自的輸入框：5、4、3、2、1 格
   late final List<List<TextEditingController>> _ctrls = [
@@ -1255,6 +1256,58 @@ class _GroundingPageState extends ConsumerState<GroundingPage> {
           zh ? '寫下你此刻身體的一種感覺' : 'One thing your body feels',
           zh ? '腳踩在地上，那就是你在這裡的證據。' : 'Your feet on the floor. You are here.'),
     ];
+
+    // 說明頁
+    if (_showIntro) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFF7F4FF),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(28, 24, 28, 28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.close_rounded, size: 22),
+                  color: const Color(0xFF6A41C8),
+                  onPressed: () => Navigator.of(context).pop(false),
+                ),
+                const SizedBox(height: 24),
+                const Text('5-4-3-2-1', style: TextStyle(fontSize: 13, color: Color(0xFF6A41C8), fontWeight: FontWeight.w600, letterSpacing: 1.2)),
+                const SizedBox(height: 8),
+                Text(
+                  zh ? '五感回神' : 'Grounding',
+                  style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w700, color: Color(0xFF1A1A2E)),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  zh
+                      ? '當焦慮、恐慌或思緒打結的時候，大腦會陷在「想像的威脅」裡，忘記你其實在安全的地方。\n\n五感回神讓你用五種感官——視覺、觸覺、聽覺、嗅覺、體感——把注意力拉回此刻、此地、此身。\n\n研究顯示這個方法可以在幾分鐘內降低焦慮感，對於恐慌發作或情緒過載特別有效。'
+                      : 'When anxiety, panic, or racing thoughts take over, your brain gets stuck in imagined threats and forgets you\'re actually safe.\n\nGrounding uses your five senses — sight, touch, sound, smell, and feeling — to bring your attention back to the present moment.\n\nResearch shows this can reduce anxiety within minutes, especially during panic or emotional overwhelm.',
+                  style: const TextStyle(fontSize: 15.5, height: 1.7, color: Color(0xFF3A3A4A)),
+                ),
+                const Spacer(),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFF6A41C8),
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
+                    onPressed: () => setState(() => _showIntro = false),
+                    child: Text(
+                      zh ? '開始' : 'Start',
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     final s = steps[_index];
     final left = _remaining(_index);
@@ -1746,7 +1799,47 @@ class _EmotionDictPageState extends ConsumerState<EmotionDictPage> {
         _Word('平靜', 'Calm', '沒什麼特別的，那也很好', 'Nothing special, and that is fine'),
         _Word('放鬆', 'At ease', '肩膀鬆下來了', 'My shoulders dropped'),
         _Word('有點期待', 'Looking forward', '有件事在前面等著', 'Something is waiting ahead'),
+        _Word('安心', 'Relieved', '擔心的事沒發生', 'What I feared did not happen'),
+      ],
+    ),
+    _EmotionGroup(
+      '喜悅', 'Joyful', Icons.wb_sunny_outlined,
+      Color(0xFFC8A841),
+      [
+        _Word('開心', 'Happy', '有件事讓你笑了', 'Something made you smile'),
+        _Word('雀躍', 'Excited', '快要發生的事讓你跳起來', 'Something coming makes you jump'),
+        _Word('滿足', 'Content', '剛好就很好', 'Just right is enough'),
+        _Word('輕盈', 'Light', '好像什麼都可以', 'Everything feels possible'),
+      ],
+    ),
+    _EmotionGroup(
+      '感謝', 'Grateful', Icons.favorite_border_outlined,
+      Color(0xFF41C86F),
+      [
+        _Word('感激', 'Thankful', '有人幫了你一把', 'Someone helped you along'),
+        _Word('被記得', 'Remembered', '對方沒忘記你', 'They did not forget you'),
+        _Word('有人在', 'Supported', '不是一個人在撐', 'You are not holding this alone'),
         _Word('感謝', 'Grateful', '有人做了什麼讓你記得', 'Someone did something I remember'),
+      ],
+    ),
+    _EmotionGroup(
+      '驕傲', 'Proud', Icons.emoji_events_outlined,
+      Color(0xFF41A8C8),
+      [
+        _Word('做到了', 'Did it', '自己也沒想到', 'Even you did not expect it'),
+        _Word('有進步', 'Growing', '跟以前的自己比', 'Compared to who you were'),
+        _Word('被肯定', 'Recognized', '有人看見你做的事', 'Someone saw what you did'),
+        _Word('相信自己', 'Confident', '這次感覺做得來', 'This time it feels doable'),
+      ],
+    ),
+    _EmotionGroup(
+      '被愛', 'Loved', Icons.volunteer_activism_outlined,
+      Color(0xFFC84179),
+      [
+        _Word('被疼到', 'Cherished', '有人特別對你好', 'Someone was especially kind to you'),
+        _Word('被接住', 'Held', '說出口了，對方接住了', 'You said it, and they caught it'),
+        _Word('歸屬感', 'Belonging', '這裡有你的位置', 'There is a place here for you'),
+        _Word('不孤單', 'Not alone', '有人陪著你', 'Someone is with you'),
       ],
     ),
   ];

@@ -981,7 +981,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
             ),
           if (_all.isNotEmpty)
             IconButton(
-              tooltip: zh ? '清空罐子' : 'Empty the jar',
+              tooltip: zh ? '清空記憶庫' : 'Empty the vault',
               icon: const Icon(Icons.delete_sweep_outlined),
               onPressed: () => _clearJar(zh),
             ),
@@ -1125,8 +1125,9 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
               ),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
             children: [
               for (final g in EmotionGroup.values)
                 Semantics(
@@ -1358,9 +1359,9 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(zh ? '清空罐子？' : 'Empty the jar?'),
+        title: Text(zh ? '清空記憶庫？' : 'Empty the vault?'),
         content: Text(zh
-            ? '罐子裡的 $count 顆球都會拿掉。'
+            ? '記憶庫裡的 $count 顆球都會拿掉。'
             : 'All $count balls will be removed.'),
         actions: [
           TextButton(
@@ -1390,7 +1391,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: Text(zh ? '罐子清空了' : 'The jar is empty'),
+          content: Text(zh ? '記憶庫清空了' : 'The vault is empty'),
           duration: const Duration(seconds: 6),
           action: SnackBarAction(
             label: zh ? '復原' : 'Undo',
@@ -1410,7 +1411,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
   Future<void> _chooseKeep(bool zh) async {
     final current = await MemoryBallStore.loadKeep();
     if (!mounted) return;
-    final picked = await showModalBottomSheet<JarKeep>(
+    final picked = await showModalBottomSheet<MemoryVault>(
       context: context,
       showDragHandle: true,
       builder: (context) => SafeArea(
@@ -1425,7 +1426,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
                 child: Text(zh ? '這些光要留多久？' : 'How long should the jar keep balls?',
                     style: Theme.of(context).textTheme.titleMedium),
               ),
-              for (final k in JarKeep.values)
+              for (final k in MemoryVault.values)
                 ListTile(
                   leading: Icon(
                     k == current
@@ -1496,7 +1497,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
           Expanded(
             child: Text(
               zh
-                  ? '罐子快滿了（${_all.length}/${MemoryBallStore.maxBalls}），滿了之後最舊的會被收走。'
+                  ? '記憶庫快滿了（${_all.length}/${MemoryBallStore.maxBalls}），滿了之後最舊的會被收走。'
                   : 'The jar is almost full (${_all.length}/${MemoryBallStore.maxBalls}). The oldest will be removed after that.',
               style: GoogleFonts.nunitoSans(
                 fontSize: 12,

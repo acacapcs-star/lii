@@ -524,7 +524,7 @@ class _AtmSlideState extends State<_AtmSlide> {
           const SizedBox(height: 24),
           // 最大寬度 480 讓 tile 在寬螢幕也強制換行（每行最多 ~6 個）
           ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 480),
+            constraints: const BoxConstraints(maxWidth: 360),
             child: Wrap(
               alignment: WrapAlignment.center,
               spacing: 10,

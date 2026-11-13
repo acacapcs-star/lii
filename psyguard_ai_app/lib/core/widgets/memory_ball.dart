@@ -37,7 +37,7 @@
 /// ── 但刻意不用 ERS 配色 ────────────────────────────────
 ///
 /// 依風險分層自動配色的話，紅燈那天的球會是紅的——
-/// 那等於在記憶裡標記「這天你很糟」。使用者回頭看罐子，
+/// 那等於在記憶裡標記「這天你很糟」。使用者回頭看記憶庫，
 /// 看到一片紅，那不是回顧，是壓力。
 ///
 /// 情緒詞是使用者自己挑的，風險分層是系統判的。
@@ -55,7 +55,7 @@ import 'luna_orb.dart' show GlassTone;
 /// 這個 enum 存在的理由是：讓「情緒組」成為一個型別，
 /// 而不是散在各處的字串。字典那邊改了組名，
 /// 這裡的對應不會跟著壞掉。
-enum EmotionGroup { angry, sad, afraid, tired, pressured, okay }
+enum EmotionGroup {angry, sad, afraid, tired, pressured, okay, joyful, grateful, proud, loved}
 
 extension EmotionGroupX on EmotionGroup {
   /// 六組對六色，一對一。
@@ -63,6 +63,10 @@ extension EmotionGroupX on EmotionGroup {
   /// 這個對應不是隨便配的——每一組本來就有自己的顏色
   /// （字典頁面在用），而 GlassTone 裡剛好有色相最接近的那一個。
   GlassTone get tone => switch (this) {
+        EmotionGroup.joyful => GlassTone.amber,      // 金黃 → 喜悅
+        EmotionGroup.grateful => GlassTone.moss,      // 綠 → 感謝
+        EmotionGroup.proud => GlassTone.sea,          // 青藍 → 驕傲
+        EmotionGroup.loved => GlassTone.dawn,         // 玫瑰 → 被愛
         EmotionGroup.angry => GlassTone.dawn,       // 紅 → 粉紅玫瑰
         EmotionGroup.sad => GlassTone.ice,          // 藍 → 冰藍
         EmotionGroup.afraid => GlassTone.amethyst,  // 紫 → 紫水晶
@@ -72,6 +76,10 @@ extension EmotionGroupX on EmotionGroup {
       };
 
   String get key => switch (this) {
+        EmotionGroup.joyful => 'joyful',
+        EmotionGroup.grateful => 'grateful',
+        EmotionGroup.proud => 'proud',
+        EmotionGroup.loved => 'loved',
         EmotionGroup.angry => 'angry',
         EmotionGroup.sad => 'sad',
         EmotionGroup.afraid => 'afraid',
@@ -81,6 +89,10 @@ extension EmotionGroupX on EmotionGroup {
       };
 
   String label(bool zh) => switch (this) {
+        EmotionGroup.joyful => zh ? '喜悅' : 'Joyful',
+        EmotionGroup.grateful => zh ? '感謝' : 'Grateful',
+        EmotionGroup.proud => zh ? '驕傲' : 'Proud',
+        EmotionGroup.loved => zh ? '被愛' : 'Loved',
         EmotionGroup.angry => zh ? '生氣' : 'Angry',
         EmotionGroup.sad => zh ? '難過' : 'Sad',
         EmotionGroup.afraid => zh ? '害怕' : 'Afraid',
@@ -90,6 +102,10 @@ extension EmotionGroupX on EmotionGroup {
       };
 
   static EmotionGroup fromKey(String k) => switch (k) {
+        'joyful' => EmotionGroup.joyful,
+        'grateful' => EmotionGroup.grateful,
+        'proud' => EmotionGroup.proud,
+        'loved' => EmotionGroup.loved,
         'sad' => EmotionGroup.sad,
         'afraid' => EmotionGroup.afraid,
         'tired' => EmotionGroup.tired,
@@ -100,6 +116,10 @@ extension EmotionGroupX on EmotionGroup {
 
   /// 依字典裡的組名反查。字典用的是中文組名當識別。
   static EmotionGroup fromZhName(String name) => switch (name) {
+        '喜悅' => EmotionGroup.joyful,
+        '感謝' => EmotionGroup.grateful,
+        '驕傲' => EmotionGroup.proud,
+        '被愛' => EmotionGroup.loved,
         '難過' => EmotionGroup.sad,
         '害怕' => EmotionGroup.afraid,
         '累' => EmotionGroup.tired,
@@ -256,7 +276,7 @@ class MemoryBall {
       createdAt.day == other.day;
 }
 
-/// 罐子要保存多久。使用者自己選，預設一直保存。
+/// 記憶庫要保存多久。使用者自己選，預設一直保存。
 ///
 /// ── 為什麼預設不自動刪 ─────────────────────────────────
 ///
@@ -265,32 +285,32 @@ class MemoryBall {
 /// 「上學期期中我都是有壓力，這學期好多了」。
 ///
 /// 一學期取 18 週：高中、大學的壓力幾乎都跟著學期走。
-enum JarKeep { forever, semester, month }
+enum MemoryVault { forever, semester, month }
 
-extension JarKeepX on JarKeep {
+extension MemoryVaultX on MemoryVault {
   /// null 表示一直保存
   int? get days => switch (this) {
-        JarKeep.forever => null,
-        JarKeep.semester => 126,
-        JarKeep.month => 30,
+        MemoryVault.forever => null,
+        MemoryVault.semester => 126,
+        MemoryVault.month => 30,
       };
 
   String label(bool zh) => switch (this) {
-        JarKeep.forever => zh ? '一直留著' : 'Keep everything',
-        JarKeep.semester => zh ? '留一學期' : 'Keep one semester',
-        JarKeep.month => zh ? '留一個月' : 'Keep one month',
+        MemoryVault.forever => zh ? '一直留著' : 'Keep everything',
+        MemoryVault.semester => zh ? '留一學期' : 'Keep one semester',
+        MemoryVault.month => zh ? '留一個月' : 'Keep one month',
       };
 
   String hint(bool zh) => switch (this) {
-        JarKeep.forever => zh ? '直到你自己清空' : 'Until you empty the jar yourself',
-        JarKeep.semester => zh ? '大約 18 週，從開學看到期末' : 'About 18 weeks, a whole term',
-        JarKeep.month => zh ? '只留最近的，罐子輕一點' : 'Only the recent ones',
+        MemoryVault.forever => zh ? '直到你自己清空' : 'Until you empty the jar yourself',
+        MemoryVault.semester => zh ? '大約 18 週，從開學看到期末' : 'About 18 weeks, a whole term',
+        MemoryVault.month => zh ? '只留最近的，記憶庫輕一點' : 'Only the recent ones',
       };
 }
 
 /// 讀寫記憶球。
 ///
-/// 所有方法都容忍資料損壞——一顆球的 JSON 壞掉不該讓整個罐子讀不出來。
+/// 所有方法都容忍資料損壞——一顆球的 JSON 壞掉不該讓整個記憶庫讀不出來。
 class MemoryBallStore {
   static const _key = 'memory_balls';
 
@@ -301,26 +321,26 @@ class MemoryBallStore {
   /// 搬到 Drift 之後這個限制就可以拿掉。
   static const _maxBalls = 500;
 
-  /// 罐子的總上限，和開始提醒「快滿了」的數量
+  /// 記憶庫的總上限，和開始提醒「快滿了」的數量
   static const int maxBalls = _maxBalls;
   static const int nearFull = 450;
 
   static const _keepKey = 'gleam_keep';
 
-  static Future<JarKeep> loadKeep() async {
+  static Future<MemoryVault> loadKeep() async {
     final p = await SharedPreferences.getInstance();
     final name = p.getString(_keepKey);
-    return JarKeep.values.firstWhere((k) => k.name == name,
-        orElse: () => JarKeep.forever);
+    return MemoryVault.values.firstWhere((k) => k.name == name,
+        orElse: () => MemoryVault.forever);
   }
 
-  static Future<void> saveKeep(JarKeep keep) async {
+  static Future<void> saveKeep(MemoryVault keep) async {
     final p = await SharedPreferences.getInstance();
     await p.setString(_keepKey, keep.name);
   }
 
   /// 依使用者選的保存時間，會被拿掉的球有幾顆。換設定前先問用的。
-  static int countExpired(List<MemoryBall> all, JarKeep keep, {DateTime? now}) {
+  static int countExpired(List<MemoryBall> all, MemoryVault keep, {DateTime? now}) {
     final days = keep.days;
     if (days == null) return 0;
     final cutoff = (now ?? DateTime.now()).subtract(Duration(days: days));
@@ -348,7 +368,7 @@ class MemoryBallStore {
       if (list is! List) return [];
       final out = <MemoryBall>[];
       for (final item in list) {
-        // 一顆壞掉就跳過那一顆，不要讓整個罐子讀不出來
+        // 一顆壞掉就跳過那一顆，不要讓整個記憶庫讀不出來
         try {
           if (item is Map<String, dynamic>) out.add(MemoryBall.fromJson(item));
         } catch (_) {}

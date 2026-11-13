@@ -194,8 +194,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                   alignment: WrapAlignment.center,
                   children: moods.map((m) {
                     return GestureDetector(
-                      onTap: () {
-                        ref.read(moodThemeProvider.notifier).setMood(m.$1);
+                      onTap: () async {
+                        await ref.read(moodThemeProvider.notifier).setMood(m.$1);
+                        await Future.delayed(const Duration(milliseconds: 100));
                         ref.read(moodFallControllerProvider).play();
                         Navigator.pop(ctx);
                       },
@@ -209,7 +210,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                               color: const Color(0xFFF5F5F5),
                               border: Border.all(color: Colors.grey.shade300, width: 1.5),
                             ),
-                            child: Center(child: Text(m.$3, style: const TextStyle(fontSize: 28))),
+                            child: Center(child: Text(m.$3, style: TextStyle(fontSize: 28, color: m.$1 == MoodTheme.summer ? const Color(0xFFFFB800) : null))),
                           ),
                           const SizedBox(height: 6),
                           Text(m.$2, style: const TextStyle(fontSize: 12)),
@@ -376,7 +377,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     final zh = copy.isZhTw;
     final items = <(String, String, IconData)>[
       ('/home', copy.navHome, Icons.home_rounded),
-      ('/welcome', zh ? '✨ 歡迎頁' : '✨ Welcome', Icons.auto_awesome_rounded),
+      ('/welcome', zh ? '歡迎頁' : 'Welcome', Icons.auto_awesome_rounded),
       ('#', zh ? '每日紀錄' : 'Daily', Icons.circle),
       ('/dashboard', zh ? '儀表板' : 'Dashboard', Icons.dashboard_rounded),
       ('/checkin', copy.navCheckin, Icons.edit_note_rounded),
@@ -886,7 +887,7 @@ class _HomeContentState extends State<_HomeContent> {
                 isBold: isBoldTarget,
                 tooltipTitle: card['title'] as String,
                 tooltipDescription: card['tooltip'] as String,
-                cornerLabel: idx < labels.length ? labels[idx] : null,
+                
               ),
             );
           }),
@@ -1250,7 +1251,7 @@ class _InteractiveCardState extends State<_InteractiveCard>
             }
           },
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
@@ -1334,10 +1335,10 @@ class _InteractiveCardState extends State<_InteractiveCard>
               ),
               if (widget.cornerLabel != null)
                 Positioned(
-                  right: widget.cornerLabel == '1' || widget.cornerLabel == '3' ? 8 : null,
-                  left: widget.cornerLabel == '2' || widget.cornerLabel == '4' ? 8 : null,
-                  bottom: widget.cornerLabel == '1' || widget.cornerLabel == '2' ? 8 : null,
-                  top: widget.cornerLabel == '3' || widget.cornerLabel == '4' ? 8 : null,
+                  right: widget.cornerLabel == '1' || widget.cornerLabel == '3' ? 4 : null,
+                  left: widget.cornerLabel == '2' || widget.cornerLabel == '4' ? 4 : null,
+                  bottom: widget.cornerLabel == '1' || widget.cornerLabel == '2' ? 4 : null,
+                  top: widget.cornerLabel == '3' || widget.cornerLabel == '4' ? 4 : null,
                   child: Text(
                     widget.cornerLabel!,
                     style: TextStyle(
@@ -1497,13 +1498,14 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
 
   @override
   Widget build(BuildContext context) {
-    final pages = 4;
+    final pages = 3;
     return Column(
       children: [
         SizedBox(
           height: 160,
           child: PageView(
             controller: _ctrl,
+            physics: const ClampingScrollPhysics(),
             onPageChanged: (i) => setState(() => _page = i),
             children: [
               // 頁1：狀態卡片
@@ -1582,85 +1584,18 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
                   );
                 },
               ),
-              // 頁2：寵物卡片
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Colors.white, Color(0xFFDCEBF7)],
-                  ),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                      color: const Color(0xFF4179C8).withValues(alpha: 0.42), width: 4),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF4179C8).withValues(alpha: 0.22),
-                      blurRadius: 16,
-                      offset: const Offset(0, 7),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 80,
-                      height: 80,
-                      child: Center(
-                        child: Image.asset(
-                          'assets/images/lii_ball.png',
-                          width: 56,
-                          height: 56,
-                          fit: BoxFit.contain,
-                          errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(_petName,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF002F70),
-                          )),
-                        const SizedBox(height: 4),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF41B4C8).withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                          child: Consumer(builder: (context, ref, _) {
-                            final zh = AppStrings.of(ref.watch(appLanguageControllerProvider)).isZhTw;
-                            return Text(
-                              zh ? '一直都在' : 'Always here',
-                              style: const TextStyle(fontSize: 12, color: Color(0xFF41B4C8)),
-                            );
-                          }),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
               // 頁3：桃紅便條紙
               StickyNotePage(
                 color: const Color(0xFFF7E4EF),
                 borderColor: const Color(0xFFC841A0),
-                hintText: 'Jot anything down... 🌸',
+                hintText: '隨手記點什麼... 🌸',
                 storageKey: 'sticky_pink',
               ),
               // 頁4：薄荷綠便條紙
               StickyNotePage(
                 color: const Color(0xFFE4F5F0),
                 borderColor: const Color(0xFF41C8A2),
-                hintText: 'Key priorities today... 🌿',
+                hintText: '今天最重要的事... 🌿',
                 storageKey: 'sticky_mint',
               ),
             ],
@@ -1722,7 +1657,6 @@ class _SunMoonToggle extends ConsumerWidget {
                 (BgColorChoice.blueLight, '淺藍', const Color(0xFFE3F2FD)),
                 (BgColorChoice.greenLight, '淺綠', const Color(0xFFE8F5E9)),
                 (BgColorChoice.pinkLight, '淺粉', const Color(0xFFFDF2F6)),
-                (BgColorChoice.rainbowLight, '彩虹', const Color(0xFFFBF4FA)),
               ];
         return SafeArea(
           child: Padding(
@@ -1751,14 +1685,17 @@ class _SunMoonToggle extends ConsumerWidget {
                               // 彩虹的底色很淡，單色圓點看不出是彩虹，用一圈漸層示意
                               color: opt.$1 == BgColorChoice.rainbowLight ? null : opt.$3,
                               gradient: opt.$1 == BgColorChoice.rainbowLight
-                                  ? const SweepGradient(colors: [
-                                      Color(0xFFFFD6E0),
-                                      Color(0xFFFFF1C9),
-                                      Color(0xFFD9F5E3),
-                                      Color(0xFFD6ECFF),
-                                      Color(0xFFE9DDFF),
-                                      Color(0xFFFFD6E0),
-                                    ])
+                                  ? const LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Color(0xFFFF4444),
+                                        Color(0xFFFF9900),
+                                        Color(0xFFFFEE00),
+                                        Color(0xFF44CC44),
+                                        Color(0xFF4488FF),
+                                        Color(0xFF9933FF),
+                                      ])
                                   : null,
                               shape: BoxShape.circle,
                               border: Border.all(color: Colors.grey.shade300, width: 1.5),

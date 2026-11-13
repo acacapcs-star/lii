@@ -813,15 +813,43 @@ class _NotePageState extends ConsumerState<NotePage> {
           const Divider(height: 1),
           Expanded(
             child: _items.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text('📝', style: TextStyle(fontSize: 48)),
-                        const SizedBox(height: 12),
-                        Text(_isZh ? '這天還沒有筆記' : 'No notes for this day',
-                          style: TextStyle(color: Colors.grey.shade400, fontSize: 14)),
-                      ],
+                ? Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+                    child: Opacity(
+                      opacity: 0.35,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // 示範：checkbox + 綠色（priority 0）
+                          _DemoNoteItem(
+                            type: NoteItemType.checkbox,
+                            checked: true,
+                            priorityColor: const Color(0xFF48BB78),
+                            label: _isZh ? '做作業' : 'Homework',
+                          ),
+                          // 示範：checkbox + 黃色（priority 1）
+                          _DemoNoteItem(
+                            type: NoteItemType.checkbox,
+                            checked: false,
+                            priorityColor: const Color(0xFFECC94B),
+                            label: _isZh ? '比賽練習' : 'Practice',
+                          ),
+                          // 示範：bullet + 紅色（priority 2）
+                          _DemoNoteItem(
+                            type: NoteItemType.bullet,
+                            checked: false,
+                            priorityColor: const Color(0xFFFC8181),
+                            label: _isZh ? '電影' : 'Movie',
+                          ),
+                          // 示範：text + 綠色（priority 0）
+                          _DemoNoteItem(
+                            type: NoteItemType.text,
+                            checked: false,
+                            priorityColor: const Color(0xFF48BB78),
+                            label: _isZh ? '跟朋友吃飯' : 'Dinner with friends',
+                          ),
+                        ],
+                      ),
                     ),
                   )
                 : ReorderableListView.builder(
@@ -900,6 +928,71 @@ class _QuickButton extends StatelessWidget {
           border: Border.all(color: const Color(0xFF0ABFBC).withOpacity(0.3)),
         ),
         child: Text(label, style: const TextStyle(fontSize: 13, color: Color(0xFF0ABFBC))),
+      ),
+    );
+  }
+}
+
+// ── 空狀態示範筆記列（純展示，不可互動）────────────────────────────────────
+class _DemoNoteItem extends StatelessWidget {
+  final NoteItemType type;
+  final bool checked;
+  final Color priorityColor;
+  final String label;
+
+  const _DemoNoteItem({
+    required this.type,
+    required this.checked,
+    required this.priorityColor,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border(left: BorderSide(color: priorityColor, width: 4)),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)],
+      ),
+      child: Row(
+        children: [
+          // 左：checkbox / bullet / text icon
+          if (type == NoteItemType.checkbox)
+            Icon(
+              checked ? Icons.check_box_rounded : Icons.check_box_outline_blank_rounded,
+              color: checked ? const Color(0xFF0ABFBC) : Colors.grey.shade400,
+              size: 22,
+            )
+          else if (type == NoteItemType.bullet)
+            Text('•', style: TextStyle(fontSize: 20, color: priorityColor))
+          else
+            Icon(Icons.edit_note_rounded, size: 20, color: Colors.grey.shade300),
+          const SizedBox(width: 8),
+          // 中：文字
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 16,
+                decoration: checked ? TextDecoration.lineThrough : null,
+                color: checked ? Colors.grey.shade400 : const Color(0xFF2D3748),
+              ),
+            ),
+          ),
+          // 右：顏色圓點
+          Container(
+            width: 18,
+            height: 18,
+            decoration: BoxDecoration(color: priorityColor, shape: BoxShape.circle),
+          ),
+          const SizedBox(width: 8),
+          // 右：拖曳 handle
+          Icon(Icons.drag_handle_rounded, size: 18, color: Colors.grey.shade300),
+        ],
       ),
     );
   }
@@ -984,7 +1077,7 @@ class _NoteItemWidgetState extends State<_NoteItemWidget> {
               controller: _ctrl,
               decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: 'Type here...',
+                hintText: '做作業、比賽、電影…',
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
               ),
