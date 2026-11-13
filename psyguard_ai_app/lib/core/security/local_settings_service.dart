@@ -68,6 +68,7 @@ class LocalSettingsService {
   static const _welcomeSeenKey = 'welcome_seen';
   static const _ttsSpeechRateKey = 'tts_speech_rate';
   static const _appLanguageKey = 'app_language';
+  static const _userNameKey = 'user_name';
 
   Future<void> saveAiSettings({
     required String baseUrl,
@@ -150,12 +151,27 @@ class LocalSettingsService {
     return AppLanguage.fromStorageValue(prefs.getString(_appLanguageKey));
   }
 
+  Future<void> setUserName(String name) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_userNameKey, name);
+    await _storage.write(key: _userNameKey, value: name);
+  }
+
+  Future<String?> getUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    final v1 = prefs.getString(_userNameKey);
+    if (v1 != null && v1.trim().isNotEmpty) return v1.trim();
+    final v2 = await _storage.read(key: _userNameKey);
+    return (v2 != null && v2.trim().isNotEmpty) ? v2.trim() : null;
+  }
+
   Future<void> clearAll() async {
     await _storage.deleteAll();
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_welcomeSeenKey);
     await prefs.remove(_ttsSpeechRateKey);
     await prefs.remove(_appLanguageKey);
+    await prefs.remove(_userNameKey);
   }
 }
 

@@ -2,17 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// 深淺模式：使用者可以選擇 App 底色是深色或淺色主題
 enum BgMode { light, dark }
 
-// 淺色模式下可選的兩種顏色；深色模式下可選的兩種顏色
-// 前四個是淺色模式可選，後三個是深色模式
 enum BgColorChoice {
   blueLight, greenLight, pinkLight, rainbowLight,
   navyDark, forestDark, pureBlack,
+  christmas, lunarNewYear, spring, summer, autumn, winter, winterBreak, summerBreak,
 }
 
-/// 首頁背景圖。none 表示只用底色。
 enum BgImage { none, night, sea, dawn }
 
 extension BgImageAsset on BgImage {
@@ -34,6 +31,7 @@ extension BgImageAsset on BgImage {
 class BackgroundThemeState {
   final BgMode mode;
   final BgColorChoice colorChoice;
+  final BgImage image;
 
   const BackgroundThemeState({
     required this.mode,
@@ -41,34 +39,36 @@ class BackgroundThemeState {
     this.image = BgImage.none,
   });
 
-  Color get backgroundColor {
-    switch (colorChoice) {
-      case BgColorChoice.blueLight:
-        return const Color(0xFFE3F2FD);
-      case BgColorChoice.greenLight:
-        return const Color(0xFFE8F5E9);
-      case BgColorChoice.pinkLight:
-        // 浪漫粉：很淡的玫瑰色，卡片放上去還看得清楚
-        return const Color(0xFFFDF2F6);
-      case BgColorChoice.rainbowLight:
-        // 彩虹：底色取最淡的那一端。
-        // 全彩當背景會蓋過所有內容，所以只留一點暈染。
-        return const Color(0xFFFBF4FA);
-      case BgColorChoice.pureBlack:
-        // 純黑簡約：不是全黑，留一點點灰。
-        // 全黑在 OLED 上跟關機沒兩樣，卡片的邊界會完全消失。
-        return const Color(0xFF070707);
-      case BgColorChoice.navyDark:
-        return const Color(0xFF16283C); // 帶藍的深色，像 logo 球球，不那麼黑
-      case BgColorChoice.forestDark:
-        // 夜紫：原本是深墨綠。
-        // 名稱 forestDark 刻意不改——使用者存過的設定用的是這個名字，
-        // 改名的話已經選了它的人，下次打開會找不到自己的選擇。
-        return const Color(0xFF2C2442);
-    }
-  }
+  /// 彩虹背景用漸層，其他回傳 null
+  LinearGradient? get backgroundGradient => colorChoice == BgColorChoice.rainbowLight
+      ? const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0xFFFFB3B3), // 紅
+            Color(0xFFE8B3FF), // 紫
+            Color(0xFFB3CFFF), // 藍
+          ],
+        )
+      : null;
 
-  final BgImage image;
+  Color get backgroundColor => switch (colorChoice) {
+    BgColorChoice.blueLight      => const Color(0xFFE3F2FD),
+    BgColorChoice.greenLight     => const Color(0xFFE8F5E9),
+    BgColorChoice.pinkLight      => const Color(0xFFFDF2F6),
+    BgColorChoice.rainbowLight   => const Color(0xFFFBF4FA),
+    BgColorChoice.pureBlack      => const Color(0xFF070707),
+    BgColorChoice.navyDark       => const Color(0xFF16283C),
+    BgColorChoice.forestDark     => const Color(0xFF2C2442),
+    BgColorChoice.christmas      => const Color(0xFFFFFBF5),
+    BgColorChoice.lunarNewYear   => const Color(0xFFFFF3F3),
+    BgColorChoice.spring         => const Color(0xFFFCE4EC),
+    BgColorChoice.summer         => const Color(0xFFE0F7FA),
+    BgColorChoice.autumn         => const Color(0xFFFBE9E0),
+    BgColorChoice.winter         => const Color(0xFFE8F0F7),
+    BgColorChoice.winterBreak    => const Color(0xFFF3E9E0),
+    BgColorChoice.summerBreak    => const Color(0xFFFFF3D6),
+  };
 
   BackgroundThemeState copyWith({
     BgMode? mode,
@@ -89,7 +89,8 @@ class BackgroundThemeController extends StateNotifier<BackgroundThemeState> {
   static const _colorKey = 'bg_theme_color';
 
   BackgroundThemeController()
-      : super(const BackgroundThemeState(mode: BgMode.light, colorChoice: BgColorChoice.blueLight)) {
+      : super(const BackgroundThemeState(
+            mode: BgMode.light, colorChoice: BgColorChoice.blueLight)) {
     _load();
   }
 
@@ -99,29 +100,10 @@ class BackgroundThemeController extends StateNotifier<BackgroundThemeState> {
     final colorStr = prefs.getString(_colorKey);
 
     final mode = modeStr == 'dark' ? BgMode.dark : BgMode.light;
-    BgColorChoice colorChoice;
-    switch (colorStr) {
-      case 'greenLight':
-        colorChoice = BgColorChoice.greenLight;
-        break;
-      case 'pinkLight':
-        colorChoice = BgColorChoice.pinkLight;
-        break;
-      case 'rainbowLight':
-        colorChoice = BgColorChoice.rainbowLight;
-        break;
-      case 'pureBlack':
-        colorChoice = BgColorChoice.pureBlack;
-        break;
-      case 'navyDark':
-        colorChoice = BgColorChoice.navyDark;
-        break;
-      case 'forestDark':
-        colorChoice = BgColorChoice.forestDark;
-        break;
-      default:
-        colorChoice = mode == BgMode.dark ? BgColorChoice.navyDark : BgColorChoice.blueLight;
-    }
+    final colorChoice = BgColorChoice.values.firstWhere(
+      (e) => e.name == colorStr,
+      orElse: () => mode == BgMode.dark ? BgColorChoice.navyDark : BgColorChoice.blueLight,
+    );
 
     final imgStr = prefs.getString(_imageKey);
     final img = BgImage.values.firstWhere(
@@ -129,25 +111,29 @@ class BackgroundThemeController extends StateNotifier<BackgroundThemeState> {
       orElse: () => BgImage.none,
     );
 
-    state = BackgroundThemeState(
-        mode: mode, colorChoice: colorChoice, image: img);
+    state = BackgroundThemeState(mode: mode, colorChoice: colorChoice, image: img);
   }
 
   Future<void> toggleMode() async {
     final newMode = state.mode == BgMode.light ? BgMode.dark : BgMode.light;
-    // 日夜切換時換到「同一家族」的顏色，切過去再切回來不會跳色：
-    //   淺藍 ↔ 深藍、淺粉 ↔ 夜紫、彩虹 ↔ 純黑
-    // 淺綠沒有對應的深色（深墨綠已經換成夜紫），切到深色時用深藍。
     const toDark = {
-      BgColorChoice.blueLight: BgColorChoice.navyDark,
-      BgColorChoice.greenLight: BgColorChoice.navyDark,
-      BgColorChoice.pinkLight: BgColorChoice.forestDark,
+      BgColorChoice.blueLight:    BgColorChoice.navyDark,
+      BgColorChoice.greenLight:   BgColorChoice.navyDark,
+      BgColorChoice.pinkLight:    BgColorChoice.forestDark,
       BgColorChoice.rainbowLight: BgColorChoice.pureBlack,
+      BgColorChoice.spring:       BgColorChoice.forestDark,
+      BgColorChoice.summer:       BgColorChoice.navyDark,
+      BgColorChoice.autumn:       BgColorChoice.forestDark,
+      BgColorChoice.winter:       BgColorChoice.navyDark,
+      BgColorChoice.christmas:    BgColorChoice.navyDark,
+      BgColorChoice.lunarNewYear: BgColorChoice.forestDark,
+      BgColorChoice.winterBreak:  BgColorChoice.navyDark,
+      BgColorChoice.summerBreak:  BgColorChoice.pureBlack,
     };
     const toLight = {
-      BgColorChoice.navyDark: BgColorChoice.blueLight,
+      BgColorChoice.navyDark:   BgColorChoice.blueLight,
       BgColorChoice.forestDark: BgColorChoice.pinkLight,
-      BgColorChoice.pureBlack: BgColorChoice.rainbowLight,
+      BgColorChoice.pureBlack:  BgColorChoice.rainbowLight,
     };
     final newColor = newMode == BgMode.dark
         ? (toDark[state.colorChoice] ?? BgColorChoice.navyDark)

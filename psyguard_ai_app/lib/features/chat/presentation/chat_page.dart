@@ -14,6 +14,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/network/ai_chat_repository.dart';
+import '../../../core/network/ai_demo_replies.dart';
 import '../../../core/network/ai_local_messages.dart';
 import '../../../core/risk_engine/risk_models.dart';
 import '../../../core/risk_engine/risk_provider.dart';
@@ -643,6 +644,29 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       ),
       body: Column(
         children: [
+          // 展示模式的聲明。只在 --dart-define=DEMO_MODE=true 的 build 出現，
+          // 正常 build 這整塊不會進畫面。
+          if (DemoReplies.enabled)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+              decoration: const BoxDecoration(
+                color: Color(0xFFFFF4E0),
+                border: Border(
+                  bottom: BorderSide(color: Color(0xFFE8D6B0)),
+                ),
+              ),
+              child: Text(
+                DemoReplies.noticeFor(
+                  ref.watch(appLanguageControllerProvider),
+                ),
+                style: const TextStyle(
+                  fontSize: 12,
+                  height: 1.6,
+                  color: Color(0xFF6B5425),
+                ),
+              ),
+            ),
           Expanded(
             child: messages.when(
               data: (items) {

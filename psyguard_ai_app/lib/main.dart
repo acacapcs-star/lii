@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/app.dart';
+import 'core/security/local_settings_service.dart';
 import 'core/pacer/bookmark_quick_add.dart';
 
 Future<void> main() async {
@@ -19,5 +20,7 @@ Future<void> main() async {
   // SEED_PACERS 第一次開 app 時放三張預設 pacer，Pacer Lift 才不會是空的
   await BookmarkQuickAdd.seedIfEmpty();
 
-  runApp(const ProviderScope(child: LumiApp()));
+  final container = ProviderContainer();
+  await container.read(appLanguageControllerProvider.notifier).load();
+  runApp(UncontrolledProviderScope(container: container, child: const LumiApp()));
 }

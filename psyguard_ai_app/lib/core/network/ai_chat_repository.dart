@@ -11,6 +11,7 @@ import '../security/local_settings_service.dart';
 import '../storage/app_database.dart';
 import '../storage/database_provider.dart';
 import '../../l10n/app_language.dart';
+import 'ai_demo_replies.dart';
 import 'ai_lang_pref.dart';
 import 'ai_api_client.dart';
 import 'app_config_controller.dart';
@@ -92,6 +93,18 @@ class AiChatRepositoryImpl implements AiChatRepository {
     required String userText,
     String? contextSummary,
   }) async {
+    // 展示模式：不送出任何東西，回一則預先寫好的內容。
+    // 放在最前面是刻意的——後面那段會組 prompt、呼叫 API、記錄用量，
+    // 展示模式下那些全部都不該發生。
+    if (DemoReplies.enabled) {
+      return AiReply(
+        content: DemoReplies.replyFor(userText, _language),
+        isFallback: true,
+        model: 'demo',
+        warningMessage: DemoReplies.noticeFor(_language),
+      );
+    }
+
     final messages = await _buildPromptMessages(
       sessionId: sessionId,
       userText: userText,

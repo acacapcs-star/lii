@@ -12,7 +12,7 @@ enum AppLanguage {
   static AppLanguage fromStorageValue(String? value) {
     return switch (value) {
       'zh_TW' => AppLanguage.zhTw,
-      _ => AppLanguage.english,
+      _ => AppLanguage.zhTw,
     };
   }
 }

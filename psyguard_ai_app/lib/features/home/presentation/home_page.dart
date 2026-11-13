@@ -131,11 +131,105 @@ final homeDashboardProvider =
   );
 });
 
-class HomePage extends ConsumerWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
+  final _nameCtrl = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadName();
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadName() async {
+    final name = await ref.read(localSettingsServiceProvider).getUserName();
+    if (mounted && name != null) _nameCtrl.text = name;
+  }
+
+  Future<void> _saveName(String val) async {
+    final name = val.trim();
+    if (name.isEmpty) return;
+    await ref.read(localSettingsServiceProvider).setUserName(name);
+  }
+
+  void _showBgPicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (ctx) {
+        const moods = [
+          (MoodTheme.none, '無', '😶'),
+          (MoodTheme.christmas, '聖誕節', '🎄'),
+          (MoodTheme.newYear, '過年', '🧧'),
+          (MoodTheme.spring, '春', '🌸'),
+          (MoodTheme.summer, '夏', '☀️'),
+          (MoodTheme.autumn, '秋', '🍂'),
+          (MoodTheme.winter, '冬', '❄️'),
+          (MoodTheme.winterBreak, '寒假', '⛷️'),
+          (MoodTheme.summerBreak, '暑假', '🏖️'),
+        ];
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('選擇氛圍', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 20),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  alignment: WrapAlignment.center,
+                  children: moods.map((m) {
+                    return GestureDetector(
+                      onTap: () async {
+                        await ref.read(moodThemeProvider.notifier).setMood(m.$1);
+                        await Future.delayed(const Duration(milliseconds: 100));
+                        ref.read(moodFallControllerProvider).play();
+                        Navigator.pop(ctx);
+                      },
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 60, height: 60,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: const Color(0xFFF5F5F5),
+                              border: Border.all(color: Colors.grey.shade300, width: 1.5),
+                            ),
+                            child: Center(child: Text(m.$3, style: TextStyle(fontSize: 28, color: m.$1 == MoodTheme.summer ? const Color(0xFFFFB800) : null))),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(m.$2, style: const TextStyle(fontSize: 12)),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final dashboard = ref.watch(homeDashboardProvider);
     final theme = Theme.of(context);
     final copy = AppStrings.of(ref.watch(appLanguageControllerProvider));
@@ -169,7 +263,11 @@ class HomePage extends ConsumerWidget {
           centerTitle: true,
           title: Padding(
             padding: const EdgeInsets.only(top: 10),
-            child: FloatingAppBrandIcon(size: 66),
+            child: GestureDetector(
+              onTap: () => ref.read(moodFallControllerProvider).play(),
+              onLongPress: () => _showBgPicker(context),
+              child: FloatingAppBrandIcon(size: 66),
+            ),
           ),
         ),
         body: PawTapLayer(
@@ -279,7 +377,6 @@ class HomePage extends ConsumerWidget {
     final zh = copy.isZhTw;
     final items = <(String, String, IconData)>[
       ('/home', copy.navHome, Icons.home_rounded),
-      ('/welcome', zh ? '🌙 夜空球' : '🌙 Night Orb', Icons.auto_awesome_rounded),
       ('#', zh ? '每日紀錄' : 'Daily', Icons.circle),
       ('/dashboard', zh ? '儀表板' : 'Dashboard', Icons.dashboard_rounded),
       ('/checkin', copy.navCheckin, Icons.edit_note_rounded),
@@ -324,11 +421,31 @@ class HomePage extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Image.asset(
-                      'assets/images/lii_ball.png',
-                      width: 52,
-                      height: 52,
-                      fit: BoxFit.contain,
+                    Row(
+                      children: [
+                        Image.asset(
+                          'assets/images/lii_ball.png',
+                          width: 52,
+                          height: 52,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            controller: _nameCtrl,
+                            style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
+                            decoration: InputDecoration(
+                              hintText: 'lii 要怎麼稱呼你？',
+                              hintStyle: const TextStyle(color: Colors.white54, fontSize: 15),
+                              enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white38)),
+                              focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(vertical: 4),
+                            ),
+                            onSubmitted: _saveName,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -593,26 +710,6 @@ class _HomeContentState extends State<_HomeContent> {
 
     final exploreCards = [
       _cardData(
-        copy.navCheckin,
-        copy.emotionalRelease,
-        Icons.edit_note_rounded,
-        const Color(0xFFC85341),
-        '/checkin',
-        copy.isZhTw
-            ? '把心裡的感受寫下來，讓自己慢慢看見、慢慢理解。'
-            : 'Write down what you feel so you can see and understand it more gently.',
-      ),
-      _cardData(
-        copy.navSleep,
-        copy.sleepStatus,
-        Icons.bedtime_outlined,
-        const Color(0xFF8FC841),
-        '/sleep',
-        copy.isZhTw
-            ? '看見每晚的睡眠變化，慢慢找回適合自己的作息節奏。'
-            : 'Track nightly sleep changes and rebuild a rhythm that fits you.',
-      ),
-      _cardData(
         copy.navChat,
         copy.supportiveChat,
         Icons.forum_outlined,
@@ -631,6 +728,26 @@ class _HomeContentState extends State<_HomeContent> {
         copy.isZhTw
             ? '說「嘿，在嗎？」，直接講出來就好。'
             : 'Say "Hey Luna" to wake up your companion.',
+      ),
+      _cardData(
+        copy.navSleep,
+        copy.sleepStatus,
+        Icons.bedtime_outlined,
+        const Color(0xFF8FC841),
+        '/sleep',
+        copy.isZhTw
+            ? '看見每晚的睡眠變化，慢慢找回適合自己的作息節奏。'
+            : 'Track nightly sleep changes and rebuild a rhythm that fits you.',
+      ),
+      _cardData(
+        copy.navCheckin,
+        copy.emotionalRelease,
+        Icons.edit_note_rounded,
+        const Color(0xFFC85341),
+        '/checkin',
+        copy.isZhTw
+            ? '把心裡的感受寫下來，讓自己慢慢看見、慢慢理解。'
+            : 'Write down what you feel so you can see and understand it more gently.',
       ),
     ];
 
@@ -744,13 +861,16 @@ class _HomeContentState extends State<_HomeContent> {
           crossAxisCount: 2,
           mainAxisSpacing: 14,
           crossAxisSpacing: 14,
-          childAspectRatio: 1.15,
+          childAspectRatio: 1.0,
           children: [
-            ...exploreCards.map((card) {
+            ...exploreCards.asMap().entries.map((entry) {
+            final idx = entry.key;
+            final card = entry.value;
             final isBoldTarget =
                 _hasNegativeSignal &&
                 (card['route'] == '/chat' || card['route'] == '/tools');
             final isShakeTarget = _isHighRisk && (card['route'] == '/safety');
+            final labels = ['1', '2', '3', '4'];
 
             return MicroShake(
               enabled: isShakeTarget,
@@ -766,6 +886,7 @@ class _HomeContentState extends State<_HomeContent> {
                 isBold: isBoldTarget,
                 tooltipTitle: card['title'] as String,
                 tooltipDescription: card['tooltip'] as String,
+                
               ),
             );
           }),
@@ -825,7 +946,7 @@ class _HomeContentState extends State<_HomeContent> {
           crossAxisCount: 2,
           mainAxisSpacing: 14,
           crossAxisSpacing: 14,
-          childAspectRatio: 1.15,
+          childAspectRatio: 1.0,
           children: [
             _InteractiveCard(
               title: copy.isZhTw ? '我的水晶' : 'My Crystals',
@@ -894,7 +1015,7 @@ class _HomeContentState extends State<_HomeContent> {
           crossAxisCount: 2,
           mainAxisSpacing: 14,
           crossAxisSpacing: 14,
-          childAspectRatio: 1.15,
+          childAspectRatio: 1.0,
           children: [
             _InteractiveCard(
               title: copy.isZhTw ? '我的專屬格言' : 'My Quote Cards',
@@ -1040,6 +1161,7 @@ class _InteractiveCard extends StatefulWidget {
     this.tooltipTitle,
     this.tooltipDescription,
     this.onTapOverride,
+    this.cornerLabel,
   });
 
   final String title;
@@ -1052,6 +1174,7 @@ class _InteractiveCard extends StatefulWidget {
   final String? tooltipTitle;
   final String? tooltipDescription;
   final VoidCallback? onTapOverride;
+  final String? cornerLabel;
 
   @override
   State<_InteractiveCard> createState() => _InteractiveCardState();
@@ -1127,7 +1250,7 @@ class _InteractiveCardState extends State<_InteractiveCard>
             }
           },
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
@@ -1166,45 +1289,64 @@ class _InteractiveCardState extends State<_InteractiveCard>
             borderRadius: BorderRadius.circular(24),
 
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Stack(
             children: [
-              FoxPocket(
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: widget.color.withValues(alpha: 0.24),
-                    borderRadius: BorderRadius.circular(12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FoxPocket(
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: widget.color.withValues(alpha: 0.24),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(widget.icon, color: widget.color, size: 20),
+                    ),
                   ),
-                  child: Icon(widget.icon, color: widget.color, size: 20),
-                ),
+                  const SizedBox(height: 10),
+                  Text(
+                    widget.title,
+                    style: GoogleFonts.nunitoSans(
+                      fontSize: 15,
+                      fontWeight:
+                          widget.isBold ? FontWeight.w600 : FontWeight.w600,
+                      color: onCard,
+                      height: 1.15,
+                    ),
+                    maxLines: 1,
+                    softWrap: true,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    widget.subtitle,
+                    style: GoogleFonts.nunitoSans(
+                      fontSize: 11,
+                      color: onCardSoft,
+                    ),
+                    maxLines: 1,
+                    softWrap: true,
+                  ),
+                ],
               ),
-              const SizedBox(height: 10),
-              Text(
-                widget.title,
-                style: GoogleFonts.nunitoSans(
-                  fontSize: 15,
-                  fontWeight:
-                      widget.isBold ? FontWeight.w600 : FontWeight.w600,
-                  color: onCard,
-                  height: 1.15,
+              if (widget.cornerLabel != null)
+                Positioned(
+                  right: widget.cornerLabel == '1' || widget.cornerLabel == '3' ? 4 : null,
+                  left: widget.cornerLabel == '2' || widget.cornerLabel == '4' ? 4 : null,
+                  bottom: widget.cornerLabel == '1' || widget.cornerLabel == '2' ? 4 : null,
+                  top: widget.cornerLabel == '3' || widget.cornerLabel == '4' ? 4 : null,
+                  child: Text(
+                    widget.cornerLabel!,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: onCardSoft.withValues(alpha: 0.5),
+                    ),
+                  ),
                 ),
-                maxLines: 1,
-                softWrap: true,
-              ),
-              const SizedBox(height: 2),
-              Text(
-                widget.subtitle,
-                style: GoogleFonts.nunitoSans(
-                  fontSize: 11,
-                  color: onCardSoft,
-                ),
-                maxLines: 1,
-                softWrap: true,
-              ),
             ],
           ),
         ),
@@ -1355,13 +1497,14 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
 
   @override
   Widget build(BuildContext context) {
-    final pages = 4;
+    final pages = 3;
     return Column(
       children: [
         SizedBox(
           height: 160,
           child: PageView(
             controller: _ctrl,
+            physics: const ClampingScrollPhysics(),
             onPageChanged: (i) => setState(() => _page = i),
             children: [
               // 頁1：狀態卡片
@@ -1440,85 +1583,18 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
                   );
                 },
               ),
-              // 頁2：寵物卡片
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Colors.white, Color(0xFFDCEBF7)],
-                  ),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                      color: const Color(0xFF4179C8).withValues(alpha: 0.42), width: 4),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF4179C8).withValues(alpha: 0.22),
-                      blurRadius: 16,
-                      offset: const Offset(0, 7),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 80,
-                      height: 80,
-                      child: Center(
-                        child: Image.asset(
-                          'assets/images/lii_ball.png',
-                          width: 56,
-                          height: 56,
-                          fit: BoxFit.contain,
-                          errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(_petName,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF002F70),
-                          )),
-                        const SizedBox(height: 4),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF41B4C8).withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                          child: Consumer(builder: (context, ref, _) {
-                            final zh = AppStrings.of(ref.watch(appLanguageControllerProvider)).isZhTw;
-                            return Text(
-                              zh ? '一直都在' : 'Always here',
-                              style: const TextStyle(fontSize: 12, color: Color(0xFF41B4C8)),
-                            );
-                          }),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
               // 頁3：桃紅便條紙
               StickyNotePage(
                 color: const Color(0xFFF7E4EF),
                 borderColor: const Color(0xFFC841A0),
-                hintText: 'Jot anything down... 🌸',
+                hintText: '隨手記點什麼... 🌸',
                 storageKey: 'sticky_pink',
               ),
               // 頁4：薄荷綠便條紙
               StickyNotePage(
                 color: const Color(0xFFE4F5F0),
                 borderColor: const Color(0xFF41C8A2),
-                hintText: 'Key priorities today... 🌿',
+                hintText: '今天最重要的事... 🌿',
                 storageKey: 'sticky_mint',
               ),
             ],
@@ -1580,7 +1656,6 @@ class _SunMoonToggle extends ConsumerWidget {
                 (BgColorChoice.blueLight, '淺藍', const Color(0xFFE3F2FD)),
                 (BgColorChoice.greenLight, '淺綠', const Color(0xFFE8F5E9)),
                 (BgColorChoice.pinkLight, '淺粉', const Color(0xFFFDF2F6)),
-                (BgColorChoice.rainbowLight, '彩虹', const Color(0xFFFBF4FA)),
               ];
         return SafeArea(
           child: Padding(
@@ -1609,14 +1684,17 @@ class _SunMoonToggle extends ConsumerWidget {
                               // 彩虹的底色很淡，單色圓點看不出是彩虹，用一圈漸層示意
                               color: opt.$1 == BgColorChoice.rainbowLight ? null : opt.$3,
                               gradient: opt.$1 == BgColorChoice.rainbowLight
-                                  ? const SweepGradient(colors: [
-                                      Color(0xFFFFD6E0),
-                                      Color(0xFFFFF1C9),
-                                      Color(0xFFD9F5E3),
-                                      Color(0xFFD6ECFF),
-                                      Color(0xFFE9DDFF),
-                                      Color(0xFFFFD6E0),
-                                    ])
+                                  ? const LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Color(0xFFFF4444),
+                                        Color(0xFFFF9900),
+                                        Color(0xFFFFEE00),
+                                        Color(0xFF44CC44),
+                                        Color(0xFF4488FF),
+                                        Color(0xFF9933FF),
+                                      ])
                                   : null,
                               shape: BoxShape.circle,
                               border: Border.all(color: Colors.grey.shade300, width: 1.5),

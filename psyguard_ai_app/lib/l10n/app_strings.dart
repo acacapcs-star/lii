@@ -56,7 +56,7 @@ class AppStrings {
 
   String get navHome => isZhTw ? '首頁' : 'Home';
   String get navChat => isZhTw ? '聊聊' : 'Talk it out';
-  String get navCheckin => isZhTw ? '筆記紀錄' : 'Check-in';
+  String get navCheckin => isZhTw ? '今天怎麼樣？' : 'How are you today?';
   String get navSleep => isZhTw ? '睡眠紀錄' : 'Sleep Log';
   String get navTrends => isZhTw ? '趨勢圖' : 'Trends';
   String get navTools => isZhTw ? '心情工具箱' : 'Toolbox';
@@ -75,13 +75,13 @@ class AppStrings {
   String get statusCare => isZhTw ? '需要留意' : 'Take care';
   String get statusSupport => isZhTw ? '需要支持' : 'Needs support';
   String get todayStatus => isZhTw ? '今日身心狀態' : 'Today\'s well-being';
-  String get exploreSelf => isZhTw ? '探索自己' : 'Explore Yourself';
+  String get exploreSelf => isZhTw ? '記錄一下' : 'Log it';
   String get moreFeatures => isZhTw ? '工具' : 'Tools';
   String get emergencyCase => isZhTw ? '案號 115-E018647' : 'Case 115-E018647';
-  String get emotionalRelease => isZhTw ? '情緒抒發' : 'Emotional release';
+  String get emotionalRelease => isZhTw ? '滑一滑，了解自己' : 'Swipe to know yourself';
   String get healthDataTrends => isZhTw ? '健康數據趨勢' : 'Health data trends';
   String get supportiveChat => isZhTw ? '想說什麼都行' : "Say what's going on";
-  String get sleepStatus => isZhTw ? '記錄睡眠狀況' : 'Track sleep';
+  String get sleepStatus => isZhTw ? '昨晚睡得好嗎？' : 'How did you sleep?';
   String get moodFirstAid => isZhTw ? '心情急救' : 'Mood first aid';
   String get sevenDaySummary =>
       isZhTw ? '近七天的摘要' : 'A 7-day summary';
