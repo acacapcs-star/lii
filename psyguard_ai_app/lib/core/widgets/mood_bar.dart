@@ -1117,7 +1117,7 @@ class _MoodBarPageState extends ConsumerState<MoodBarPage> {
           Padding(
             padding: const EdgeInsets.only(left: 4, bottom: 8),
             child: Text(
-              zh ? '現在是哪一種？' : 'Which one is it now?',
+              zh ? '閃現的感受，就像一道微光' : 'A fleeting feeling, like a glimpse of light',
               style: GoogleFonts.nunitoSans(
                 fontSize: 12.5,
                 fontWeight: FontWeight.w600,

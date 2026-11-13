@@ -1317,7 +1317,7 @@ class _InteractiveCardState extends State<_InteractiveCard>
                       color: onCard,
                       height: 1.15,
                     ),
-                    maxLines: 1,
+                    maxLines: 2,
                     softWrap: true,
                   ),
                   const SizedBox(height: 2),
@@ -1327,7 +1327,7 @@ class _InteractiveCardState extends State<_InteractiveCard>
                       fontSize: 11,
                       color: onCardSoft,
                     ),
-                    maxLines: 1,
+                    maxLines: 2,
                     softWrap: true,
                   ),
                 ],
@@ -1862,8 +1862,8 @@ class _CornerPenguinState extends ConsumerState<_CornerPenguin>
                 : Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(6),
+                  Transform.scale(
+                    scale: 1.5,
                     child: Image.asset(
                       'assets/images/mood_penguin.png',
                       fit: BoxFit.contain,
@@ -1894,21 +1894,38 @@ class _CornerPenguinState extends ConsumerState<_CornerPenguin>
                     ),
                 ],
               ))
-            // 🍁 秋：燈下讀書狐狸 —— 用 AspectRatio 鎖成格子比例、cover 填滿，
-            //         這樣圖片比例不符時也乖乖待在格子裡，不會凸出去
-            : AspectRatio(
-                aspectRatio: 1.15,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
-                  child: Image.asset(
-                    'assets/images/mood_fox_lamp.jpg',
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: double.infinity,
-                    errorBuilder: (_, __, ___) => const Center(
-                      child: Text('🦊', style: TextStyle(fontSize: 48)),
+            // 🍁 秋：落葉裝飾
+            : SizedBox(
+                width: 120,
+                height: 104,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                      bottom: 0, left: 0,
+                      child: Transform.rotate(
+                        angle: -0.3,
+                        child: Image.asset('assets/images/mood_leaf_2.png',
+                            width: 80, errorBuilder: (_, __, ___) => const Text('🍂')),
+                      ),
                     ),
-                  ),
+                    Positioned(
+                      bottom: 10, right: 0,
+                      child: Transform.rotate(
+                        angle: 0.4,
+                        child: Image.asset('assets/images/mood_leaf_1.png',
+                            width: 60, errorBuilder: (_, __, ___) => const Text('🍁')),
+                      ),
+                    ),
+                    Positioned(
+                      top: 0, left: 20,
+                      child: Transform.rotate(
+                        angle: 0.1,
+                        child: Image.asset('assets/images/mood_leaf_2.png',
+                            width: 50, errorBuilder: (_, __, ___) => const Text('🍂')),
+                      ),
+                    ),
+                  ],
                 ),
               ),
       ),

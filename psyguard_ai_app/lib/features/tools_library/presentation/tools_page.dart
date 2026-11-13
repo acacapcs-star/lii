@@ -1924,7 +1924,7 @@ class _EmotionDictPageState extends ConsumerState<EmotionDictPage> {
         children: [
           Text(
             zh
-                ? '先選一個大概的方向，再往下找更準的詞。'
+                ? '找找你的感覺。'
                 : 'Pick a rough direction, then look for the closer word.',
             style: TextStyle(fontSize: 14, height: 1.7, color: onSoft),
           ),

@@ -413,19 +413,30 @@ class _VoiceWakePageState extends ConsumerState<VoiceWakePage>
         ),
         title: Text(isZh ? '嘿，在嗎？' : 'Hey Luna', style: const TextStyle(color: Colors.white)),
         actions: [
-          TextButton(
-            onPressed: () => setState(() {
-              _isNoteMode = !_isNoteMode;
-              _statusText = _isNoteMode
-                  ? (isZh ? '說話後自動整理成筆記 📝' : 'Speak and auto-organize into notes 📝')
-                  : (isZh ? '點擊麥克風說「嘿，在嗎？」' : 'Tap the mic and say "Hey Luna"');
-              _spokenText = '';
-            }),
-            child: Text(
-              _isNoteMode
-                  ? (isZh ? '🎙 筆記模式' : '🎙 Note Mode')
-                  : (isZh ? '💬 喚醒模式' : '💬 Wake Mode'),
-              style: const TextStyle(color: Color(0xFF0ABFBC)),
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  _isNoteMode
+                      ? (isZh ? '📝 筆記' : '📝 Note')
+                      : (isZh ? '💬 聊聊' : '💬 Chat'),
+                  style: const TextStyle(color: Color(0xFF0ABFBC), fontSize: 14),
+                ),
+                const SizedBox(width: 4),
+                Switch(
+                  value: _isNoteMode,
+                  activeColor: const Color(0xFF0ABFBC),
+                  onChanged: (v) => setState(() {
+                    _isNoteMode = v;
+                    _statusText = _isNoteMode
+                        ? (isZh ? '語音輸入後，自動轉錄到心晴筆記' : 'Speak and auto-organize into notes 📝')
+                        : (isZh ? '點擊麥克風說「嘿，在嗎？」' : 'Tap the mic and say "Hey Luna"');
+                    _spokenText = '';
+                  }),
+                ),
+              ],
             ),
           ),
         ],

@@ -2,22 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'mood_fall_overlay.dart';
+import 'app_brand_icon.dart';
 import 'snow_cap.dart';
 import '../theme/mood_theme_service.dart';
 import '../security/local_settings_service.dart';
 import '../../l10n/app_language.dart';
 
 // 飄浮版品牌圖示：氣球般懸浮、底部有陰影、上方一條會左右擺動的繩子
-class FloatingAppBrandIcon extends StatefulWidget {
+class FloatingAppBrandIcon extends ConsumerStatefulWidget {
   const FloatingAppBrandIcon({super.key, this.size = 66});
 
   final double size;
 
   @override
-  State<FloatingAppBrandIcon> createState() => _FloatingAppBrandIconState();
+  ConsumerState<FloatingAppBrandIcon> createState() => _FloatingAppBrandIconState();
 }
 
-class _FloatingAppBrandIconState extends State<FloatingAppBrandIcon>
+class _FloatingAppBrandIconState extends ConsumerState<FloatingAppBrandIcon>
     with TickerProviderStateMixin {
   late final AnimationController _floatController;
   late final AnimationController _swayController;
