@@ -1461,6 +1461,10 @@ class _GroundingPageState extends ConsumerState<GroundingPage> {
                 height: 1.6,
                 color: onSoft.withValues(alpha: 0.7)),
           ),
+          Text(
+            zh ? '選一個詞，為自己製作一張卡 🃏' : 'Pick a word, make yourself a card 🃏',
+            style: TextStyle(fontSize: 14, height: 1.7, color: onSoft),
+          ),
           const SizedBox(height: 18),
 
           // N 個小格
@@ -1926,6 +1930,10 @@ class _EmotionDictPageState extends ConsumerState<EmotionDictPage> {
             zh
                 ? '找找你的感覺。'
                 : 'Pick a rough direction, then look for the closer word.',
+            style: TextStyle(fontSize: 14, height: 1.7, color: onSoft),
+          ),
+          Text(
+            zh ? '選一個詞，為自己製作一張卡 🃏' : 'Pick a word, make yourself a card 🃏',
             style: TextStyle(fontSize: 14, height: 1.7, color: onSoft),
           ),
           const SizedBox(height: 18),

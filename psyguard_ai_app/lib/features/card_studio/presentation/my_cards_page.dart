@@ -102,7 +102,7 @@ class _MyCardsPageState extends ConsumerState<MyCardsPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: const Color(0xFF2C3150),
-        title: Text(_zh ? '我的專屬格言' : 'My Quotes'),
+        title: Text(_zh ? '我的暖話卡' : 'My Warm Cards'),
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: const Color(0xFF9B5DE5),
@@ -134,7 +134,7 @@ class _MyCardsPageState extends ConsumerState<MyCardsPage> {
             const Icon(Icons.auto_awesome_rounded,
                 size: 56, color: Color(0xFFB0B6C6)),
             const SizedBox(height: 12),
-            Text(_zh ? '還沒有專屬格言卡' : 'No cards yet',
+            Text(_zh ? '還沒有暖話卡' : 'No cards yet',
                 style: const TextStyle(color: Color(0xFF8A92A6), fontSize: 15)),
             const SizedBox(height: 6),
             Text(_zh ? '點右下角「做新卡」開始' : 'Tap "New card" to start',

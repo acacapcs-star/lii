@@ -143,7 +143,7 @@ class _CardStudioPageState extends ConsumerState<CardStudioPage> {
     ));
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(_zh ? '已存到我的專屬格言 🎴' : 'Saved to My Quotes 🎴')),
+      SnackBar(content: Text(_zh ? '已存到我的暖話卡 🎴' : 'Saved to My Warm Cards 🎴')),
     );
     // 帶著 id 回去。原本的呼叫端不看回傳值，所以不受影響。
     Navigator.of(context).maybePop(newId);

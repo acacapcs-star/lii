@@ -32,7 +32,7 @@ class ProfilePage extends ConsumerWidget {
         route: '/bookmark',
       ),
       _ProfileItem(
-        title: zh ? '我的專屬格言' : 'My Quote Cards',
+        title: zh ? '我的暖話卡' : 'My Warm Cards',
         subtitle: zh ? '自己做一張' : 'Make your own',
         icon: Icons.auto_awesome_rounded,
         color: const Color(0xFFB341C8),

@@ -44,7 +44,7 @@ class LiiBottomNav extends StatelessWidget {
       case LiiTab.luna:
         return 'Luna';
       case LiiTab.tools:
-        return isZh ? '工具' : 'Tools';
+        return isZh ? '我的足跡' : 'My Footprints';
       case LiiTab.profile:
         return isZh ? '我的' : 'Profile';
     }

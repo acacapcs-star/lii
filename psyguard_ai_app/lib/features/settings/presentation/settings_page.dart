@@ -306,10 +306,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
-                    height: 48,
                     child: ElevatedButton(
                       onPressed: _isSaving ? null : _saveAiSettings,
                       style: ElevatedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(48),
                         backgroundColor: LumiTheme.primary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
@@ -328,10 +328,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   const SizedBox(height: 10),
                   SizedBox(
                     width: double.infinity,
-                    height: 46,
                     child: OutlinedButton(
                       onPressed: _isSaving ? null : _clearAiSettings,
                       style: OutlinedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(46),
                         foregroundColor: LumiTheme.textPrimary,
                         side: BorderSide(
                           color: Colors.black.withValues(alpha: 0.1),
@@ -429,7 +429,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         const SizedBox(height: 16),
                         SizedBox(
                           width: double.infinity,
-                          height: 48,
                           child: ElevatedButton(
                             onPressed:
                                 _isSavingTtsSpeechRate ||
@@ -606,7 +605,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     const SizedBox(height: 14),
                     SizedBox(
                       width: double.infinity,
-                      height: 48,
                       child: OutlinedButton(
                         onPressed: () async {
                           final zh = language == AppLanguage.zhTw;
@@ -747,7 +745,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   const SizedBox(height: 14),
                   SizedBox(
                     width: double.infinity,
-                    height: 48,
                     child: OutlinedButton(
                       onPressed: () async {
                         final confirmed = await showDialog<bool>(

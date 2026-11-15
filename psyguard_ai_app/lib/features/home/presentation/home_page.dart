@@ -1019,12 +1019,12 @@ class _HomeContentState extends State<_HomeContent> {
           childAspectRatio: 1.0,
           children: [
             _InteractiveCard(
-              title: copy.isZhTw ? '我的專屬格言' : 'My Quote Cards',
-              subtitle: copy.isZhTw ? '手作暖話卡' : 'Make your own',
+              title: copy.isZhTw ? '我的暖話卡' : 'My Warm Cards',
+              subtitle: copy.isZhTw ? '為自己寫下的溫暖' : 'Words you write for yourself',
               icon: Icons.auto_awesome_rounded,
               color: const Color(0xFF41C866),
               route: '/my-cards',
-              tooltipTitle: copy.isZhTw ? '我的專屬格言' : 'My Quote Cards',
+              tooltipTitle: copy.isZhTw ? '我的暖話卡' : 'My Warm Cards',
               tooltipDescription: copy.isZhTw
                   ? '自己寫一張卡片，難過的時候拿出來看。'
                   : 'Write your own card and keep it for a hard day.',
