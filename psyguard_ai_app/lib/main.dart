@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app/app.dart';
 import 'core/security/local_settings_service.dart';
 import 'core/pacer/bookmark_quick_add.dart';
+import 'l10n/app_language.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,10 +18,10 @@ Future<void> main() async {
       // Allow running with --dart-define when env files are unavailable.
     }
   }
-  // SEED_PACERS 第一次開 app 時放三張預設 pacer，Pacer Lift 才不會是空的
-  await BookmarkQuickAdd.seedIfEmpty();
-
   final container = ProviderContainer();
   await container.read(appLanguageControllerProvider.notifier).load();
+  final lang = container.read(appLanguageControllerProvider);
+  // SEED_PACERS 第一次開 app 時放三張預設 pacer，Pacer Lift 才不會是空的
+  await BookmarkQuickAdd.seedIfEmpty(isZh: lang == AppLanguage.zhTw);
   runApp(UncontrolledProviderScope(container: container, child: const LumiApp()));
 }

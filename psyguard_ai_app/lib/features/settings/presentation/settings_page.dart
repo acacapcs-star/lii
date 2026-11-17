@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/config/app_config.dart';
+import '../../../core/pacer/bookmark_quick_add.dart';
 import '../../../core/network/ai_api_client.dart';
 import '../../../core/network/ai_error_formatter.dart';
 import '../../../core/network/app_config_controller.dart';
@@ -1209,6 +1210,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     await ref
         .read(appLanguageControllerProvider.notifier)
         .setLanguage(language);
+    // 語言切換時重新 seed 預設 Pacer（只影響全是 lii 預設的情況）
+    await BookmarkQuickAdd.reseedDefault(isZh: language == AppLanguage.zhTw);
     if (!mounted) {
       return;
     }

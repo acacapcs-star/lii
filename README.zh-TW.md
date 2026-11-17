@@ -319,7 +319,7 @@ onboarding 之後會跳一次說明，因為沒人知道的設定跟不存在的
 | 🧧 過年 | `#FFF3F3` 極淺粉紅 | 煙火 | 小龍賀歲 + 紅包噴灑 |
 | 🌸 春 | `#FCE4EC` 粉嫩 | 花瓣 | 復活節兔兔 |
 | ☀️ 夏 | `#E0F7FA` 明亮淺藍 | 水花 | 海灘上的墨鏡貓與兔兔 |
-| 🍁 秋 | `#FBE9E0` 橘棕暖調 | 落葉 | 搖擺吉祥物 |
+| 🍁 秋 | `#FBE9E0` 橘棕暖調 | 落葉 | 落葉裝飾 |
 | ❄️ 冬 | `#E8F0F7` 冷藍白 | 雪 | 工程師企鵝 → 孵蛋 → 冰屋 |
 | 🧣 寒假 | `#F3E9E0` 暖米色 | 雪 | 一起堆雪人 |
 | 🏖️ 暑假 | `#FFF3D6` 活潑亮黃 | 零食 | 排球男孩 + 飲料吧 |
@@ -341,7 +341,7 @@ onboarding 之後會跳一次說明，因為沒人知道的設定跟不存在的
 | 🧧 過年 | 恭喜發財，紅包拿來 | Happy New Year! |
 | 🌸 春 | 春天藏了一隻兔兔 | A bunny hides in spring |
 | ☀️ 夏 | 夏日海灘等你來 | Summer beach awaits |
-| 🍂 秋 | 落葉裡躲著一隻狐狸 | A fox hides in the leaves |
+| 🍂 秋 | 三片落葉清晰詮釋於旁邊 | A fox hides in the leaves |
 | ❄️ 冬 | 雪地裡有個雪貓咪 | Snowcat in the snow |
 | ⛷️ 寒假 | 寒假小企鵝出沒 | Baby penguin on vacation |
 | 🏖️ 暑假 | 暑假就該吃冰淇淋 | Ice cream season! |
@@ -394,7 +394,7 @@ Pacer 卡與每日纜車卡都接受使用者自己的照片。來源的優先�
 |---|---|
 | **探索自己** | Check-in · 睡眠紀錄 · 聊聊 · 嘿，在嗎？ |
 | **工具** | 我的水晶 · 最近的起伏 · 心情工具箱 · 匯出報告 |
-| **看看自己** | 我的專屬格言 · 我的 Pacers |
+| **看看自己** | 我的暖話卡 · 我的 Pacers |
 | **今日待辦** | 心晴筆記（卡片內可捲）· 年度總覽（可展開） |
 
 底部有三個分頁：
@@ -476,7 +476,7 @@ Pacer 卡與每日纜車卡都接受使用者自己的照片。來源的優先�
 
 語氣刻意不同於微光的回聲——輕、帶一點吐槽，不給建議、不問問題、不安慰。便條是一個隨手丟出來的念頭，把它當成傾訴來處理，會讓便條變得像一張要填的表單。
 
-接著兩區卡片：**Explore Yourself · 探索自己**(Check-in、Trends、Talk it out、Sleep Log、Year Overview、My Quote Cards)與 **Tools · 工具**(Toolbox、Export、Thought Coach、Thinking Traps、Weekly Persona、Hope Box、My Pacers、Hey Luna)。
+接著兩區卡片：**Explore Yourself · 探索自己**(Check-in、Trends、Talk it out、Sleep Log、Year Overview、My Quote Cards)與 **心情工具箱**(Toolbox、Export、Thought Coach、Thinking Traps、Weekly Persona、Hope Box、My Pacers、Hey Luna)。
 
 ### 設定頁
 

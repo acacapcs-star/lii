@@ -29,6 +29,7 @@ class _VoiceWakePageState extends ConsumerState<VoiceWakePage>
   bool _statusInitialized = false;
   String _spokenText = '';
   String _apiKey = '';
+  final TextEditingController _noteController = TextEditingController();
 
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
@@ -55,6 +56,7 @@ class _VoiceWakePageState extends ConsumerState<VoiceWakePage>
   @override
   void dispose() {
     _pulseController.dispose();
+    _noteController.dispose();
     _service.dispose();
     super.dispose();
   }
@@ -373,6 +375,7 @@ class _VoiceWakePageState extends ConsumerState<VoiceWakePage>
           if (!mounted) return;
           setState(() {
             _spokenText = text;
+            _noteController.text = text;
             _statusText = _isNoteMode
                 ? (isZh ? '說完了，點「整理成筆記」👆' : 'Done! Tap "Organize Notes" 👆')
                 : (isZh ? 'Luna 思考中...' : 'Luna is thinking...');
@@ -474,16 +477,20 @@ class _VoiceWakePageState extends ConsumerState<VoiceWakePage>
                   color: Colors.white12,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(
-                  _spokenText,
+                child: TextField(
+                  controller: _noteController,
                   style: const TextStyle(color: Colors.white70, fontSize: 13),
                   maxLines: 4,
-                  overflow: TextOverflow.ellipsis,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: isZh ? '可以在這裡修改辨識結果' : 'Edit the recognised text here',
+                    hintStyle: TextStyle(color: Colors.white38),
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
               ElevatedButton.icon(
-                onPressed: () => _organizeAndSaveToNote(_spokenText),
+                onPressed: () => _organizeAndSaveToNote(_noteController.text),
                 icon: const Icon(Icons.auto_fix_high),
                 label: Text(isZh ? '整理成筆記' : 'Organize Notes'),
                 style: ElevatedButton.styleFrom(

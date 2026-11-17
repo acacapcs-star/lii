@@ -12,7 +12,7 @@ class BookmarkQuickAdd {
 
   // SEED_PACERS 首次啟動放三張，之後就不再塞。
   // 只有在一張卡片都沒有的時候才會動作。
-  static Future<void> seedIfEmpty() async {
+  static Future<void> seedIfEmpty({bool isZh = true}) async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_key);
     if (raw != null && raw.isNotEmpty) {
@@ -25,24 +25,33 @@ class BookmarkQuickAdd {
     }
 
     // 倒著加，因為 add() 是 insert(0)，最後一句會排在最上面
-    await add(
-      quote: "以後都可以跟我講喔 0v0/",
-      author: 'lii',
-      toneIndex: 4,
-      colorIndex: 4,
-    );
-    await add(
-      quote: "把想說的話存在這裡，它會在對的時候出現。",
-      author: 'lii',
-      toneIndex: 2,
-      colorIndex: 2,
-    );
-    await add(
-      quote: "嗨，初次見面捏 =w=",
-      author: 'lii',
-      toneIndex: 0,
-      colorIndex: 0,
-    );
+    if (isZh) {
+      await add(quote: "以後都可以跟我講喔 0v0/", author: 'lii', toneIndex: 4, colorIndex: 4);
+      await add(quote: "把想說的話存在這裡，它會在對的時候出現。", author: 'lii', toneIndex: 2, colorIndex: 2);
+      await add(quote: "嗨，初次見面捏 =w=", author: 'lii', toneIndex: 0, colorIndex: 0, imageIndex: 0);
+    } else {
+      await add(quote: "You can always talk to me 0v0/", author: 'lii', toneIndex: 4, colorIndex: 4);
+      await add(quote: "Save what you want to say here. It will show up when you need it.", author: 'lii', toneIndex: 2, colorIndex: 2);
+      await add(quote: "Hey, nice to meet you =w=", author: 'lii', toneIndex: 0, colorIndex: 0, imageIndex: 0);
+    }
+  }
+
+  // 語言切換時，若卡片全是 lii 預設的，重新 seed 當前語言版本
+  static Future<void> reseedDefault({bool isZh = true}) async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_key);
+    if (raw == null || raw.isEmpty) return;
+    try {
+      final list = jsonDecode(raw) as List;
+      // 只有全是 lii 的卡片才重新 seed
+      final allLii = list.every((e) => (e['author'] as String?) == 'lii');
+      if (!allLii) return;
+    } catch (_) {
+      return;
+    }
+    // 清掉再重塞
+    await prefs.remove(_key);
+    await seedIfEmpty(isZh: isZh);
   }
 
   static Future<void> add({

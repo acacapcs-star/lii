@@ -1,4 +1,4 @@
-// 我的專屬格言卡 — 存檔記憶（含照片、文字位置、貼圖）
+// 我的暖話卡 — 存檔記憶（含照片、文字位置、貼圖）
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 

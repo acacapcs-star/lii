@@ -1,4 +1,4 @@
-// 暖話卡工坊 — 底色/照片/字體/貼圖(可拖)/文字可拖任意位置，存進「我的專屬格言」
+// 暖話卡工坊 — 底色/照片/字體/貼圖(可拖)/文字可拖任意位置，存進「我的暖話卡」
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';

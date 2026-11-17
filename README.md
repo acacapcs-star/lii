@@ -466,7 +466,7 @@ screen corner:
 | 🧧 Lunar New Year | `#FFF3F3` pale pink | Fireworks | New Year dragons + red-envelope burst |
 | 🌸 Spring | `#FCE4EC` soft pink | Petals | Easter bunny |
 | ☀️ Summer | `#E0F7FA` bright pale blue | Water splash | Beach cat and bunny in sunglasses |
-| 🍁 Autumn | `#FBE9E0` warm orange-brown | Leaves | Swaying mascot |
+| 🍁 Autumn | `#FBE9E0` warm orange-brown | Leaves | Falling leaves decoration |
 | ❄️ Winter | `#E8F0F7` cool blue-white | Snow | Engineer penguin → egg-hatching → igloo |
 | 🧣 Winter Break | `#F3E9E0` warm beige | Snow | Building a snowman together |
 | 🏖️ Summer Break | `#FFF3D6` bright yellow | Treats | Volleyball boy + drinks bar |
@@ -561,7 +561,7 @@ A three-tab bar sits at the foot of the app:
 |---|---|---|
 | Home | `/home` | The four sections above |
 | Records | `/trends` | Trend charts, 7/14/30-day slider, personal-vs-group comparison |
-| Tools | `/tools` | Four in-the-moment tools as square cards: Self-dialogue Card, 4-7-8 Breathing, 5-4-3-2-1 Grounding, Emotion Dictionary |
+| My Toolbox | `/tools` | Four in-the-moment tools as square cards: Self-dialogue Card, 4-7-8 Breathing, 5-4-3-2-1 Grounding, Emotion Dictionary |
 
 The bar lives in `lib/core/widgets/lii_bottom_nav.dart`. The side drawer is kept as a second path to everything, including reports, safety flow and settings.
 
@@ -641,7 +641,7 @@ Below that, four sections:
 |---|---|
 | **Explore Yourself** | Check-in · Sleep Log · Talk it out · Hey, Luna? |
 | **Tools** | My Crystals · Trends · Toolbox · Export Report |
-| **Look back** | My Quote Cards · My Pacers |
+| **Look back** | My Warm Cards · My Pacers |
 | **Today's list** | Notes (today's items, scrollable in-card) · Calendar (this month's marked items, expandable) |
 
 The last two are live cards rather than links — they read straight from storage and show content in place.

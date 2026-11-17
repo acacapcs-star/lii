@@ -436,7 +436,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                             controller: _nameCtrl,
                             style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
                             decoration: InputDecoration(
-                              hintText: 'lii 要怎麼稱呼你？',
+                              hintText: zh ? 'lii 要怎麼稱呼你？' : 'What should lii call you?',
                               hintStyle: const TextStyle(color: Colors.white54, fontSize: 15),
                               enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white38)),
                               focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
@@ -1588,14 +1588,14 @@ class _SwipeableCardsState extends State<_SwipeableCards> {
               StickyNotePage(
                 color: const Color(0xFFF7E4EF),
                 borderColor: const Color(0xFFC841A0),
-                hintText: '隨手記點什麼... 🌸',
+                hintText: Localizations.localeOf(context).languageCode == 'zh' ? '隨手記點什麼... 🌸' : 'Jot anything down... 🌸',
                 storageKey: 'sticky_pink',
               ),
               // 頁4：薄荷綠便條紙
               StickyNotePage(
                 color: const Color(0xFFE4F5F0),
                 borderColor: const Color(0xFF41C8A2),
-                hintText: '今天最重要的事... 🌿',
+                hintText: Localizations.localeOf(context).languageCode == 'zh' ? '今天最重要的事... 🌿' : 'Most important thing today... 🌿',
                 storageKey: 'sticky_mint',
               ),
             ],

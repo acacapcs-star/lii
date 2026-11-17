@@ -76,7 +76,7 @@ class AppStrings {
   String get statusSupport => isZhTw ? '需要支持' : 'Needs support';
   String get todayStatus => isZhTw ? '今日身心狀態' : 'Today\'s well-being';
   String get exploreSelf => isZhTw ? '記錄一下' : 'Log it';
-  String get moreFeatures => isZhTw ? '我的足跡' : 'My Footprints';
+  String get moreFeatures => isZhTw ? '心情工具箱' : 'Toolbox';
   String get emergencyCase => isZhTw ? '案號 115-E018647' : 'Case 115-E018647';
   String get emotionalRelease => isZhTw ? '滑一滑，了解自己' : 'Swipe to know yourself';
   String get healthDataTrends => isZhTw ? '健康數據趨勢' : 'Health data trends';
