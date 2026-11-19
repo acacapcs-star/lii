@@ -339,8 +339,8 @@ onboarding 之後會跳一次說明，因為沒人知道的設定跟不存在的
 |---|---|---|
 | 🎄 聖誕節 | 聖誕貓貓在偷看你 | Santa Cat is watching |
 | 🧧 過年 | 恭喜發財，紅包拿來 | Happy New Year! |
-| 🌸 春 | 春天藏了一隻兔兔 | A bunny hides in spring |
-| ☀️ 夏 | 夏日海灘等你來 | Summer beach awaits |
+| 🌸 春 | 櫻花緩緩落下 | Cherry blossoms drifting down |
+| ☀️ 夏 | 夏日小遊戲等你玩| Summer mini-games await |
 | 🍂 秋 | 三片落葉清晰詮釋於旁邊 | A fox hides in the leaves |
 | ❄️ 冬 | 雪地裡有個雪貓咪 | Snowcat in the snow |
 | ⛷️ 寒假 | 寒假小企鵝出沒 | Baby penguin on vacation |
