@@ -504,8 +504,8 @@ The 7th slide (second-to-last) of the first-launch onboarding lets users pick an
 |---|---|
 | 🎄 Christmas | Santa Cat is watching |
 | 🧧 Lunar NY | Happy New Year! |
-| 🌸 Spring | A bunny hides in spring |
-| ☀️ Summer | Summer beach awaits |
+| 🌸 Spring | Cherry blossoms drifting down |
+| ☀️ Summer | Summer mini-games await|
 | 🍂 Autumn | A fox hides in the leaves |
 | ❄️ Winter | Snowcat in the snow |
 | ⛷️ Winter Hols | Baby penguin on vacation |
