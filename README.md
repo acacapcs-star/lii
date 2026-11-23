@@ -1385,10 +1385,9 @@ within a category — 3 out of 714. It is the strongest third-party validation t
 project currently holds, and it belongs to the v1 phase. **v2 lii was developed forward
 independently by the author and has no award result of its own yet.**
 
-### Da Vinci International Invention Exhibition, submitted August 2026
+### Da Vinci International Invention Exhibition, August 2026
 
-v2 lii was submitted as an individual work. **The result has not been announced.**
-No anticipated result is written here as if it were already achieved.
+v2 lii was submitted as an individual work and received a **golden medal**.
 
 ### Education Bureau guidance, April 2026
 
@@ -1475,8 +1474,7 @@ what to write; the cold start is real and unsolved.
 
 ## Status
 
-- **Da Vinci International Invention Exhibition** — submitted; result not yet
-  announced.
+- **Da Vinci International Invention Exhibition** — **golden medal**.
 - **Patent** — Taiwan invention patent, application in preparation, **not yet
   filed**.
 - External guidance — Taichung City Government Education Bureau,
