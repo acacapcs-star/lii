@@ -361,7 +361,7 @@ one listening session); and iOS defaults to an audio category that stays
 silent when the mute switch is on, requiring `playback`.
 
 Notes and to-dos live in `features/checkin/presentation/note_page.dart`
-(15 priority levels); the annual overview is in `month_overview_page.dart`.
+(4 priority levels); the annual overview is in `month_overview_page.dart`.
 
 ---
 
@@ -1312,7 +1312,7 @@ lii/
             │   ├── checkin_page.dart
             │   ├── checkin_history_page.dart
             │   ├── month_overview_page.dart
-            │   └── note_page.dart              15 priority levels
+            │   └── note_page.dart              4 priority levels
             ├── sleep/presentation/
             │   ├── sleep_page.dart
             │   └── sleep_history_page.dart
