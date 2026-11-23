@@ -301,7 +301,7 @@ class SafetyPage extends ConsumerWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: Text(copy.copy),
+                        child: Text(copy.copy, overflow: TextOverflow.visible, softWrap: false),
                       ),
                     ),
                   ],

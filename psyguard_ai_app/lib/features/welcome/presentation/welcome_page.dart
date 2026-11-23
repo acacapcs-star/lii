@@ -96,13 +96,13 @@ const _atmItems = [
     emoji: '🌸', labelZh: '春', labelEn: 'Spring',
     bg: Color(0xFF6A3A5A), moodTheme: MoodTheme.spring,
     easterImg: 'assets/images/mood_easter_bunny.jpg',
-    easterZh: '春天藏了一隻兔兔', easterEn: 'A bunny hides in spring',
+    easterZh: '櫻花緩緩落下', easterEn: 'Cherry blossoms drifting down',
   ),
   _AtmItem(
     emoji: '☀️', labelZh: '夏', labelEn: 'Summer',
     bg: Color(0xFF1A4A5A), moodTheme: MoodTheme.summer,
-    easterImg: 'assets/images/mood_summer_beach.png',
-    easterZh: '夏日海灘等你來', easterEn: 'Summer beach awaits',
+    easterImg: 'assets/images/mood_drink_4.png',
+    easterZh: '夏日小遊戲等你玩', easterEn: 'Summer mini-games await',
   ),
   _AtmItem(
     emoji: '🍂', labelZh: '秋', labelEn: 'Autumn',

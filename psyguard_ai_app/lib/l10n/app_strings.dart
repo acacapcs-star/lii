@@ -113,6 +113,8 @@ class AppStrings {
   String get stress => isZhTw ? '情緒輕鬆度' : 'Emotional Ease';
   String get energy => isZhTw ? '情緒韌性值' : 'Emotional Resilience';
   String get todayNote => isZhTw ? '今日筆記' : 'Today\'s Note';
+  String get openTodayDiary => isZhTw ? '開啟今日筆記' : 'Open Today Diary';
+  String get diarySubtitle => isZhTw ? '重點、待辦、4 級優先標記' : 'Bullet, todo, and 4-level priority tags';
   String get noteHint =>
       isZhTw ? '想記下什麼嗎？（選填）' : 'Anything to write down? (optional)';
   String get completeCheckin => isZhTw ? '完成紀錄' : 'Complete Check-in';

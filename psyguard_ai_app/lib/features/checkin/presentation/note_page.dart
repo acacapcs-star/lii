@@ -12,53 +12,30 @@ import '../../../core/security/local_settings_service.dart';
 enum NoteItemType { text, bullet, checkbox }
 
 enum NotePriority {
-  // 紅系 (緊急) — 淺到深
-  red1, red2, red3, red4, red5,
-  // 黃系 (重要) — 淺到深
-  yellow1, yellow2, yellow3, yellow4, yellow5,
-  // 綠系 (一般) — 淺到深
-  green1, green2, green3, green4, green5,
+  urgent,    // 🔴 緊急
+  important, // 🟡 重要
+  normal,    // 🟢 一般
+  anytime,   // ⚪ 隨時
 }
 
 Color priorityColor(NotePriority p) {
   switch (p) {
-    case NotePriority.red1:    return const Color(0xFFFFCDD2);
-    case NotePriority.red2:    return const Color(0xFFEF9A9A);
-    case NotePriority.red3:    return const Color(0xFFEF5350);
-    case NotePriority.red4:    return const Color(0xFFC62828);
-    case NotePriority.red5:    return const Color(0xFF7B2B2B);
-    case NotePriority.yellow1: return const Color(0xFFFFF9C4);
-    case NotePriority.yellow2: return const Color(0xFFFFEE58);
-    case NotePriority.yellow3: return const Color(0xFFFFCA28);
-    case NotePriority.yellow4: return const Color(0xFFF57F17);
-    case NotePriority.yellow5: return const Color(0xFF7B5800);
-    case NotePriority.green1:  return const Color(0xFFC8E6C9);
-    case NotePriority.green2:  return const Color(0xFF81C784);
-    case NotePriority.green3:  return const Color(0xFF66BB6A);
-    case NotePriority.green4:  return const Color(0xFF2E7D32);
-    case NotePriority.green5:  return const Color(0xFF1B4B1B);
+    case NotePriority.urgent:    return const Color(0xFFEF5350);
+    case NotePriority.important: return const Color(0xFFFFCA28);
+    case NotePriority.normal:    return const Color(0xFF66BB6A);
+    case NotePriority.anytime:   return const Color(0xFFBDBDBD);
   }
 }
 
 String priorityLabel(NotePriority p, {bool isZh = true}) {
   switch (p) {
-    case NotePriority.red1:    return isZh ? '🔴 緊急 1' : '🔴 Urgent 1';
-    case NotePriority.red2:    return isZh ? '🔴 緊急 2' : '🔴 Urgent 2';
-    case NotePriority.red3:    return isZh ? '🔴 緊急 3' : '🔴 Urgent 3';
-    case NotePriority.red4:    return isZh ? '🔴 緊急 4' : '🔴 Urgent 4';
-    case NotePriority.red5:    return isZh ? '🔴 緊急 5' : '🔴 Urgent 5';
-    case NotePriority.yellow1: return isZh ? '🟡 重要 1' : '🟡 Important 1';
-    case NotePriority.yellow2: return isZh ? '🟡 重要 2' : '🟡 Important 2';
-    case NotePriority.yellow3: return isZh ? '🟡 重要 3' : '🟡 Important 3';
-    case NotePriority.yellow4: return isZh ? '🟡 重要 4' : '🟡 Important 4';
-    case NotePriority.yellow5: return isZh ? '🟡 重要 5' : '🟡 Important 5';
-    case NotePriority.green1:  return isZh ? '🟢 一般 1' : '🟢 Normal 1';
-    case NotePriority.green2:  return isZh ? '🟢 一般 2' : '🟢 Normal 2';
-    case NotePriority.green3:  return isZh ? '🟢 一般 3' : '🟢 Normal 3';
-    case NotePriority.green4:  return isZh ? '🟢 一般 4' : '🟢 Normal 4';
-    case NotePriority.green5:  return isZh ? '🟢 一般 5' : '🟢 Normal 5';
+    case NotePriority.urgent:    return isZh ? '🔴 緊急' : '🔴 Urgent';
+    case NotePriority.important: return isZh ? '🟡 重要' : '🟡 Important';
+    case NotePriority.normal:    return isZh ? '🟢 一般' : '🟢 Normal';
+    case NotePriority.anytime:   return isZh ? '⚪ 隨時' : '⚪ Anytime';
   }
 }
+
 
 class NoteItem {
   String text;
@@ -70,7 +47,7 @@ class NoteItem {
     required this.text,
     this.type = NoteItemType.text,
     this.checked = false,
-    this.priority = NotePriority.green3,
+    this.priority = NotePriority.normal,
   });
 
   Map<String, dynamic> toJson() => {
@@ -84,7 +61,13 @@ class NoteItem {
     text: j['text'] ?? '',
     type: NoteItemType.values[j['type'] ?? 0],
     checked: j['checked'] ?? false,
-    priority: NotePriority.values[j['priority'] ?? 12],
+    priority: () {
+      final i = j['priority'] ?? 2;
+      if (i < 5)  return NotePriority.urgent;
+      if (i < 10) return NotePriority.important;
+      if (i < 14) return NotePriority.normal;
+      return NotePriority.anytime;
+    }(),
   );
 }
 
@@ -598,7 +581,7 @@ class _NotePageState extends ConsumerState<NotePage> {
         title: Row(
           children: [
             const Text('💡 ', style: TextStyle(fontSize: 20)),
-            Text(_isZh ? 'PsyGuard 筆記指南' : 'Note Guide', style: GoogleFonts.playfairDisplay(
+            Text(_isZh ? 'lii 筆記指南' : 'Note Guide', style: GoogleFonts.playfairDisplay(
               fontWeight: FontWeight.w600, color: const Color(0xFF2C5282), fontSize: 18
             )),
           ],
@@ -609,7 +592,7 @@ class _NotePageState extends ConsumerState<NotePage> {
           children: [
             _GuideRow(icon: '•', text: _isZh ? '[重點] 快速記下想法和關鍵字。' : '[Bullet] Great for quick ideas and key points.'),
             _GuideRow(icon: '☑', text: _isZh ? '[待辦] 點方框標記完成。' : '[Todo] Tap the checkbox to mark done.'),
-            _GuideRow(icon: '🟢', text: _isZh ? '[優先級] 點圓點循環 15 級，長按直接選。' : '[Priority] Tap dot to cycle 15 levels. Long press to pick directly.'),
+            _GuideRow(icon: '🟢', text: _isZh ? '[優先級] 點圓點循環 4 級（緊急／重要／一般／隨時），長按直接選。' : '[Priority] Tap dot to cycle 4 levels (Urgent/Important/Normal/Anytime). Long press to pick.'),
             _GuideRow(icon: '↕', text: _isZh ? '[排序] 長按任一項可拖曳調整順序。' : '[Reorder] Long press any item to drag and reorder.'),
             _GuideRow(icon: '🤖', text: _isZh ? '[AI 同步] 筆記會同步給 Luna，紅色緊急任務牠會主動關心你。' : '[AI Sync] All notes sync to AI chat. Luna will check in on your urgent red tasks!'),
           ],
@@ -637,7 +620,7 @@ class _NotePageState extends ConsumerState<NotePage> {
   void _cyclePriority(int index) {
     setState(() {
       final current = _items[index].priority.index;
-      _items[index].priority = NotePriority.values[(current + 1) % 15];
+      _items[index].priority = NotePriority.values[(current + 1) % 4];
     });
     _saveNotes();
   }

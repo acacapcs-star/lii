@@ -232,9 +232,9 @@ class _MonthOverviewPageState extends ConsumerState<MonthOverviewPage> {
       }
     }
     final priority = switch (level) {
-      0 => NotePriority.red3,
-      1 => NotePriority.yellow3,
-      _ => NotePriority.green3,
+      0 => NotePriority.urgent,
+      1 => NotePriority.important,
+      _ => NotePriority.normal,
     };
     list.add(NoteItem(
       text: text,

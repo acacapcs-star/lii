@@ -312,19 +312,19 @@ class _CheckinPageState extends ConsumerState<CheckinPage> {
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
+                            children: [
                               Text(
-                                'Open Today Diary',
-                                style: TextStyle(
+                                copy.openTodayDiary,
+                                style: const TextStyle(
                                   fontSize: 15, 
                                   fontWeight: FontWeight.w600, 
                                   color: Color(0xFF2C5282),
                                 ),
                               ),
-                              SizedBox(height: 2),
+                              const SizedBox(height: 2),
                               Text(
-                                'Bullet, todo, and 15-level priority tags',
-                                style: TextStyle(fontSize: 11, color: Colors.grey),
+                                copy.diarySubtitle,
+                                style: const TextStyle(fontSize: 11, color: Colors.grey),
                               ),
                             ],
                           ),
