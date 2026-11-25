@@ -10,21 +10,16 @@ import 'breath_plan.dart';
 class BookmarkQuickAdd {
   static const String _key = 'bookmarks_v2';
 
-  // SEED_PACERS 首次啟動放三張，之後就不再塞。
-  // 只有在一張卡片都沒有的時候才會動作。
   static Future<void> seedIfEmpty({bool isZh = true}) async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_key);
     if (raw != null && raw.isNotEmpty) {
       try {
         final list = jsonDecode(raw) as List;
-        if (list.isNotEmpty) return; // 已經有卡片就不動
-      } catch (_) {
-        // 資料壞掉就當作空的，照樣塞
-      }
+        if (list.isNotEmpty) return;
+      } catch (_) {}
     }
 
-    // 倒著加，因為 add() 是 insert(0)，最後一句會排在最上面
     if (isZh) {
       await add(quote: "以後都可以跟我講喔 0v0/", author: 'lii', toneIndex: 4, colorIndex: 4);
       await add(quote: "把想說的話存在這裡，它會在對的時候出現。", author: 'lii', toneIndex: 2, colorIndex: 2);
@@ -36,20 +31,15 @@ class BookmarkQuickAdd {
     }
   }
 
-  // 語言切換時，若卡片全是 lii 預設的，重新 seed 當前語言版本
   static Future<void> reseedDefault({bool isZh = true}) async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_key);
     if (raw == null || raw.isEmpty) return;
     try {
       final list = jsonDecode(raw) as List;
-      // 只有全是 lii 的卡片才重新 seed
       final allLii = list.every((e) => (e['author'] as String?) == 'lii');
       if (!allLii) return;
-    } catch (_) {
-      return;
-    }
-    // 清掉再重塞
+    } catch (_) { return; }
     await prefs.remove(_key);
     await seedIfEmpty(isZh: isZh);
   }
@@ -89,37 +79,18 @@ class BookmarkQuickAdd {
     await prefs.setString(_key, jsonEncode(list));
   }
 
-  // EN_SEED demo 走英文，這 12 句預設 pacer 一併換成英文
   static const Map<BreathMood, List<List<String>>> _quotes = {
     BreathMood.anxious: [
       ["Right now, nothing is happening. You are safe.", 'Luna'],
-      [
-        "A fast heartbeat doesn't mean danger. It's just running ahead of you.",
-        'Homeroom teacher'
-      ],
-      [
-        "You don't have to think through the whole day. Just the next ten minutes.",
-        'Homeroom teacher'
-      ],
-      [
-        "You just slowed your breathing down. You can do more than you think.",
-        'Luna'
-      ],
+      ["A fast heartbeat doesn't mean danger. It's just running ahead of you.", 'Homeroom teacher'],
+      ["You don't have to think through the whole day. Just the next ten minutes.", 'Homeroom teacher'],
+      ["You just slowed your breathing down. You can do more than you think.", 'Luna'],
     ],
     BreathMood.low: [
       ["It's okay if you did nothing today. You were breathing.", 'Luna'],
-      [
-        "You don't have to feel better right away. Take your time, I'll wait.",
-        'Luna'
-      ],
-      [
-        "You're the one who made it this far. That's not a small thing.",
-        'Homeroom teacher'
-      ],
-      [
-        "You don't have to pretend to be bright in the dark. I'll just stay.",
-        'Luna'
-      ],
+      ["You don't have to feel better right away. Take your time, I'll wait.", 'Luna'],
+      ["You're the one who made it this far. That's not a small thing.", 'Homeroom teacher'],
+      ["You don't have to pretend to be bright in the dark. I'll just stay.", 'Luna'],
     ],
     BreathMood.calm: [
       ["This is enough. You don't have to do more.", 'Luna'],

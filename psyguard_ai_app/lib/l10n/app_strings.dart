@@ -59,7 +59,7 @@ class AppStrings {
   String get navCheckin => isZhTw ? '今天怎麼樣？' : 'How are you today?';
   String get navSleep => isZhTw ? '睡眠紀錄' : 'Sleep Log';
   String get navTrends => isZhTw ? '趨勢圖' : 'Trends';
-  String get navTools => isZhTw ? '心情工具箱' : 'Toolbox';
+  String get navTools => isZhTw ? '心情工具箱' : 'My Toolbox';
   String get navSafety => isZhTw ? '安全流程' : 'Safety Flow';
   String get navExport => isZhTw ? '匯出報告' : 'Export Report';
   String get navSettings => isZhTw ? '設定' : 'Settings';
@@ -76,13 +76,13 @@ class AppStrings {
   String get statusSupport => isZhTw ? '需要支持' : 'Needs support';
   String get todayStatus => isZhTw ? '今日身心狀態' : 'Today\'s well-being';
   String get exploreSelf => isZhTw ? '記錄一下' : 'Log it';
-  String get moreFeatures => isZhTw ? '心情工具箱' : 'Toolbox';
+  String get moreFeatures => isZhTw ? '我的足跡' : 'My Footprints';
   String get emergencyCase => isZhTw ? '案號 115-E018647' : 'Case 115-E018647';
   String get emotionalRelease => isZhTw ? '滑一滑，了解自己' : 'Swipe to know yourself';
   String get healthDataTrends => isZhTw ? '健康數據趨勢' : 'Health data trends';
   String get supportiveChat => isZhTw ? '想說什麼都行' : "Say what's going on";
   String get sleepStatus => isZhTw ? '昨晚睡得好嗎？' : 'How did you sleep?';
-  String get moodFirstAid => isZhTw ? '心情急救' : 'Mood first aid';
+  String get moodFirstAid => isZhTw ? '心情急救' : 'Mood First Aid';
   String get sevenDaySummary =>
       isZhTw ? '近七天的摘要' : 'A 7-day summary';
 
@@ -143,7 +143,7 @@ class AppStrings {
   String savedSleepRisk(String level) =>
       isZhTw ? '已儲存！風險：$level' : 'Saved. Risk: $level';
 
-  String get toolsTitle => navTools;
+  String get toolsTitle => isZhTw ? '心情工具箱' : 'My Toolbox';
   String get toolHistory => isZhTw ? '練習紀錄' : 'Practice History';
   String get todayGuidance => isZhTw ? '今日指引' : 'Today\'s Guidance';
   String get acceptThisLine => isZhTw ? '收下這句話' : 'Keep this line';
@@ -261,3 +261,4 @@ class AppStrings {
   String get demoDataImported =>
       isZhTw ? '已重置並匯入模擬資料！' : 'Demo data has been reset and imported.';
 }
+// force rebuild 2026年11月25日 週三 13時51分44秒 CST

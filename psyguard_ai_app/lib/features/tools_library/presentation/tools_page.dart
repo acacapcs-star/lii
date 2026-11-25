@@ -732,7 +732,7 @@ class ToolboxPage extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          copy.isZhTw ? '心情工具箱' : 'Toolbox',
+          copy.toolsTitle,
           style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
